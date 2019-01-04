@@ -1,11 +1,3 @@
-//
-//  SPRSeed.h
-//  Sprout
-//
-//  Created by Thomas Redding on 1/4/19.
-//  Copyright © 2019 Thomas Redding. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN

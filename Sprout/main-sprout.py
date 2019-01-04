@@ -1,8 +1,8 @@
 import sys
 
-class SproutApp:
-  def __init__(self):
-    self.listenForHotkey(49, True, False, False, False)
+class ObjcInterface:
+  def __init__(self, delegate):
+    self.delegate = delegate
   
   def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift):
     x = str(keyCode)
@@ -11,14 +11,14 @@ class SproutApp:
     x += '1' if opt else '0'
     x += '1' if ctrl else '0'
     x += '1' if shift else '0'
-    self._print('registerHotkey '+ x)
+    sys.stdout.write('registerHotkey '+ x)
+    sys.stdout.flush()
   
   def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
-    # TODO
-    self._print(str(keyCode))
-    None
+    self.delegate.hotkeyPressed(keyCode, cmd, opt, ctrl, shift)
   
   def eventLoop(self):
+    # TODO: Figure out how to stop blocking here.
     line = sys.stdin.readline()
     line = line[:-1]
     if line[0:13] == 'hotKeyPressed':
@@ -32,13 +32,23 @@ class SproutApp:
       shift = (modifierFlags[0] == '1')
       self.hotkeyPressed(keyCode, cmd, opt, ctrl, shift)
     else:
-      self._print('echo ' + line)
+      self.print(line)
     return True
   
-  def _print(self, s):
-    sys.stdout.write(s)
+  def print(self, s):
+    sys.stdout.write('print ' + s)
     sys.stdout.flush()
 
+
+class SproutApp:
+  def __init__(self):
+    self.objcInterface = ObjcInterface(self)
+    self.objcInterface.listenForHotkey(49, True, False, False, False)
+    while True:
+      if not self.objcInterface.eventLoop():
+        break
+  def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
+    self.objcInterface.print('key pressed:' + str(keyCode))
+
+
 sproutApp = SproutApp()
-while True:
-  if not sproutApp.eventLoop(): break
