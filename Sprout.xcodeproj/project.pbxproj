@@ -11,6 +11,8 @@
 		2832035621DF4A2C0078D811 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2832035521DF4A2C0078D811 /* Assets.xcassets */; };
 		2832035921DF4A2C0078D811 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2832035721DF4A2C0078D811 /* MainMenu.xib */; };
 		2832035C21DF4A2C0078D811 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832035B21DF4A2C0078D811 /* main.m */; };
+		2832036421DF4B250078D811 /* main-sprout.py in Resources */ = {isa = PBXBuildFile; fileRef = 2832036321DF4B250078D811 /* main-sprout.py */; };
+		2832036721DF4B4E0078D811 /* SPRSeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832036621DF4B4E0078D811 /* SPRSeed.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,9 @@
 		2832035A21DF4A2C0078D811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2832035B21DF4A2C0078D811 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2832035D21DF4A2C0078D811 /* Sprout.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sprout.entitlements; sourceTree = "<group>"; };
+		2832036321DF4B250078D811 /* main-sprout.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "main-sprout.py"; sourceTree = "<group>"; };
+		2832036521DF4B4E0078D811 /* SPRSeed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRSeed.h; sourceTree = "<group>"; };
+		2832036621DF4B4E0078D811 /* SPRSeed.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRSeed.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +61,9 @@
 			children = (
 				2832035221DF4A2C0078D811 /* AppDelegate.h */,
 				2832035321DF4A2C0078D811 /* AppDelegate.m */,
+				2832036321DF4B250078D811 /* main-sprout.py */,
+				2832036521DF4B4E0078D811 /* SPRSeed.h */,
+				2832036621DF4B4E0078D811 /* SPRSeed.m */,
 				2832035521DF4A2C0078D811 /* Assets.xcassets */,
 				2832035721DF4A2C0078D811 /* MainMenu.xib */,
 				2832035A21DF4A2C0078D811 /* Info.plist */,
@@ -123,6 +131,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2832035621DF4A2C0078D811 /* Assets.xcassets in Resources */,
+				2832036421DF4B250078D811 /* main-sprout.py in Resources */,
 				2832035921DF4A2C0078D811 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +143,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2832036721DF4B4E0078D811 /* SPRSeed.m in Sources */,
 				2832035C21DF4A2C0078D811 /* main.m in Sources */,
 				2832035421DF4A2C0078D811 /* AppDelegate.m in Sources */,
 			);
