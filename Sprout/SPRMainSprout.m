@@ -69,7 +69,7 @@
   }
 }
 
-- (void)end {
+- (void)terminate {
   [_task terminate];
 }
 
