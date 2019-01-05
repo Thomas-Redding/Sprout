@@ -13,6 +13,7 @@
 		2832035C21DF4A2C0078D811 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832035B21DF4A2C0078D811 /* main.m */; };
 		2832036421DF4B250078D811 /* main-sprout.py in Resources */ = {isa = PBXBuildFile; fileRef = 2832036321DF4B250078D811 /* main-sprout.py */; };
 		2832036721DF4B4E0078D811 /* SPRSeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832036621DF4B4E0078D811 /* SPRSeed.m */; };
+		28459FAC21E05F1800ABAFCC /* SproutObjcInterface.py in Resources */ = {isa = PBXBuildFile; fileRef = 28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */; };
 		28B3F50921DFC992006879E1 /* SPRMainSprout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28B3F50821DFC992006879E1 /* SPRMainSprout.m */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		2832036321DF4B250078D811 /* main-sprout.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "main-sprout.py"; sourceTree = "<group>"; };
 		2832036521DF4B4E0078D811 /* SPRSeed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRSeed.h; sourceTree = "<group>"; };
 		2832036621DF4B4E0078D811 /* SPRSeed.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRSeed.m; sourceTree = "<group>"; };
+		28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = SproutObjcInterface.py; sourceTree = "<group>"; };
 		28B3F50721DFC992006879E1 /* SPRMainSprout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRMainSprout.h; sourceTree = "<group>"; };
 		28B3F50821DFC992006879E1 /* SPRMainSprout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRMainSprout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -65,6 +67,7 @@
 				2832035221DF4A2C0078D811 /* AppDelegate.h */,
 				2832035321DF4A2C0078D811 /* AppDelegate.m */,
 				2832036321DF4B250078D811 /* main-sprout.py */,
+				28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */,
 				28B3F50721DFC992006879E1 /* SPRMainSprout.h */,
 				28B3F50821DFC992006879E1 /* SPRMainSprout.m */,
 				2832036521DF4B4E0078D811 /* SPRSeed.h */,
@@ -136,6 +139,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2832035621DF4A2C0078D811 /* Assets.xcassets in Resources */,
+				28459FAC21E05F1800ABAFCC /* SproutObjcInterface.py in Resources */,
 				2832036421DF4B250078D811 /* main-sprout.py in Resources */,
 				2832035921DF4A2C0078D811 /* MainMenu.xib in Resources */,
 			);

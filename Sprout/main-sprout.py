@@ -1,54 +1,37 @@
-import sys
+import time
+from tkinter import Tk, Label, Button
 
-class ObjcInterface:
-  def __init__(self, delegate):
-    self.delegate = delegate
-  
-  def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift):
-    x = str(keyCode)
-    x += ' '
-    x += '1' if cmd else '0'
-    x += '1' if opt else '0'
-    x += '1' if ctrl else '0'
-    x += '1' if shift else '0'
-    sys.stdout.write('registerHotkey '+ x)
-    sys.stdout.flush()
-  
-  def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
-    self.delegate.hotkeyPressed(keyCode, cmd, opt, ctrl, shift)
-  
-  def eventLoop(self):
-    # TODO: Figure out how to stop blocking here.
-    line = sys.stdin.readline()
-    line = line[:-1]
-    if line[0:13] == 'hotKeyPressed':
-      args = line[14:]
-      spaceIndex = args.index(' ')
-      keyCode = int(args[0:spaceIndex])
-      modifierFlags = args[spaceIndex+1]
-      cmd = (modifierFlags[0] == '1')
-      opt = (modifierFlags[0] == '1')
-      ctrl = (modifierFlags[0] == '1')
-      shift = (modifierFlags[0] == '1')
-      self.hotkeyPressed(keyCode, cmd, opt, ctrl, shift)
-    else:
-      self.print(line)
-    return True
-  
-  def print(self, s):
-    sys.stdout.write('print ' + s)
-    sys.stdout.flush()
+from SproutObjcInterface import ObjcInterface
 
+class MainWindow:
+  def __init__(self, master):
+    self.master = master
+    master.title("A simple GUI")
+    self.label = Label(master, text="This is our first GUI!")
+    self.label.pack()
+    self.greet_button = Button(master, text="Greet", command=self.greet)
+    self.greet_button.pack()
+    self.close_button = Button(master, text="Close", command=master.quit)
+    self.close_button.pack()
+
+  def greet(self):
+    print("Greetings!")
 
 class SproutApp:
   def __init__(self):
     self.objcInterface = ObjcInterface(self)
+    # Listen to "CMD + Space" hotkey.
     self.objcInterface.listenForHotkey(49, True, False, False, False)
-    while True:
-      if not self.objcInterface.eventLoop():
-        break
+    self.root = Tk()
+    self.mainWindow = MainWindow(self.root)
+    self.root.after(100, self.task)
+    self.root.mainloop()
+
+  def task(self):
+    self.objcInterface.poll()
+    self.root.after(100, self.task)
+  
   def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
     self.objcInterface.print('key pressed:' + str(keyCode))
-
 
 sproutApp = SproutApp()
