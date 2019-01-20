@@ -1,5 +1,24 @@
 import select
+from subprocess import Popen, PIPE
 import sys
+
+# MacOs only - requires `pip install pyobjc.`
+# Might be unneccssary going forward.
+from Foundation import NSBundle
+from AppKit import NSWorkspace
+
+# Update menu item from "Python" to "Sprout".
+bundle = NSBundle.mainBundle()
+if bundle:
+  info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+  if info and info['CFBundleName'] == 'Python':
+    info['CFBundleName'] = 'Sprout'
+
+# spr.listenForHotkey(49, True, False, False, False) - Listen for 'CMD + SPACE'
+# spt.poll()                                         - Perform hotkey callbacks.
+# spt.print("foo")                                   - Print "foo" to the Xcode terminal.
+# spt.activeApplication()                            - The name of the current active application.
+# spt.runAppleScript(script, args)                   - Run the given AppleScript.
 
 class ObjcInterface:
   def __init__(self, delegate):
@@ -29,11 +48,11 @@ class ObjcInterface:
         args = line[14:]
         spaceIndex = args.index(' ')
         keyCode = int(args[0:spaceIndex])
-        modifierFlags = args[spaceIndex+1]
+        modifierFlags = args[spaceIndex+1:]
         cmd = (modifierFlags[0] == '1')
-        opt = (modifierFlags[0] == '1')
-        ctrl = (modifierFlags[0] == '1')
-        shift = (modifierFlags[0] == '1')
+        opt = (modifierFlags[1] == '1')
+        ctrl = (modifierFlags[2] == '1')
+        shift = (modifierFlags[3] == '1')
         self.delegate.hotkeyPressed(keyCode, cmd, opt, ctrl, shift)
       else:
         self.print(line)
@@ -42,3 +61,17 @@ class ObjcInterface:
   def print(self, s):
     sys.stdout.write('print ' + str(s))
     sys.stdout.flush()
+
+  def activeApplication(self):
+    return (NSWorkspace.sharedWorkspace().activeApplication()['NSApplicationName'])
+
+  # https://stackoverflow.com/a/2941735
+  def runAppleScript(self, script, args):
+    p = Popen(['osascript', '-'] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = p.communicate(script.encode('utf-8'))
+    return (p.returncode, stdout.decode('utf-8'), stderr.decode('utf-8'))
+
+  def runPython(self, script, args):
+    p = Popen(['osascript', '-'] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = p.communicate(script.encode('utf-8'))
+    return (p.returncode, stdout.decode('utf-8'), stderr.decode('utf-8'))

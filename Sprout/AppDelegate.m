@@ -14,6 +14,10 @@
   [_sproutMain launch];
 }
 
+-(void)applicationWillTerminate:(NSNotification *)notification {
+  [_sproutMain terminate];
+}
+
 #pragma mark - SproutMainDelegate
 
 - (void)didEnd {
