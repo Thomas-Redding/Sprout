@@ -1,0 +1,55 @@
+<script>
+onload = () => {
+  document.getElementById('lorem').onkeyup = (event) => {
+    var val = document.getElementById('lorem').value;
+    if (event.keyCode == 13) spr.send('ENTER:' + val);
+    else spr.send('SUGGEST:' + val);
+    // TODO: 'PREVIEW'.
+  };
+  spr.receive = (message) => {
+    if (message.substr(0, 10) == 'SUGGEST') {
+      //
+    } else if (message.substr(0, 10) == 'PREVIEW') {
+      //
+    }
+    document.getElementById('lorem').value = message;
+  };
+}
+</script>
+<style>
+  body {
+    margin: 0;
+    background-color: #333;
+  }
+#lorem {
+  display: block;
+  width: 100vw;
+  font-size: 32px;
+  color: white;
+  border: none;
+  border-bottom: 1px solid #888;
+  background-color: #444;
+}
+#ipsum {
+  width: 100vw;
+  color: white;
+  border-collapse: collapse;
+  height: calc(100vh - 41px)
+}
+#ipsum > tbody > tr > td {
+  width: 50%;
+}
+#ipsum > tbody > tr > td:first-child {
+  border-right: 1px solid #888;
+}
+#suggestion{}
+#preview{}
+  </style>
+<input id="lorem" type="text">
+<table id="ipsum"><tbody><tr><td>
+  <table id="suggestion"><tbody>
+  </tbody></table>
+</td><td id="preview">
+  PREVIEW
+</td></tr>
+</tbody></table></body></html>

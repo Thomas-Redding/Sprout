@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface SPRMainSprout : NSObject
+@interface SPRMainSprout : NSObject <SPRSeedDelegate>
 
 /* Launch main-sprout.py */
 - (void)launch;

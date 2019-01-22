@@ -1,64 +1,28 @@
 import time
-from tkinter import Tk, Label, Button, Menu
 
 from SproutObjcInterface import ObjcInterface
-
-class MainWindow:
-  def __init__(self, master):
-    self.master = master
-    master.title("A simple GUI")
-    self.label = Label(master, text="This is our first GUI!")
-    self.label.pack()
-    self.greet_button = Button(master, text="Greet", command=self.greet)
-    self.greet_button.pack()
-    self.close_button = Button(master, text="Close", command=master.quit)
-    self.close_button.pack()
-
-  def greet(self):
-    print("Greetings!")
-
-def do_about_dialog():
-  tk_version = window.tk.call('info', 'patchlevel')
-  showinfo(message= app_name + "\nThe answer to all your problems.\n\nTK version: " + tk_version)
-
-def do_preferences():
-  showinfo(message="Preferences window")
-
-FOO = """
-on run {x, y}
-  return x + y
-end run
-"""
+spr = ObjcInterface()
 
 class SproutApp:
   def __init__(self):
-    self.spr = ObjcInterface(self)
+    spr = ObjcInterface()
     # Listen to "CMD + Space" hotkey.
-    self.spr.listenForHotkey(49, True, False, False, False)
-    self.root = Tk()
-    
-    # Remove all menubar items except the "Sprout" one.
-    emptyMenu = Menu(self.root)
-    self.root.config(menu=emptyMenu)
-    
-    # Start app.
-    self.mainWindow = MainWindow(self.root)
-    self.root.after(100, self.repeat)
-    self.root.mainloop()
-
-  def repeat(self):
-    self.spr.poll()
-    self.root.after(200, self.repeat)
-    self.spr.print(self.spr.activeApplication())
-    self.spr.runAppleScript(FOO, ['2', '2'])
-  
+    spr.listenForHotkey(49, True, False, False, False, lambda a, b, c, d, e : self.cmdSpacePressed())
+    spr.makeWidgetWithId('sprout-trvQ1obpkMHqPfT3', '/Users/thomasredding/Desktop/sprout-temp', lambda widgetId : self.didLoad())
+    spr.serveWidgetWithId('sprout-trvQ1obpkMHqPfT3', lambda widgetId, message : self.foo(widgetId, message))
+    while True:
+      time.sleep(1)
+      spr.poll()
   def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
+    spr.print('hotkeyPressed:' + str(keyCode))
     if (keyCode == 49 and cmd and not opt and not ctrl and not shift):
       # Show/hide window when CMD + Space is pressed.
-      if self.root.state() == "withdrawn":
-        self.root.deiconify()
-      else:
-        self.root.withdraw()
-    self.spr.print('key pressed:' + str(keyCode))
+      None
+  def cmdSpacePressed(self):
+    spr.print('cmdSpacePressed')
+  def didLoad(self):
+    spr.setWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', '100')
+  def foo(self, widgetId, message):
+    spr.sendMessageToWidget(widgetId, message)
 
 sproutApp = SproutApp()

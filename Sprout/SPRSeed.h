@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+#import "SPRWebWindow.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SPRWindowInfo : NSObject
@@ -10,10 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) CGRect frame;
 @end
 
-@protocol SPRWindowChangeDelegate <NSObject>
+@protocol SPRSeedDelegate <NSObject>
 - (void)windowAdded:(SPRWindowInfo *)windowInfo;
 - (void)windowMoved:(SPRWindowInfo *)windowInfo;
 - (void)windowRemoved;
++ (void)didReceiveMessage:(NSString *)message fromWidget:(NSString *)widgetId;
++ (void)widgetDidLoad:(NSString *)widgetId;
 @end
 
 @interface SPRContact : NSObject
@@ -103,6 +107,12 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
  */
 + (NSPoint)mousePosition;
 
++ (void)makeWidgetWithId:(NSString *)widgetID fromPath:(NSString *)path;
++ (void)widgetDidLoad:(NSString *)widgetId;
++ (void)sendWidget:(NSString *)widgetId message:(NSString *)message;
++ (void)setValueFromWidget:(NSString *)widgetId key:(NSString *)key value:(NSString *)value;
++ (NSString *)getValueFromWidget:(NSString *)widgetId key:(NSString *)key;
+
 /**
  The number of seconds to poll window changes.
  The default value is 0.1, which causes roughly 2% of CPU usage.
@@ -113,8 +123,9 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 /**
  A class property that allows the delegate to be notified of window changes.
  */
-+ (id<SPRWindowChangeDelegate>)windowChangeDelegate;
-+ (void)setWindowChangeDelegate:(id<SPRWindowChangeDelegate>)delegate;
++ (id<SPRSeedDelegate>)delegate;
++ (void)setDelegate:(id<SPRSeedDelegate>)delegate;
++ (void)didReceiveMessage:(NSString *)message fromWidget:(NSString *)widgetId;
 
 /**
  Should return a list of contacts in the future. Doesn't work at the moment. TODO: make work.

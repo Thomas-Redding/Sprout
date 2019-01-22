@@ -21,19 +21,43 @@ if bundle:
 # spt.runAppleScript(script, args)                   - Run the given AppleScript.
 
 class ObjcInterface:
-  def __init__(self, delegate):
-    self.delegate = delegate
+  def __init__(self):
+    self.widgets = {}
+    self.widgetServers = {}
+    self.hotkeyCallbacks = {}
   
-  # Call `self.delegate.hotkeyPressed` when this hotkey is pressed.
-  def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift):
-    x = str(keyCode)
-    x += ' '
-    x += '1' if cmd else '0'
-    x += '1' if opt else '0'
-    x += '1' if ctrl else '0'
-    x += '1' if shift else '0'
-    sys.stdout.write('registerHotkey '+ x)
+  def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
+    x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
+    self.hotkeyCallbacks[x] = callback
+    sys.stdout.write('registerHotkey '+ x + '\n')
     sys.stdout.flush()
+
+  def _hotkeyStr(self, keyCode, cmd, opt, ctrl, shift):
+    rtn = str(keyCode)
+    rtn += ' '
+    rtn += '1' if cmd else '0'
+    rtn += '1' if opt else '0'
+    rtn += '1' if ctrl else '0'
+    rtn += '1' if shift else '0'
+    return rtn
+  
+  # widgetId - random string that doesn't contain whitespace.
+  def makeWidgetWithId(self, widgetId, makeWidgetWithId, loadFunc):
+    self.widgets[widgetId] = loadFunc
+    sys.stdout.write('widget ' + widgetId + ' ' + makeWidgetWithId + '\n')
+    sys.stdout.flush()
+  
+  def serveWidgetWithId(self, widgetId, func):
+    self.widgetServers[widgetId] = func
+  
+  def setWidgetProperty(self, widgetId, key, value):
+    sys.stdout.write('setWidgetProperty ' + widgetId + ' ' + key + ' ' + value + '\n')
+    sys.stdout.flush()
+
+  def getWidgetProperty(self, widgetId, key):
+    sys.stdout.write('getWidgetProperty ' + widgetId + ' ' + key + '\n')
+    sys.stdout.flush()
+    return None
   
   # Call this method frequently (on the order of 30 times per second).
   # It checks whether events (e.g. hotkeys) have occured.
@@ -53,13 +77,30 @@ class ObjcInterface:
         opt = (modifierFlags[1] == '1')
         ctrl = (modifierFlags[2] == '1')
         shift = (modifierFlags[3] == '1')
-        self.delegate.hotkeyPressed(keyCode, cmd, opt, ctrl, shift)
+        x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
+        if x in self.hotkeyCallbacks:
+          self.hotkeyCallbacks[x](keyCode, cmd, opt, ctrl, shift)
+      elif line[0:13] == 'widgetMessage':
+        args = line[14:]
+        firstSpace = args.index(' ')
+        widgetId = args[0:firstSpace]
+        message = args[firstSpace+1:]
+        if widgetId in self.widgetServers:
+          self.widgetServers[widgetId](widgetId, message)
+      elif line[0:13] == 'widgetDidLoad':
+        widgetId = line[14:]
+        if widgetId in self.widgetServers:
+          self.widgets[widgetId](widgetId)
       else:
-        self.print(line)
+        self.print('UNKNOWN COMMAND:' + line)
 
   # Print to Xcode console.
   def print(self, s):
     sys.stdout.write('print ' + str(s))
+    sys.stdout.flush()
+  
+  def sendMessageToWidget(self, widgetId, message):
+    sys.stdout.write('sendMessageToWidget ' + widgetId + ' ' + message)
     sys.stdout.flush()
 
   def activeApplication(self):

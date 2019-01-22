@@ -11,8 +11,12 @@
 #import <Contacts/Contacts.h>
 
 #import "SPRSeed.h"
+#import "SPRWebWindow.h"
+
+static NSMutableDictionary<NSString *, SPRWebWindow *> *_widgets;
 
 @implementation SPRWindowInfo
+
 - (instancetype)initWithName:(NSString *)name number:(NSNumber *)number processID:(NSNumber *)processID frame:(CGRect)frame {
   self = [super init];
   if (self) {
@@ -50,7 +54,7 @@ static NSMutableDictionary<NSNumber *, SPRTarget *> *_hotKeyToTarget;
 static NSMutableDictionary<NSString *, NSValue *> *_windowNumberToFrame;
 static CGFloat _windowTrackInterval = 0.1;
 static NSTimer *_windowTrackingTimer;
-static id<SPRWindowChangeDelegate> _windowChangeDelegate;
+static id<SPRSeedDelegate> _delegate;
 
 @implementation SPRFileSearchQuery
 @end
@@ -66,6 +70,7 @@ static id<SPRWindowChangeDelegate> _windowChangeDelegate;
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
     _windowNumberToFrame = [[NSMutableDictionary alloc] init];
     _windowTrackingTimer = [NSTimer scheduledTimerWithTimeInterval:_windowTrackInterval target:[self class] selector:@selector(tickTock) userInfo:nil repeats:YES];
+    _widgets = [[NSMutableDictionary alloc] init];
     [self tickTock:NO];
   }
 }
@@ -152,6 +157,32 @@ static id<SPRWindowChangeDelegate> _windowChangeDelegate;
   return [NSEvent mouseLocation];
 }
 
++ (void)makeWidgetWithId:(NSString *)widgetID  fromPath:(NSString *)path {
+  if ([_widgets objectForKey:widgetID]) return;
+  _widgets[widgetID] = [[SPRWebWindow alloc] initWithId:widgetID path:path];
+}
+
++ (void)widgetDidLoad:(NSString *)widgetId {
+  [_delegate widgetDidLoad:widgetId];
+}
+
++ (void)didReceiveMessage:(NSString *)message fromWidget:(NSString *)widgetId {
+  [_delegate didReceiveMessage:message fromWidget:widgetId];
+}
+
++ (void)sendWidget:(NSString *)widgetId message:(NSString *)message {
+  [_widgets[widgetId] sendMessage:message];
+}
+
++ (void)setValueFromWidget:(NSString *)widgetId key:(NSString *)key value:(NSString *)value {
+  if (![_widgets objectForKey:widgetId]) return;
+  [_widgets[widgetId] setKey:key withValue:value];
+}
+
++ (NSString *)getValueFromWidget:(NSString *)widgetId key:(NSString *)key {
+  return [_widgets[widgetId] getValueFromKey:(NSString *)key];
+}
+
 #pragma mark - Hotkeys - Private
 
 + (void)callCallbackForHotKeyId:(UInt32)hotKeyId {
@@ -190,11 +221,12 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   }
 }
 
-+ (id<SPRWindowChangeDelegate>)windowChangeDelegate {
-  return _windowChangeDelegate;
++ (id<SPRSeedDelegate>)delegate {
+  return _delegate;
 }
-+ (void)setWindowChangeDelegate:(id<SPRWindowChangeDelegate>)delegate {
-  _windowChangeDelegate = delegate;
+
++ (void)setDelegate:(id<SPRSeedDelegate>)delegate {
+  _delegate = delegate;
 }
 
 #pragma mark - Window Tracking - Private
@@ -230,14 +262,14 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
     } else {
       // A new window has been added.
       [_windowNumberToFrame setObject:[NSValue valueWithRect:newRect] forKey:windowNumber];
-      if (alertDelegate && _windowChangeDelegate) {
-        [_windowChangeDelegate performSelector:@selector(windowAdded:)
+      if (alertDelegate && _delegate) {
+        [_delegate performSelector:@selector(windowAdded:)
                                     withObject:[self windowInfoFromDict:window]];
       }
     }
   }
   
-  if (alertDelegate && _windowChangeDelegate) {
+  if (alertDelegate && _delegate) {
     NSMutableSet<NSNumber *> *processesWithMovedWindows = [[NSMutableSet alloc] init];
     for (NSString *w in movedWindows) {
       [processesWithMovedWindows addObject:movedWindows[w][@"kCGWindowOwnerPID"]];
@@ -246,7 +278,7 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
     // If more than one process has moving windows, we're probably changing worksapces.
     if (processesWithMovedWindows.count == 1) {
       NSDictionary *windowDict = movedWindows[movedWindows.allKeys.firstObject];
-      [_windowChangeDelegate performSelector:@selector(windowMoved:)
+      [_delegate performSelector:@selector(windowMoved:)
                                   withObject:[self windowInfoFromDict:windowDict]];
     }
   }
@@ -260,8 +292,8 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   }
   for (NSString *windowNumber in windowsToRemove) {
     [_windowNumberToFrame removeObjectForKey:windowNumber];
-    if (alertDelegate && _windowChangeDelegate) {
-      [_windowChangeDelegate performSelector:@selector(windowRemoved)];
+    if (alertDelegate && _delegate) {
+      [_delegate performSelector:@selector(windowRemoved)];
     }
   }
 }
