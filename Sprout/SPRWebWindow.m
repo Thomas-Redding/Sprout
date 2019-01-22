@@ -104,6 +104,8 @@
     CGRect newRect =
         CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, height);
     [self setFrame:newRect display:YES];
+  } else if ([key isEqualToString:@"visible"]) {
+    [self setIsVisible:![value isEqualToString:@""]];
   }
 }
 
@@ -116,6 +118,9 @@
     return [NSString stringWithFormat:@"%f", self.frame.size.width];
   } else if ([key isEqualToString:@"height"]) {
     return [NSString stringWithFormat:@"%f", self.frame.size.height];
+  } else if ([key isEqualToString:@"visible"]) {
+    if (self.visible) return @"1";
+    else return @"";
   }
   return nil;
 }

@@ -12,17 +12,15 @@ class SproutApp:
     while True:
       time.sleep(0.02)
       spr.poll()
-  def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
-    spr.print('hotkeyPressed:' + str(keyCode))
-    if (keyCode == 49 and cmd and not opt and not ctrl and not shift):
-      # Show/hide window when CMD + Space is pressed.
-      None
+  def showHideWithCurrentVisibility(self, isVisible):
+    if isVisible == '':
+      spr.setWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'visible', '1')
+    else:
+      spr.setWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'visible', '')
   def cmdSpacePressed(self):
-    spr.print('cmdSpacePressed')
+    spr.getWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'visible', lambda widgetId, key, value : self.showHideWithCurrentVisibility(value))
   def didLoad(self):
-    spr.getWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', lambda widgetId, key, value : spr.print('x: ' + value))
-    spr.setWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', '100')
-    spr.doAfterLag(2, lambda : spr.getWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', lambda widgetId, key, value : spr.print('x: ' + value)))
+    None
   def foo(self, widgetId, message):
     spr.sendMessageToWidget(widgetId, message)
 
