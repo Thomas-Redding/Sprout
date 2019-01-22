@@ -11,7 +11,7 @@ class SproutApp:
     spr.makeWidgetWithId('sprout-trvQ1obpkMHqPfT3', '/Users/thomasredding/Desktop/sprout-temp', lambda widgetId : self.didLoad())
     spr.serveWidgetWithId('sprout-trvQ1obpkMHqPfT3', lambda widgetId, message : self.foo(widgetId, message))
     while True:
-      time.sleep(1)
+      time.sleep(0.02)
       spr.poll()
   def hotkeyPressed(self, keyCode, cmd, opt, ctrl, shift):
     spr.print('hotkeyPressed:' + str(keyCode))
