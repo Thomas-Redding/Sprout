@@ -115,8 +115,8 @@
       if (range.location == NSNotFound) return;
       NSString *widgetId = [argsString substringToIndex:range.location];
       NSString *key = [argsString substringFromIndex:range.location + 1];
-      [SPRSeed getValueFromWidget:widgetId key:key];
-      // TODO: fish.
+      NSString *value = [SPRSeed getValueFromWidget:widgetId key:key];
+      [self input:[NSString stringWithFormat:@"getWidgetProperty %@ %@ %@", widgetId, key, value]];
     } else {
       NSLog(@"Unrecognized Command: '%@'", command);
     }

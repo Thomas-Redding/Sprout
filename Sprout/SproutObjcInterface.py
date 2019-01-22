@@ -1,6 +1,7 @@
 import select
 from subprocess import Popen, PIPE
 import sys
+import time
 
 # MacOs only - requires `pip install pyobjc.`
 # Might be unneccssary going forward.
@@ -23,8 +24,10 @@ if bundle:
 class ObjcInterface:
   def __init__(self):
     self.widgets = {}
+    self.widgetPropertyCallbacks = {}
     self.widgetServers = {}
     self.hotkeyCallbacks = {}
+    self.timers = []
   
   def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
     x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
@@ -53,11 +56,16 @@ class ObjcInterface:
   def setWidgetProperty(self, widgetId, key, value):
     sys.stdout.write('setWidgetProperty ' + widgetId + ' ' + key + ' ' + value + '\n')
     sys.stdout.flush()
+  
+  def doAfterLag(self, seconds, callback):
+    self.timers.append((time.time() + seconds, callback))
 
-  def getWidgetProperty(self, widgetId, key):
+  def getWidgetProperty(self, widgetId, key, callback):
+    if (widgetId, key) not in self.widgetPropertyCallbacks:
+      self.widgetPropertyCallbacks[(widgetId, key)] = []
+    self.widgetPropertyCallbacks[(widgetId, key)].append(callback)
     sys.stdout.write('getWidgetProperty ' + widgetId + ' ' + key + '\n')
     sys.stdout.flush()
-    return None
   
   # Call this method frequently (on the order of 30 times per second).
   # It checks whether events (e.g. hotkeys) have occured.
@@ -65,6 +73,11 @@ class ObjcInterface:
     # Loop while the standard input pipe has data.
     # This while-loop condition may not work on Windows.
     # See https://stackoverflow.com/a/3732001.
+    t = time.time()
+    for i in range(len(self.timers)):
+      if self.timers[i][0] <= t:
+        self.timers[i][1]()
+        del self.timers[i]
     while select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
       line = sys.stdin.readline()
       line = line[:-1]
@@ -91,16 +104,24 @@ class ObjcInterface:
         widgetId = line[14:]
         if widgetId in self.widgetServers:
           self.widgets[widgetId](widgetId)
+      elif line[0:17] == 'getWidgetProperty':
+        args = line[18:].split(' ')
+        widgetId = args[0]
+        key = args[1]
+        value = args[2]
+        for callback in self.widgetPropertyCallbacks[(widgetId, key)]:
+          callback(widgetId, key, value)
+        del self.widgetPropertyCallbacks[(widgetId, key)]
       else:
         self.print('UNKNOWN COMMAND:' + line)
 
   # Print to Xcode console.
   def print(self, s):
-    sys.stdout.write('print ' + str(s))
+    sys.stdout.write('print ' + str(s) + '\n')
     sys.stdout.flush()
   
   def sendMessageToWidget(self, widgetId, message):
-    sys.stdout.write('sendMessageToWidget ' + widgetId + ' ' + message)
+    sys.stdout.write('sendMessageToWidget ' + widgetId + ' ' + message + '\n')
     sys.stdout.flush()
 
   def activeApplication(self):

@@ -108,6 +108,15 @@
 }
 
 - (NSString *)getValueFromKey:(NSString *)key {
+  if ([key isEqualToString:@"x"]) {
+    return [NSString stringWithFormat:@"%f", self.frame.origin.x];
+  } else if ([key isEqualToString:@"y"]) {
+    return [NSString stringWithFormat:@"%f", self.frame.origin.y];
+  } else if ([key isEqualToString:@"width"]) {
+    return [NSString stringWithFormat:@"%f", self.frame.size.width];
+  } else if ([key isEqualToString:@"height"]) {
+    return [NSString stringWithFormat:@"%f", self.frame.size.height];
+  }
   return nil;
 }
 

@@ -5,7 +5,6 @@ spr = ObjcInterface()
 
 class SproutApp:
   def __init__(self):
-    spr = ObjcInterface()
     # Listen to "CMD + Space" hotkey.
     spr.listenForHotkey(49, True, False, False, False, lambda a, b, c, d, e : self.cmdSpacePressed())
     spr.makeWidgetWithId('sprout-trvQ1obpkMHqPfT3', '/Users/thomasredding/Desktop/sprout-temp', lambda widgetId : self.didLoad())
@@ -21,8 +20,11 @@ class SproutApp:
   def cmdSpacePressed(self):
     spr.print('cmdSpacePressed')
   def didLoad(self):
+    spr.getWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', lambda widgetId, key, value : spr.print('x: ' + value))
     spr.setWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', '100')
+    spr.doAfterLag(2, lambda : spr.getWidgetProperty('sprout-trvQ1obpkMHqPfT3', 'x', lambda widgetId, key, value : spr.print('x: ' + value)))
   def foo(self, widgetId, message):
     spr.sendMessageToWidget(widgetId, message)
+
 
 sproutApp = SproutApp()
