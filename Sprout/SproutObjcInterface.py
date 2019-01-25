@@ -186,6 +186,13 @@ class Sprout:
       return self.argArrayFromArgStr(argStr, 1)[0]
     elif command == 'window.close':
       None
+    elif command == 'hotKeyPressed':
+      hotKeyCode = self.argArrayFromArgStr(argStr, 1)[0]
+      if hotKeyCode in self._hotkeyCallbacks:
+        keyCode, flags = self.argArrayFromArgStr(argStr, 2)
+        callbacks = self._hotkeyCallbacks[hotKeyCode]
+        for callback in callbacks:
+          callback(int(keyCode), int(flags[0]), int(flags[1]), int(flags[2]), int(flags[3]))
     else:
       self.print('UNKNOWN COMMAND: ' + message)
 
