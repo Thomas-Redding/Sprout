@@ -13,7 +13,7 @@
 #import "SPRSeed.h"
 #import "SPRWebWindow.h"
 
-static NSMutableDictionary<NSString *, SPRWebWindow *> *_widgets;
+static NSMutableDictionary<NSString *, SPRWebWindow *> *_windows;
 
 @implementation SPRWindowInfo
 
@@ -70,12 +70,12 @@ static id<SPRSeedDelegate> _delegate;
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
     _windowNumberToFrame = [[NSMutableDictionary alloc] init];
     _windowTrackingTimer = [NSTimer scheduledTimerWithTimeInterval:_windowTrackInterval target:[self class] selector:@selector(tickTock) userInfo:nil repeats:YES];
-    _widgets = [[NSMutableDictionary alloc] init];
+    _windows = [[NSMutableDictionary alloc] init];
     [self tickTock:NO];
   }
 }
 
-#pragma mark - Hotkeys - Public
+#pragma mark - Public
 
 + (BOOL)registerHotKeyFromKeyCode:(UInt32)keyCode
                           keyFlag:(SPRKeyFlag)keyFlag
@@ -157,30 +157,44 @@ static id<SPRSeedDelegate> _delegate;
   return [NSEvent mouseLocation];
 }
 
-+ (void)makeWidgetWithId:(NSString *)widgetID  fromPath:(NSString *)path {
-  if ([_widgets objectForKey:widgetID]) return;
-  _widgets[widgetID] = [[SPRWebWindow alloc] initWithId:widgetID path:path];
++ (void)makeWindowWithId:(NSString *)windowId {
+  if ([_windows objectForKey:windowId]) return;
+  _windows[windowId] = [[SPRWebWindow alloc] initWithId:windowId];
 }
 
-+ (void)widgetDidLoad:(NSString *)widgetId {
-  [_delegate widgetDidLoad:widgetId];
++ (CGRect)getFrameOfWindow:(NSString *)windowId {
+  if ([_windows objectForKey:windowId]) return _windows[windowId].frame;
+  return CGRectZero;
 }
 
-+ (void)didReceiveMessage:(NSString *)message fromWidget:(NSString *)widgetId {
-  [_delegate didReceiveMessage:message fromWidget:widgetId];
++ (void)setFrame:(CGRect)frame ofWindow:(NSString *)windowId {
+  if (![_windows objectForKey:windowId]) return;
+  [_windows[windowId] setFrame:frame display:YES];
 }
 
-+ (void)sendWidget:(NSString *)widgetId message:(NSString *)message {
-  [_widgets[widgetId] sendMessage:message];
++ (void)closeWindow:(NSString *)windowId {
+  if (![_windows objectForKey:windowId]) return;
+  [_windows[windowId] close];
+  [_windows removeObjectForKey:windowId];
 }
 
-+ (void)setValueFromWidget:(NSString *)widgetId key:(NSString *)key value:(NSString *)value {
-  if (![_widgets objectForKey:widgetId]) return;
-  [_widgets[widgetId] setKey:key withValue:value];
++ (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId {
+  if (![_windows objectForKey:windowId]) return;
+  [_windows[windowId] setIndexPath:indexPath];
 }
 
-+ (NSString *)getValueFromWidget:(NSString *)widgetId key:(NSString *)key {
-  return [_widgets[widgetId] getValueFromKey:(NSString *)key];
+# pragma mark - Private
+
++ (void)windowDidLoad:(NSString *)windowId {
+  [_delegate windowDidLoad:windowId];
+}
+
++ (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId {
+  [_delegate didReceiveMessage:message fromWindow:windowId];
+}
+
++ (void)sendWindow:(NSString *)windowId message:(NSString *)message {
+  [_windows[windowId] sendMessage:message];
 }
 
 #pragma mark - Hotkeys - Private

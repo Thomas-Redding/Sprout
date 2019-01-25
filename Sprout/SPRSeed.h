@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowAdded:(SPRWindowInfo *)windowInfo;
 - (void)windowMoved:(SPRWindowInfo *)windowInfo;
 - (void)windowRemoved;
-+ (void)didReceiveMessage:(NSString *)message fromWidget:(NSString *)widgetId;
-+ (void)widgetDidLoad:(NSString *)widgetId;
++ (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
++ (void)windowDidLoad:(NSString *)windowId;
 @end
 
 @interface SPRContact : NSObject
@@ -107,11 +107,12 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
  */
 + (NSPoint)mousePosition;
 
-+ (void)makeWidgetWithId:(NSString *)widgetID fromPath:(NSString *)path;
-+ (void)widgetDidLoad:(NSString *)widgetId;
-+ (void)sendWidget:(NSString *)widgetId message:(NSString *)message;
-+ (void)setValueFromWidget:(NSString *)widgetId key:(NSString *)key value:(NSString *)value;
-+ (NSString *)getValueFromWidget:(NSString *)widgetId key:(NSString *)key;
++ (void)makeWindowWithId:(NSString *)windowId;
++ (CGRect)getFrameOfWindow:(NSString *)windowId;
++ (void)setFrame:(CGRect)frame ofWindow:(NSString *)windowId;
++ (void)closeWindow:(NSString *)windowId;
++ (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;
++ (void)windowDidLoad:(NSString *)windowId;
 
 /**
  The number of seconds to poll window changes.
@@ -125,7 +126,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
  */
 + (id<SPRSeedDelegate>)delegate;
 + (void)setDelegate:(id<SPRSeedDelegate>)delegate;
-+ (void)didReceiveMessage:(NSString *)message fromWidget:(NSString *)widgetId;
++ (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
 
 /**
  Should return a list of contacts in the future. Doesn't work at the moment. TODO: make work.

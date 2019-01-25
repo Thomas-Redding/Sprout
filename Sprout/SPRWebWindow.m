@@ -5,14 +5,14 @@
 #import "SPRSeed.h"
 
 @implementation SPRWebWindow {
-  NSString *_widgetId;
+  NSString *_windowId;
   WKWebView *_webView;
 }
 
-- (instancetype)initWithId:(NSString *)widgetId path:(NSString *)path {
+- (instancetype)initWithId:(NSString *)windowId {
   self = [super init];
   if (self) {
-    _widgetId = widgetId;
+    _windowId = windowId;
     self.movable = NO;
     [self setOpaque:NO];
     self.titlebarAppearsTransparent = YES;
@@ -26,7 +26,15 @@
     [controller addScriptMessageHandler:self name:@"sprout_kyaQmKP75mE6RolA"];
     _webView.navigationDelegate = self;
     self.contentView = self->_webView;
-    [self loadFromRoot:path];
+    
+    // Make visible.
+    CGSize size = NSScreen.mainScreen.frame.size;
+    CGFloat width = MIN(800, size.width);
+    CGFloat height = MIN(600, size.height);
+    [self setFrame:NSMakeRect((size.width-width)/2, (size.height-height)/2, width, height) display:YES];
+    [self center];
+    [self makeKeyAndOrderFront:NSApp];
+    self->_webView.frame = NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height);
   }
   return self;
 }
@@ -52,16 +60,7 @@
   },\"foo\": 12\
   };";
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {
-    CGSize size = NSScreen.mainScreen.frame.size;
-    CGFloat width = MIN(800, size.width);
-    CGFloat height = MIN(600, size.height);
-    [self setFrame:NSMakeRect((size.width-width)/2, (size.height-height)/2, width, height) display:YES];
-    [self center];
-    [self makeKeyAndOrderFront:NSApp];
-    
-    
-    self->_webView.frame = NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height);
-    [SPRSeed widgetDidLoad:self->_widgetId];
+    [SPRSeed windowDidLoad:self->_windowId];
   }];
 }
 
@@ -73,7 +72,7 @@
   if ([message.body isKindOfClass:[NSString class]]) {
     // `foo` becomes message.body and can be an NSString, NSDictionary, NSArray, BOOL, or NSNumber.
     // We require a string.
-    [SPRSeed didReceiveMessage:message.body fromWidget:_widgetId];
+    [SPRSeed didReceiveMessage:message.body fromWindow:_windowId];
   }
 }
 
@@ -87,42 +86,8 @@
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {}];
 }
 
-- (void)setKey:(NSString *)key withValue:(NSString *)value {
-  if ([key isEqualToString:@"x"]) {
-    CGFloat x = [value floatValue];
-    [self setFrameOrigin:CGPointMake(x, self.frame.origin.y)];
-  } else if ([key isEqualToString:@"y"]) {
-    CGFloat y = [value floatValue];
-    [self setFrameOrigin:CGPointMake(self.frame.origin.x, y)];
-  } else if ([key isEqualToString:@"width"]) {
-    CGFloat width = [value floatValue];
-    CGRect newRect =
-        CGRectMake(self.frame.origin.x, self.frame.origin.y, width, self.frame.size.height);
-    [self setFrame:newRect display:YES];
-  } else if ([key isEqualToString:@"height"]) {
-    CGFloat height = [value floatValue];
-    CGRect newRect =
-        CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, height);
-    [self setFrame:newRect display:YES];
-  } else if ([key isEqualToString:@"visible"]) {
-    [self setIsVisible:![value isEqualToString:@""]];
-  }
-}
-
-- (NSString *)getValueFromKey:(NSString *)key {
-  if ([key isEqualToString:@"x"]) {
-    return [NSString stringWithFormat:@"%f", self.frame.origin.x];
-  } else if ([key isEqualToString:@"y"]) {
-    return [NSString stringWithFormat:@"%f", self.frame.origin.y];
-  } else if ([key isEqualToString:@"width"]) {
-    return [NSString stringWithFormat:@"%f", self.frame.size.width];
-  } else if ([key isEqualToString:@"height"]) {
-    return [NSString stringWithFormat:@"%f", self.frame.size.height];
-  } else if ([key isEqualToString:@"visible"]) {
-    if (self.visible) return @"1";
-    else return @"";
-  }
-  return nil;
+- (void)setIndexPath:(NSString *)indexPath {
+  [_webView loadFileURL:[NSURL fileURLWithPath:indexPath] allowingReadAccessToURL:[NSURL fileURLWithPath:@"/"]];
 }
 
 # pragma mark - Private
@@ -134,9 +99,7 @@
 }
 
 - (void)loadFromRoot:(NSString *)rootPath {
-  NSURL *x = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/index.html", rootPath]];
-  NSURL *y = [NSURL fileURLWithPath:rootPath];
-  [_webView loadFileURL:x allowingReadAccessToURL:y];
+  
 }
 
 @end
