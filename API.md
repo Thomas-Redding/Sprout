@@ -1,4 +1,6 @@
-# Python API
+# APIs
+Everything here should be supported.
+## Python API
 All methods are synchronous (blocking) unless marked with "async". In terms of future development, it should be quite easy to switch methods between synchronous and asynchronous.
 ```
 class Window:
@@ -25,7 +27,7 @@ class Sprout:
 spr = Sprout()
 ```
 
-# JavaScript API
+## JavaScript API
 You can import CSS and JavaScript files from the file system as normal.
 ```
 spr.send(string message)
