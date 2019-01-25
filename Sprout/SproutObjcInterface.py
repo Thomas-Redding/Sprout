@@ -120,6 +120,8 @@ class Window:
   def frame(self):
     if not self._windowId: return None
     return self._spr._server.sendSynchronousMessage('window.getFrame ' + self._windowId)
+  def sendMessage(self, message):
+    self._spr._server.sendAsynchronousMessage('window.sendMessage ' + self._windowId + ' ' + message, lambda x : x)
   def close(self):
     self._spr._server.sendAsynchronousMessage('window.close ' + self._windowId, lambda x : x)
     self._windowId = None
@@ -193,6 +195,11 @@ class Sprout:
         callbacks = self._hotkeyCallbacks[hotKeyCode]
         for callback in callbacks:
           callback(int(keyCode), int(flags[0]), int(flags[1]), int(flags[2]), int(flags[3]))
+    elif command == 'window.sendMessage':
+      None
+    elif command == 'window.request':
+      windowId, message = self.argArrayFromArgStr(argStr, 5)
+      return (windowId, message)
     else:
       self.print('UNKNOWN COMMAND: ' + message)
 
@@ -201,6 +208,9 @@ class Sprout:
     parsedMessage = self.parseResponse(message)
     if command == 'window.didLoad':
       self._windows[parsedMessage].onLoad()
+    elif command == 'window.request':
+      windowId, message = parsedMessage
+      self._windows[parsedMessage].onMessage(message)
     else:
       self.print('Unknown UnexpectedMessageCallback: ' + message)
     # TODO: Use parsed message.

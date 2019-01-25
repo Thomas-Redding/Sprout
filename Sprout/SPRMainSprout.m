@@ -56,13 +56,14 @@
   [self sendToPython:[NSString stringWithFormat:@"window.didLoad %@", windowId] withUniqueId:[self generateUniqueId]];
 }
 - (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId {
-  [self sendToPython:[NSString stringWithFormat:@"windowMessage %@ %@", windowId, message] withUniqueId:[self generateUniqueId]];
+  [self sendToPython:[NSString stringWithFormat:@"window.request %@ %@", windowId, message] withUniqueId:[self generateUniqueId]];
 }
 
 # pragma mark - I/O
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
   NSString *flushString = [NSString stringWithFormat:@"%@ %@\n", uniqueId, string];
+  NSLog(@"sendToPython:%@", flushString);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
   [_inPipe.fileHandleForWriting writeData:data];
 }
@@ -87,6 +88,7 @@
 }
 
 - (void)handleLineFromPython:(NSString *)line {
+  NSLog(@"handleLineFromPython:%@", line);
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
@@ -143,6 +145,13 @@
     }
     [SPRSeed setIndexPath:indexPath ofWindow:windowId];
     [self sendToPython:[NSString stringWithFormat:@"window.setIndexPath %@ %@", windowId, indexPath] withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.sendMessage"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    NSString *windowId = args[0];
+    NSString *message = args[1];
+    [SPRSeed sendMessage:message toWindow:windowId];
+    NSString *response = [NSString stringWithFormat:@"window.sendMessage %@ %@", windowId, message];
+    [self sendToPython:response withUniqueId:uniqueId];
   } else {
     NSLog(@"Unrecognized Command: '%@'", command);
   }
@@ -166,6 +175,10 @@
       [rtn addObject:argsLeft];
       [self assert:(rtn.count == argNum)
            message:[NSString stringWithFormat:@"Too few args for command '%@'", command]];
+      return rtn;
+    }
+    if (i == argNum - 1) {
+      [rtn addObject:argsLeft];
       return rtn;
     }
     [rtn addObject:[argsLeft substringToIndex:nextSpace]];

@@ -51,13 +51,14 @@
 
 # pragma mark - WKNavigationDelegate
 
-- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+// - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation {
+-(void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
   NSString *injection = @"\
   var spr = {\
-  \"send\": (message) => {\
-  window.webkit.messageHandlers.sprout_kyaQmKP75mE6RolA.postMessage(message);\
-  },\"receive\": (message) => {\
-  },\"foo\": 12\
+    \"send\": (message) => {\
+      window.webkit.messageHandlers.sprout_kyaQmKP75mE6RolA.postMessage(message);\
+    },\
+    \"receive\": (message) => {}\
   };";
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {
     [SPRSeed windowDidLoad:self->_windowId];
@@ -80,9 +81,9 @@
 
 - (void)sendMessage:(NSString *)message {
   NSString *escapedMessage =
-  [message stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+      [message stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
   NSString *injection =
-      [NSString stringWithFormat:@"if(spr.receive) spr.receive(\"%@\");", escapedMessage];
+      [NSString stringWithFormat:@" window.spr.receive(\"%@\"); ", escapedMessage];
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {}];
 }
 
@@ -96,10 +97,6 @@
  */
 - (void)loadWebsite:(NSString *)urlString {
   [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];
-}
-
-- (void)loadFromRoot:(NSString *)rootPath {
-  
 }
 
 @end

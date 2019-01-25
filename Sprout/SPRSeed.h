@@ -113,6 +113,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 + (void)closeWindow:(NSString *)windowId;
 + (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;
 + (void)windowDidLoad:(NSString *)windowId;
++ (void)sendMessage:(NSString *)message toWindow:(NSString *)windowId;
 
 /**
  The number of seconds to poll window changes.

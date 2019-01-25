@@ -183,11 +183,16 @@ static id<SPRSeedDelegate> _delegate;
   [_windows[windowId] setIndexPath:indexPath];
 }
 
-# pragma mark - Private
++ (void)sendMessage:(NSString *)message toWindow:(NSString *)windowId {
+  if (![_windows objectForKey:windowId]) return;
+  [_windows[windowId] sendMessage:message];
+}
 
 + (void)windowDidLoad:(NSString *)windowId {
   [_delegate windowDidLoad:windowId];
 }
+
+# pragma mark - Private
 
 + (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId {
   [_delegate didReceiveMessage:message fromWindow:windowId];

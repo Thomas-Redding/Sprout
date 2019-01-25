@@ -1,17 +1,10 @@
 <script>
 onload = () => {
+  document.getElementById('lorem').value = 'kale'
   document.getElementById('lorem').onkeyup = (event) => {
-    var val = document.getElementById('lorem').value;
-    if (event.keyCode == 13) spr.send('ENTER:' + val);
-    else spr.send('SUGGEST:' + val);
-    // TODO: 'PREVIEW'.
+    spr.send('SUGGEST:' + document.getElementById('lorem').value);
   };
   spr.receive = (message) => {
-    if (message.substr(0, 10) == 'SUGGEST') {
-      //
-    } else if (message.substr(0, 10) == 'PREVIEW') {
-      //
-    }
     document.getElementById('lorem').value = message;
   };
 }
