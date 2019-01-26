@@ -9,12 +9,14 @@
   NSTask *_task;
   NSPipe *_inPipe;
   NSPipe *_outPipe;
-}
+  NSMutableDictionary<NSString *, NSRunningApplication *> *windowToOriginallyFocusedApp;
+};
 
 # pragma mark - Public
 
 - (void)launch {
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
+  windowToOriginallyFocusedApp = [[NSMutableDictionary alloc] init];
   _task = [[NSTask alloc] init];
   _task.launchPath = @"/usr/local/bin/python";
   _task.arguments = @[ pathToSproutMain ];
@@ -183,8 +185,9 @@
     BOOL titleVisible = (BOOL)[args[1] intValue];
     NSWindowTitleVisibility visibility = titleVisible ? NSWindowTitleVisible : NSWindowTitleHidden;
     NSString *newTitle = args[2];
-    [[SPRSeed windowForId:windowId] setTitleVisibility:visibility];
     [[SPRSeed windowForId:windowId] setTitle:newTitle];
+    [[SPRSeed windowForId:windowId] setTitleVisibility:visibility];
+    [[SPRSeed windowForId:windowId] setTitlebarAppearsTransparent:!titleVisible];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"window.getAlpha"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
@@ -201,7 +204,18 @@
   } else if ([commandType isEqualToString:@"window.getDraggable"]) {
   } else if ([commandType isEqualToString:@"window.setDraggable"]) {
   } else if ([commandType isEqualToString:@"window.getMovable"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *windowId = args[0];
+    BOOL isMovable = [[SPRSeed windowForId:windowId] isMovable];
+    NSString *response = [NSString stringWithFormat:@"window.getMovable\t%@\t%d", windowId, isMovable];
+    [self sendToPython:response withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"window.setMovable"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    NSString *windowId = args[0];
+    BOOL isMovable = ![args[1] isEqualToString:@"0"];
+    [[SPRSeed windowForId:windowId] setMovable:isMovable];
+    NSString *response = [NSString stringWithFormat:@"window.setMovable\t%@\t%d", windowId, isMovable];
+    [self sendToPython:response withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"window.getInteractable"]) {
   } else if ([commandType isEqualToString:@"window.setInteractable"]) {
   } else if ([commandType isEqualToString:@"window.getMinSize"]) {
@@ -244,7 +258,30 @@
   } else if ([commandType isEqualToString:@"window.makeKeyAndFront"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
     NSString *windowId = args[0];
+    [NSApp activateIgnoringOtherApps:YES];
     [[SPRSeed windowForId:windowId] makeKeyAndOrderFront:NSApp];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.borrowOwnership"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *windowId = args[0];
+    [NSApp activateIgnoringOtherApps:NO];
+    if (![NSWorkspace.sharedWorkspace.frontmostApplication.bundleIdentifier isEqualToString:@"tfredding.Sprout"]) {
+      windowToOriginallyFocusedApp[windowId] = NSWorkspace.sharedWorkspace.frontmostApplication;
+    }
+    [NSApp activateIgnoringOtherApps:YES];
+    [[SPRSeed windowForId:windowId] makeKeyAndOrderFront:NSApp];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.returnOwnership"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *windowId = args[0];
+    // [NSApp activateIgnoringOtherApps:YES];
+    if ([windowToOriginallyFocusedApp objectForKey:windowId]) {
+      NSRunningApplication *originalApp = [windowToOriginallyFocusedApp objectForKey:windowId];
+      [originalApp activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+      [windowToOriginallyFocusedApp removeObjectForKey:windowId];
+    }
+    [[NSApplication sharedApplication] activateIgnoringOtherApps:NO];
+    [[SPRSeed windowForId:windowId] orderOut:self];
     [self sendToPython:command withUniqueId:uniqueId];
 /********** WebView Commands **********/
   } else if ([commandType isEqualToString:@"window.setIndexPath"]) {

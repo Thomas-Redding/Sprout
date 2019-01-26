@@ -13,40 +13,34 @@
   self = [super init];
   if (self) {
     _windowId = windowId;
-    self.movable = NO;
     [self setOpaque:NO];
-    self.titlebarAppearsTransparent = YES;
+    // self.titlebarAppearsTransparent = YES;
     self.delegate = self;
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     config.userContentController = controller;
     _webView = [[WKWebView alloc] initWithFrame:NSZeroRect configuration:config];
-    [_webView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
     [controller addScriptMessageHandler:self name:@"sprout_kyaQmKP75mE6RolA"];
     _webView.navigationDelegate = self;
     self.contentView = self->_webView;
-    
-    // Make visible.
-    CGSize size = NSScreen.mainScreen.frame.size;
-    CGFloat width = MIN(800, size.width);
-    CGFloat height = MIN(600, size.height);
-    [self setFrame:NSMakeRect((size.width-width)/2, (size.height-height)/2, width, height) display:YES];
-    [self center];
-    [self makeKeyAndOrderFront:NSApp];
-    self->_webView.frame = NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height);
   }
   return self;
 }
 
 # pragma mark - Super
 
--(BOOL)canBecomeKeyWindow { return YES; }
--(BOOL)canBecomeMainWindow { return YES; }
+- (BOOL)canBecomeKeyWindow { return YES; }
+- (BOOL)canBecomeMainWindow { return YES; }
+- (void)setTitlebarAppearsTransparent:(BOOL)titlebarAppearsTransparent {
+  super.titlebarAppearsTransparent = titlebarAppearsTransparent;
+  [self privateLayout];
+}
 
 # pragma mark - NSWindowDelegate
 
 - (void)windowDidResize:(NSNotification *)notification {
+  [self privateLayout];
 }
 
 # pragma mark - WKNavigationDelegate
@@ -97,6 +91,14 @@
  */
 - (void)loadWebsite:(NSString *)urlString {
   [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];
+}
+
+- (void)privateLayout {
+  CGFloat height = self.frame.size.height;
+  if (!self.titlebarAppearsTransparent) {
+    height = [self contentRectForFrameRect: self.frame].size.height;
+  }
+  _webView.frame = CGRectMake(0, 0, self.frame.size.width, height);
 }
 
 @end

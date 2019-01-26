@@ -104,14 +104,17 @@ class Window:
     self._indexPath = None
   def windowId(self):
     return self._windowId
+  def indexPath(self):
+    if not self._windowId: return None
+    return self._indexPath
   def setIndexPath(self, pathToIndex):
     if not self._windowId: return None
     self._indexPath = pathToIndex
     message = 'window.setIndexPath\t' + self._windowId + '\t' + pathToIndex
     self._spr._server.sendSynchronousMessage(message)
-  def indexPath(self):
+  def frame(self):
     if not self._windowId: return None
-    return self._indexPath
+    return self._spr._server.sendSynchronousMessage('window.getFrame\t' + self._windowId)
   def setFrame(self, newFrame):
     if not self._windowId: return None
     message = 'window.setFrame'
@@ -121,15 +124,63 @@ class Window:
     message += '\t' + str(float(newFrame[2]))
     message += '\t' + str(float(newFrame[3]))
     return self._spr._server.sendSynchronousMessage(message)
-  def frame(self):
-    if not self._windowId: return None
-    return self._spr._server.sendSynchronousMessage('window.getFrame\t' + self._windowId)
   def visible(self):
     if not self._windowId: return None
     return self._spr._server.sendSynchronousMessage('window.getVisible\t' + self._windowId)
   def setVisible(self, newVisible):
     if not self._windowId: return None
     return self._spr._server.sendSynchronousMessage('window.setVisible\t' + self._windowId + '\t' + ('1' if newVisible else '0'))
+  def title(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getTitle\t' + self._windowId)
+  def setTitle(self, newTitle):
+    if not self._windowId: return None
+    if newTitle == None:
+      return self._spr._server.sendSynchronousMessage('window.setTitle\t' + self._windowId + '\t0\t')
+    else:
+      return self._spr._server.sendSynchronousMessage('window.setTitle\t' + self._windowId + '\t1\t' + newTitle)
+  def alpha(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getAlpha\t' + self._windowId)
+  def setAlpha(self, newAlpha):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.setAlpha\t' + self._windowId + '\t' + str(newAlpha))
+  def minSize(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getMinSize\t' + self._windowId)
+  def setMinSize(self, newSize):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.setMinSize\t' + self._windowId + '\t' + str(newSize[0]) + '\t' + str(newSize[1]))
+  def maxSize(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getMaxSize\t' + self._windowId)
+  def setMaxSize(self, newSize):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.setMaxSize\t' + self._windowId + '\t' + str(newSize[0]) + '\t' + str(newSize[1]))
+  def movable(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getMovable\t' + self._windowId)
+  def setMovable(self, newMovable):
+    if not self._windowId: return None
+    if newMovable:
+      return self._spr._server.sendSynchronousMessage('window.setMovable\t' + self._windowId + '\t1')
+    else:
+      return self._spr._server.sendSynchronousMessage('window.setMovable\t' + self._windowId + '\t0')
+  def isKey(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getKey\t' + self._windowId)
+  def makeKey(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.makeKey\t' + self._windowId)
+  def makeKeyAndFront(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.makeKeyAndFront\t' + self._windowId)
+  def borrowOwnership(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.borrowOwnership\t' + self._windowId)
+  def returnOwnership(self):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.returnOwnership\t' + self._windowId)
   def sendMessage(self, message):
     self._spr._server.sendAsynchronousMessage('window.sendMessage\t' + self._windowId + '\t' + message, lambda x : x)
   def close(self):
@@ -215,11 +266,30 @@ class Sprout:
     elif command == 'window.setVisible' or command == 'window.getVisible':
       windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
       return bool(int(isVisible))
+    elif command == 'window.getTitle' or command == 'window.setTitle':
+      windowId, isTitleVisible, titleStr = self.argArrayFromArgStr(argStr, 3)
+      isTitleVisible = bool(int(isTitleVisible))
+      if not isTitleVisible: return None
+      else: return titleStr
+    elif command == 'window.getAlpha' or command == 'window.setAlpha':
+      windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+      return bool(int(isVisible))
+    elif command == 'window.getMinSize' or command == 'window.setMinSize':
+      windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+      return bool(int(isVisible))
+    elif command == 'window.getMaxSize' or command == 'window.setMaxSize':
+      windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+      return bool(int(isVisible))
+    elif command == 'window.getMovable' or command == 'window.setMovable':
+      windowId, isMovable = self.argArrayFromArgStr(argStr, 2)
+      return bool(int(isMovable))
     elif command == 'window.setIndexPath':
       None
     elif command == 'window.didLoad':
       return self.argArrayFromArgStr(argStr, 1)[0]
     elif command == 'window.close':
+      None
+    elif command == 'window.makeKeyAndFront':
       None
     elif command == 'hotKeyPressed':
       hotKeyCode = self.argArrayFromArgStr(argStr, 1)[0]
@@ -233,6 +303,8 @@ class Sprout:
     elif command == 'window.request':
       windowId, message = self.argArrayFromArgStr(argStr, 2)
       return (windowId, message)
+    elif command == 'window.borrowOwnership' or command == 'window.returnOwnership':
+      None
     else:
       self.print('UNKNOWN COMMAND: ' + message)
 
