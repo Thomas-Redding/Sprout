@@ -71,7 +71,11 @@ class ServerAPI:
     uniqueId = line[0:spaceIndex]
     commandAndArgs = line[spaceIndex+1:]
     if uniqueId in self._callbacks:
-      self._callbacks[uniqueId](self._praserCallback(commandAndArgs))
+      parsedResponse = self._praserCallback(commandAndArgs)
+      x = self._callbacks
+      y = x[uniqueId]
+      y(parsedResponse)
+      z = 4 + 2
       del self._callbacks[uniqueId]
     else:
       self._unexpectedMessageCallback(commandAndArgs)
@@ -170,12 +174,25 @@ class Sprout:
   
   def quit(self):
     self._server.sendAsynchronousMessage('quit', lambda x : x)
+
+  def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
+    message = 'searchFiles\t'
+    message += str(maxResults) + '\t'
+    message += ('1' if descendSubdirs else '0')
+    message += ('1' if searchHidden else '0')
+    message += ('1' if excludeDirs else '0')
+    message += ('1' if excludeFiles else '0')
+    message += '\t' + ' '.join(extensions)
+    message += '\t' + path
+    self._server.sendAsynchronousMessage(message, callback)
   
   def parseResponse(self, message):
     command = self.commandFromLine(message)
     argStr = message[len(command)+1:]
     if command == 'registerHotKey':
       None
+    elif command == 'searchFiles':
+      return argStr.split('\t')
     elif command == 'makeWindow':
       None
     elif command == 'window.setFrame' or command == 'window.getFrame':

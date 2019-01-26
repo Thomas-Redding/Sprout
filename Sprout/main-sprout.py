@@ -2,6 +2,7 @@ import time
 
 WAIT_TIME = 0.5
 
+spr.searchFiles(10, True, False, True, False, ['txt', 'md', 'c', 'h'], '~/Projects', lambda matches : spr.print('FILES:' + str(matches)))
 spr.listenForHotkey(49, True, False, False, False, lambda a, b, c, d, e : spr.print('CMD + SPACE PRESSED'))
 time.sleep(WAIT_TIME)
 wind = spr.makeWindow()

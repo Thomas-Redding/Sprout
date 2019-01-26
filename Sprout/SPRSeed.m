@@ -344,6 +344,9 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
 + (NSArray<NSString *> *)searchFilesWithQuery:(SPRFileSearchQuery *)query {
   if (query.maxResults == 0) query.maxResults = NSUIntegerMax;
   if (!query.path) query.path = NSHomeDirectory();
+  if ([query.path characterAtIndex:0] == '~') {
+    query.path = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), [query.path substringFromIndex:1]];
+  }
   NSFileManager *manager = NSFileManager.defaultManager;
   NSMutableArray<NSString *> *rtn = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *queue = [[NSMutableArray alloc] initWithObjects:query.path, nil];

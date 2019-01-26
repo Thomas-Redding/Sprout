@@ -111,20 +111,26 @@
                            andSelector:@selector(hotkeyPressed:withFlags:)];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"searchFiles"]) {
-    /*
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:3];
-    NSString *flags = args[0];
-    NSString *extensions = [args[1] componentsSeparatedByString:@"\t"];
-    NSString *path = args[2];
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:4];
+    NSUInteger maxResults = [args[0] integerValue];
+    NSString *flags = args[1];
+    NSArray<NSString *> *extensions = [args[2] componentsSeparatedByString:@" "];
+    NSString *path = args[3];
     SPRFileSearchQuery *query = [[SPRFileSearchQuery alloc] init];
+    query.maxResults = maxResults;
     query.descendSubdirs = ([flags characterAtIndex:0] != '0');
-    query.searchHidden = ([flags characterAtIndex:0] != '0');
-    query.excludeDirs = ([flags characterAtIndex:0] != '0');
-    query.excludeFiles = ([flags characterAtIndex:0] != '0');
-    extensions
-    path
-    //
-    [SPRSeed searchFilesWithQuery:query];*/
+    query.searchHidden = ([flags characterAtIndex:1] != '0');
+    query.excludeDirs = ([flags characterAtIndex:2] != '0');
+    query.excludeFiles = ([flags characterAtIndex:3] != '0');
+    query.extensions = [NSSet setWithArray:extensions];
+    query.path = path;
+    NSArray<NSString *> *matches = [SPRSeed searchFilesWithQuery:query];
+    NSMutableString *response = @"searchFiles".mutableCopy;
+    for (NSString *match in matches) {
+      [response appendString:@"\t"];
+      [response appendString:match];
+    }
+    [self sendToPython:response withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
