@@ -101,12 +101,6 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
                   toTarget:(id)target
                andSelector:(SEL)selector;
 
-/**
- @return The position of the mouse in pixels relative to the screen.
- TODO: Determine how multiple monitors affects this.
- */
-+ (NSPoint)mousePosition;
-
 + (void)makeWindowWithId:(NSString *)windowId;
 + (NSWindow *)windowForId:(NSString *)windowId;
 + (void)closeWindow:(NSString *)windowId;

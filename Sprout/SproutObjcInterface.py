@@ -1,14 +1,7 @@
 import os
 import random
-import select
 import string
-from subprocess import Popen, PIPE
 import sys
-
-# MacOs only - requires `pip install pyobjc.`
-# Might be unneccssary going forward.
-from Foundation import NSBundle
-from AppKit import NSWorkspace
 
 def generateUniqueId():
   return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
@@ -231,6 +224,9 @@ class Sprout:
     message += '\t' + path
     self._server.sendAsynchronousMessage(message, callback)
   
+  def mousePosition(self):
+    return self._server.sendSynchronousMessage('mousePosition')
+  
   def parseResponse(self, message):
     command = self.commandFromLine(message)
     argStr = message[len(command)+1:]
@@ -247,6 +243,9 @@ class Sprout:
       return argStr.split('\t')
     elif command == 'runningApps':
       return argStr[0:-1].split(' ')
+    elif command == 'mousePosition':
+      x, y = self.argArrayFromArgStr(argStr, 2)
+      return (float(x), float(y))
     elif command == 'makeWindow':
       None
     elif command == 'window.setFrame' or command == 'window.getFrame':
@@ -255,7 +254,7 @@ class Sprout:
       y = float(y)
       w = float(w)
       h = float(h)
-      return [x, y, w, h]
+      return (x, y, w, h)
     elif command == 'window.setVisible' or command == 'window.getVisible':
       windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
       return bool(int(isVisible))

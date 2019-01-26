@@ -142,6 +142,9 @@
       [response appendString:app.bundleIdentifier];
     }
     [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"mousePosition"]) {
+    NSPoint pos = [NSEvent mouseLocation];
+    [self sendToPython:[NSString stringWithFormat:@"mousePosition\t%f\t%f", pos.x, pos.y] withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];

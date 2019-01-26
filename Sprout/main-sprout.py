@@ -1,7 +1,5 @@
 import time
 
-WAIT_TIME = 0.5
-
 wind = spr.makeWindow()
 wind.setVisible(False)
 wind.setFrame([100, 100, 500, 500])
@@ -20,5 +18,3 @@ def server(requestStr):
 wind.onMessage = server
 wind.onLoad = lambda : spr.print('I Loaded!')
 wind.setIndexPath('~/Projects/Sprout/Sprout/index.html')
-
-spr.print(str(spr.runningApps()))

@@ -153,10 +153,6 @@ static id<SPRSeedDelegate> _delegate;
                                          }];
 }
 
-+ (NSPoint)mousePosition {
-  return [NSEvent mouseLocation];
-}
-
 + (void)makeWindowWithId:(NSString *)windowId {
   if ([_windows objectForKey:windowId]) return;
   _windows[windowId] = [[SPRWebWindow alloc] initWithId:windowId];
