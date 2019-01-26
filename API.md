@@ -1,22 +1,22 @@
 # APIs
 ## Python API
-All methods are synchronous (blocking) unless marked with "async". In terms of future development, it should be quite easy to switch methods between synchronous and asynchronous.
+All methods are synchronous (blocking) unless marked with "(async)". In terms of future development, it should be quite easy to switch methods between synchronous and asynchronous.
 ### Supported
 ```
 class Window:
   windowId() -> str
-  close() # async
+  close() # (async)
   key() -> bool
   makeKey()
   makeKeyAndFront()
   # A string given here is passed to the JavaScript function spr.receive().
-  sendMessage(str message) # async
+  sendMessage(str message) # (async)
   func onLoad                 # Called when the page loads.
   func onMessage(str message) # The string comes from the JavaScript method spr.send().
   
   # Path to HTML source.
   indexPath() -> str
-  setIndexPath(str pathToIndex) # async
+  setIndexPath(str pathToIndex) # (async)
   
   # This lets a window become key and front and then return focus to where it was originally.
   borrowOwnership()
@@ -33,14 +33,14 @@ class Window:
   bool movable
 
 class Sprout:
-  listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # async
+  listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   makeWindow() -> Window
-  print(str s) # async
-  def quit() # async
+  print(str s) # (async) Print to Sprout's console.
+  def quit() # (async) Quit Sprout.
   activeApps() -> [str] # The bundle identifiers of the currently active apps.
   mousePosition() -> [float] # From the lower left corner: [x, y]
   searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
-      str path, function callback) # async
+      str path, function callback) # (async)
 
 spr = Sprout()
 ```
