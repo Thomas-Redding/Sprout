@@ -39,6 +39,8 @@ class Sprout:
   def quit() # async
   activeApps() -> [str] # The bundle identifiers of the currently active apps.
   mousePosition() -> [float] # From the lower left corner: [x, y]
+  searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
+      str path, function callback) # async
 
 spr = Sprout()
 ```
