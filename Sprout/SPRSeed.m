@@ -162,14 +162,8 @@ static id<SPRSeedDelegate> _delegate;
   _windows[windowId] = [[SPRWebWindow alloc] initWithId:windowId];
 }
 
-+ (CGRect)getFrameOfWindow:(NSString *)windowId {
-  if ([_windows objectForKey:windowId]) return _windows[windowId].frame;
-  return CGRectZero;
-}
-
-+ (void)setFrame:(CGRect)frame ofWindow:(NSString *)windowId {
-  if (![_windows objectForKey:windowId]) return;
-  [_windows[windowId] setFrame:frame display:YES];
++ (NSWindow *)windowForId:(NSString *)windowId {
+  return [_windows objectForKey:windowId];
 }
 
 + (void)closeWindow:(NSString *)windowId {

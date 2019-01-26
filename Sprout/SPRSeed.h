@@ -108,9 +108,9 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 + (NSPoint)mousePosition;
 
 + (void)makeWindowWithId:(NSString *)windowId;
-+ (CGRect)getFrameOfWindow:(NSString *)windowId;
-+ (void)setFrame:(CGRect)frame ofWindow:(NSString *)windowId;
++ (NSWindow *)windowForId:(NSString *)windowId;
 + (void)closeWindow:(NSString *)windowId;
+
 + (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;
 + (void)windowDidLoad:(NSString *)windowId;
 + (void)sendMessage:(NSString *)message toWindow:(NSString *)windowId;

@@ -45,11 +45,11 @@ class ServerAPI:
   def sendSynchronousMessage(self, message):
     self.checkQueue()
     uniqueId = generateUniqueId()
-    sys.stdout.write(uniqueId + ' ' + message + '\n')
+    sys.stdout.write(uniqueId + '\t' + message + '\n')
     sys.stdout.flush()
     queue = []
     for line in sys.stdin:
-      spaceIndex = finder(line, ' ')
+      spaceIndex = finder(line, '\t')
       if line[0:spaceIndex] == uniqueId:
         return self._praserCallback(line[spaceIndex+1:])
       else:
@@ -61,13 +61,13 @@ class ServerAPI:
   def sendAsynchronousMessage(self, message, callback, debug=True):
     if debug: self.checkQueue()
     uniqueId = generateUniqueId()
-    sys.stdout.write(uniqueId + ' ' + message + '\n')
+    sys.stdout.write(uniqueId + '\t' + message + '\n')
     sys.stdout.flush()
     self._callbacks[uniqueId] = callback
   
   def _respondToStandardInput(self, line):
     line = line[0:-1]
-    spaceIndex = finder(line, ' ')
+    spaceIndex = finder(line, '\t')
     uniqueId = line[0:spaceIndex]
     commandAndArgs = line[spaceIndex+1:]
     if uniqueId in self._callbacks:
@@ -103,7 +103,7 @@ class Window:
   def setIndexPath(self, pathToIndex):
     if not self._windowId: return None
     self._indexPath = pathToIndex
-    message = 'window.setIndexPath ' + self._windowId + ' ' + pathToIndex
+    message = 'window.setIndexPath\t' + self._windowId + '\t' + pathToIndex
     self._spr._server.sendSynchronousMessage(message)
   def indexPath(self):
     if not self._windowId: return None
@@ -111,19 +111,22 @@ class Window:
   def setFrame(self, newFrame):
     if not self._windowId: return None
     message = 'window.setFrame'
-    message += ' ' + self._windowId
-    message += ' ' + str(float(newFrame[0]))
-    message += ' ' + str(float(newFrame[1]))
-    message += ' ' + str(float(newFrame[2]))
-    message += ' ' + str(float(newFrame[3]))
+    message += '\t' + self._windowId
+    message += '\t' + str(float(newFrame[0]))
+    message += '\t' + str(float(newFrame[1]))
+    message += '\t' + str(float(newFrame[2]))
+    message += '\t' + str(float(newFrame[3]))
     return self._spr._server.sendSynchronousMessage(message)
   def frame(self):
     if not self._windowId: return None
-    return self._spr._server.sendSynchronousMessage('window.getFrame ' + self._windowId)
+    return self._spr._server.sendSynchronousMessage('window.getFrame\t' + self._windowId)
+  def visible():
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.getVisible\t' + self._windowId)
   def sendMessage(self, message):
-    self._spr._server.sendAsynchronousMessage('window.sendMessage ' + self._windowId + ' ' + message, lambda x : x)
+    self._spr._server.sendAsynchronousMessage('window.sendMessage\t' + self._windowId + '\t' + message, lambda x : x)
   def close(self):
-    self._spr._server.sendAsynchronousMessage('window.close ' + self._windowId, lambda x : x)
+    self._spr._server.sendAsynchronousMessage('window.close\t' + self._windowId, lambda x : x)
     self._windowId = None
 
 # ServerAPI
@@ -145,11 +148,11 @@ class Sprout:
     x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
     if x not in self._hotkeyCallbacks: self._hotkeyCallbacks[x] = []
     self._hotkeyCallbacks[x].append(callback)
-    self._server.sendAsynchronousMessage('registerHotKey ' + x, lambda x : x)
+    self._server.sendAsynchronousMessage('registerHotKey\t' + x, lambda x : x)
 
   def _hotkeyStr(self, keyCode, cmd, opt, ctrl, shift):
     rtn = str(keyCode)
-    rtn += ' '
+    rtn += '\t'
     rtn += '1' if cmd else '0'
     rtn += '1' if opt else '0'
     rtn += '1' if ctrl else '0'
@@ -159,11 +162,11 @@ class Sprout:
   def makeWindow(self):
     rtn = Window(self)
     self._windows[rtn.windowId()] = rtn
-    response = self._server.sendSynchronousMessage('makeWindow ' + rtn.windowId())
+    response = self._server.sendSynchronousMessage('makeWindow\t' + rtn.windowId())
     return rtn
 
   def print(self, s):
-    self._server.sendAsynchronousMessage('print ' + s, lambda x : x, False)
+    self._server.sendAsynchronousMessage('print\t' + s, lambda x : x, False)
   
   def quit(self):
     self._server.sendAsynchronousMessage('quit', lambda x : x)
@@ -182,6 +185,9 @@ class Sprout:
       w = float(w)
       h = float(h)
       return [x, y, w, h]
+    elif command == 'window.setVisible' or command == 'window.getVisible':
+      windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+      return bool(isVisible)
     elif command == 'window.setIndexPath':
       None
     elif command == 'window.didLoad':
@@ -216,7 +222,7 @@ class Sprout:
     # TODO: Use parsed message.
     
   def commandFromLine(self, line):
-    index = line.find(' ')
+    index = line.find('\t')
     if index == -1: return line
     else: return line[0:index]
 
@@ -224,7 +230,7 @@ class Sprout:
     argsLeft = argStr
     args = []
     for i in range(maxNumArgs-1):
-      index = argsLeft.find(' ')
+      index = argsLeft.find('\t')
       if index == -1: break
       args.append(argsLeft[0:index])
       argsLeft = argsLeft[index + 1:]
