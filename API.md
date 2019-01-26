@@ -55,15 +55,16 @@ class MenuBarItem:
   ...
 
 class Sprout:
-  makeMenubar() -> MenuBarItem # async
+  makeMenubar() -> MenuBarItem # (async)
   runAppleScriptAtPath(str pathToScript)
-  listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # async
-  listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # async
-  listenForWindowDrag(function callback) # async
-  quitApp(str appName) # async
-  forceQuitApp(str appName) # async
-  sleep() # async
-  shutDown() # async
+  listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # (async)
+  listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # (async)
+  listenForWindowDrag(function callback) # (async)
+  quitApp(str appName) # (async)
+  forceQuitApp(str appName) # (async)
+  sleep() # (async)
+  shutDown() # (async)
+  callAfterDelay(float delay, function callback) # (async)
 ```
 
 I'm also hoping to allow Windows to be placed on the Desktop (below all other windows) and above all other windows. (Note to self: look at `NSWindowLevel` and `kCGDesktopWindowLevel`).
