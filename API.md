@@ -4,9 +4,9 @@ All methods are synchronous (blocking) unless marked with "(async)". In terms of
 ### Supported
 ```python
 class Window:
-  windowId() -> str
+  windowId(): str
   close() # (async)
-  key() -> bool
+  key(): bool
   makeKey()
   makeKeyAndFront()
   # A string given here is passed to the JavaScript function spr.receive().
@@ -15,7 +15,7 @@ class Window:
   func onMessage(str message) # The string comes from the JavaScript method spr.send().
   
   # Path to HTML source.
-  indexPath() -> str
+  indexPath(): str
   setIndexPath(str pathToIndex) # (async)
   
   # This lets a window become key and front and then return focus to where it was originally.
@@ -34,11 +34,11 @@ class Window:
 
 class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
-  makeWindow() -> Window
+  makeWindow(): Window
   print(str s) # (async) Print to Sprout's console.
   def quit() # (async) Quit Sprout.
-  activeApps() -> [str] # The bundle identifiers of the currently active apps.
-  mousePosition() -> [float] # From the lower left corner: [x, y]
+  activeApps(): [str] # The bundle identifiers of the currently active apps.
+  mousePosition(): [float] # From the lower left corner: [x, y]
   searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
       str path, function callback) # (async)
 
@@ -48,14 +48,14 @@ spr = Sprout()
 ### Planned
 ```
 class Window:
-  interactable() -> bool
+  interactable(): bool
   setInteractable(bool interactable)
 
 class MenuBarItem:
   ...
 
 class Sprout:
-  makeMenubar() -> MenuBarItem # (async)
+  makeMenubar(): MenuBarItem # (async)
   runAppleScriptAtPath(str pathToScript)
   listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # (async)
   listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # (async)
