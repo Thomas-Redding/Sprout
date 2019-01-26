@@ -5,18 +5,39 @@ All methods are synchronous (blocking) unless marked with "async". In terms of f
 ```
 class Window:
   windowId() -> str
-  # Path to HTML source.
-  indexPath() -> str
-  setIndexPath(str pathToIndex) # async
-  # Frame of window from lower left corner.
-  # [x, y, width, height]
-  frame() -> [float]
-  setFrame([float] newFrame)
   close() # async
+  key() -> bool
+  makeKey()
+  makeKeyAndFront()
   # A string given here is passed to the JavaScript function spr.receive().
   sendMessage(str message) # async
   func onLoad                 # Called when the page loads.
   func onMessage(str message) # The string comes from the JavaScript method spr.send().
+  
+  # Path to HTML source.
+  indexPath() -> str
+  setIndexPath(str pathToIndex) # async
+  
+  # Frame of window from lower left corner.
+  # [x, y, width, height]
+  frame() -> [float]
+  setFrame([float] newFrame)
+  
+  # None is used to indicate the title bar should be hidden.
+  title() -> str
+  setTitle(str title)
+  
+  visible() -> bool
+  setVisible(bool visible)
+  
+  alpha() -> float
+  setAlpha(float alpha)
+  
+  minSize() -> [float]
+  setMinSize([float])
+
+  maxSize() -> [float]
+  setMaxSize([float])
 
 class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # async
@@ -30,27 +51,12 @@ spr = Sprout()
 ### Planned
 ```
 class Window:
-  visible() -> bool
-  setVisible(bool visible)
-  # None is used to indicate the title bar should be hidden.
-  title() -> str
-  setTitle(str title)
-  alpha() -> float
-  setAlpha(float alpha)
   draggable() -> bool
   setDraggable(bool draggable)
   movable() -> bool
   setMovable(bool movable)
   interactable() -> bool
   setInteractable(bool interactable)
-  minSize() -> [float]
-  setMinSize([float])
-  maxSize() -> [float]
-  setMaxSize([float])
-  key() -> bool
-  makeKey()
-  makeKeyAndFront()
-  front() -> bool
 
 class MenuBarItem:
   ...
