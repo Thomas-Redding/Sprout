@@ -124,9 +124,12 @@ class Window:
   def frame(self):
     if not self._windowId: return None
     return self._spr._server.sendSynchronousMessage('window.getFrame\t' + self._windowId)
-  def visible():
+  def visible(self):
     if not self._windowId: return None
     return self._spr._server.sendSynchronousMessage('window.getVisible\t' + self._windowId)
+  def setVisible(self, newVisible):
+    if not self._windowId: return None
+    return self._spr._server.sendSynchronousMessage('window.setVisible\t' + self._windowId + '\t' + ('1' if newVisible else '0'))
   def sendMessage(self, message):
     self._spr._server.sendAsynchronousMessage('window.sendMessage\t' + self._windowId + '\t' + message, lambda x : x)
   def close(self):
@@ -191,6 +194,13 @@ class Sprout:
     argStr = message[len(command)+1:]
     if command == 'registerHotKey':
       None
+    elif command == 'hotKeyPressed':
+      keyCode, flags = self.argArrayFromArgStr(argStr, 2)
+      cmd = (flags[0] != '0')
+      opt = (flags[1] != '0')
+      ctrl = (flags[2] != '0')
+      shift = (flags[3] != '0')
+      return (argStr, keyCode, cmd, opt, ctrl, shift)
     elif command == 'searchFiles':
       return argStr.split('\t')
     elif command == 'makeWindow':
@@ -204,7 +214,7 @@ class Sprout:
       return [x, y, w, h]
     elif command == 'window.setVisible' or command == 'window.getVisible':
       windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
-      return bool(isVisible)
+      return bool(int(isVisible))
     elif command == 'window.setIndexPath':
       None
     elif command == 'window.didLoad':
@@ -221,7 +231,7 @@ class Sprout:
     elif command == 'window.sendMessage':
       None
     elif command == 'window.request':
-      windowId, message = self.argArrayFromArgStr(argStr, 5)
+      windowId, message = self.argArrayFromArgStr(argStr, 2)
       return (windowId, message)
     else:
       self.print('UNKNOWN COMMAND: ' + message)
@@ -233,7 +243,12 @@ class Sprout:
       self._windows[parsedMessage].onLoad()
     elif command == 'window.request':
       windowId, message = parsedMessage
-      self._windows[parsedMessage].onMessage(message)
+      self._windows[windowId].onMessage(message)
+    elif command == 'hotKeyPressed':
+      hotKeyCode, keyCode, cmd, opt, ctrl, shift = parsedMessage
+      callbacks = self._hotkeyCallbacks[hotKeyCode]
+      for callback in callbacks:
+        callback(int(keyCode), cmd, opt, ctrl, shift)
     else:
       self.print('Unknown UnexpectedMessageCallback: ' + message)
     # TODO: Use parsed message.

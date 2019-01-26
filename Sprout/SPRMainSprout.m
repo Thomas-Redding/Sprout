@@ -63,7 +63,7 @@
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
   NSString *flushString = [NSString stringWithFormat:@"%@\t%@\n", uniqueId, string];
-  NSLog(@"sendToPython:%@", flushString);
+  // NSLog(@"sendToPython:%@", flushString);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
   [_inPipe.fileHandleForWriting writeData:data];
 }
@@ -88,7 +88,7 @@
 }
 
 - (void)handleLineFromPython:(NSString *)line {
-  NSLog(@"handleLineFromPython:%@", line);
+  // NSLog(@"handleLineFromPython:%@", line);
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
@@ -305,7 +305,7 @@
   BOOL opt = (flags & 2) == 1;
   BOOL ctrl = (flags & 4) == 1;
   BOOL shift = (flags & 8) == 1;
-  [self sendToPython:[NSString stringWithFormat:@"hotKeyPressed %u %d%d%d%d", keyCode, cmd, opt, ctrl, shift]
+  [self sendToPython:[NSString stringWithFormat:@"hotKeyPressed\t%u\t%d%d%d%d", keyCode, cmd, opt, ctrl, shift]
         withUniqueId:[self generateUniqueId]];
 }
 

@@ -2,19 +2,19 @@
 onload = () => {
   document.getElementById('lorem').value = 'kale'
   document.getElementById('lorem').onkeyup = (event) => {
-    spr.send('SUGGEST:' + document.getElementById('lorem').value);
+    spr.send(document.getElementById('lorem').value);
   };
   spr.receive = (message) => {
-    document.getElementById('lorem').value = message;
+    document.getElementById('ipsum').value = message;
   };
 }
 </script>
 <style>
-  body {
-    margin: 0;
-    background-color: #333;
-  }
-#lorem {
+body {
+  margin: 0;
+  background-color: #333;
+}
+#lorem, ipsum {
   display: block;
   width: 100vw;
   font-size: 32px;
@@ -23,26 +23,7 @@ onload = () => {
   border-bottom: 1px solid #888;
   background-color: #444;
 }
-#ipsum {
-  width: 100vw;
-  color: white;
-  border-collapse: collapse;
-  height: calc(100vh - 41px)
-}
-#ipsum > tbody > tr > td {
-  width: 50%;
-}
-#ipsum > tbody > tr > td:first-child {
-  border-right: 1px solid #888;
-}
-#suggestion{}
-#preview{}
-  </style>
+</style>
 <input id="lorem" type="text">
-<table id="ipsum"><tbody><tr><td>
-  <table id="suggestion"><tbody>
-  </tbody></table>
-</td><td id="preview">
-  PREVIEW
-</td></tr>
-</tbody></table></body></html>
+<input id="ipsum" type="text">
+
