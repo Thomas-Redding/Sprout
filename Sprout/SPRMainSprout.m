@@ -127,10 +127,19 @@
     query.extensions = [NSSet setWithArray:extensions];
     query.path = path;
     NSArray<NSString *> *matches = [SPRSeed searchFilesWithQuery:query];
-    NSMutableString *response = @"searchFiles".mutableCopy;
+    NSMutableString *response = [NSMutableString stringWithString:@"searchFiles"];
     for (NSString *match in matches) {
       [response appendString:@"\t"];
       [response appendString:match];
+    }
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"runningApps"]) {
+    NSArray<NSRunningApplication *> *apps = NSWorkspace.sharedWorkspace.runningApplications;
+    NSMutableString *response = [NSMutableString stringWithString:@"runningApps\t"];
+    for (NSRunningApplication *app in apps) {
+      [response appendString:@" "];
+      if (!app.bundleIdentifier) continue;
+      [response appendString:app.bundleIdentifier];
     }
     [self sendToPython:response withUniqueId:uniqueId];
 /********** Window Commands **********/

@@ -1,3 +1,4 @@
+import os
 import random
 import select
 import string
@@ -8,19 +9,6 @@ import sys
 # Might be unneccssary going forward.
 from Foundation import NSBundle
 from AppKit import NSWorkspace
-
-# Update menu item from "Python" to "Sprout".
-bundle = NSBundle.mainBundle()
-if bundle:
-  info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
-  if info and info['CFBundleName'] == 'Python':
-    info['CFBundleName'] = 'Sprout'
-
-# spr.listenForHotkey(49, True, False, False, False) - Listen for 'CMD + SPACE'
-# spt.poll()                                         - Perform hotkey callbacks.
-# spt.print("foo")                                   - Print "foo" to the Xcode terminal.
-# spt.activeApplication()                            - The name of the current active application.
-# spt.runAppleScript(script, args)                   - Run the given AppleScript.
 
 def generateUniqueId():
   return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
@@ -229,6 +217,9 @@ class Sprout:
   def quit(self):
     self._server.sendAsynchronousMessage('quit', lambda x : x)
 
+  def runningApps(self):
+    return self._server.sendSynchronousMessage('runningApps')
+
   def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
     message = 'searchFiles\t'
     message += str(maxResults) + '\t'
@@ -254,6 +245,8 @@ class Sprout:
       return (argStr, keyCode, cmd, opt, ctrl, shift)
     elif command == 'searchFiles':
       return argStr.split('\t')
+    elif command == 'runningApps':
+      return argStr[0:-1].split(' ')
     elif command == 'makeWindow':
       None
     elif command == 'window.setFrame' or command == 'window.getFrame':
