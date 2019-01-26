@@ -350,10 +350,10 @@
 - (void)hotkeyPressed:(NSNumber *)keyCodeNum withFlags:(NSNumber *)flagsNum {
   UInt32 keyCode = (UInt32)[keyCodeNum unsignedIntegerValue];
   SPRKeyFlag flags = (SPRKeyFlag)[flagsNum unsignedIntegerValue];
-  BOOL cmd = (flags & 1) == 1;
-  BOOL opt = (flags & 2) == 1;
-  BOOL ctrl = (flags & 4) == 1;
-  BOOL shift = (flags & 8) == 1;
+  BOOL cmd = ((flags & 1) != 0);
+  BOOL opt = ((flags & 2) != 0);
+  BOOL ctrl = ((flags & 4) != 0);
+  BOOL shift = ((flags & 8) != 0);
   [self sendToPython:[NSString stringWithFormat:@"hotKeyPressed\t%u\t%d%d%d%d", keyCode, cmd, opt, ctrl, shift]
         withUniqueId:[self generateUniqueId]];
 }
