@@ -38,6 +38,13 @@ class Window:
 
   maxSize() -> [float]
   setMaxSize([float])
+  
+  movable() -> bool
+  setMovable(bool movable)
+  
+  # This lets a window become key and front and then return focus to where it was originally.
+  borrowOwnership()
+  returnOwnership()
 
 class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # async
@@ -51,10 +58,6 @@ spr = Sprout()
 ### Planned
 ```
 class Window:
-  draggable() -> bool
-  setDraggable(bool draggable)
-  movable() -> bool
-  setMovable(bool movable)
   interactable() -> bool
   setInteractable(bool interactable)
 
