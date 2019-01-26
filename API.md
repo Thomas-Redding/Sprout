@@ -2,7 +2,7 @@
 ## Python API
 All methods are synchronous (blocking) unless marked with "(async)". In terms of future development, it should be quite easy to switch methods between synchronous and asynchronous.
 ### Supported
-```
+```python
 class Window:
   windowId() -> str
   close() # (async)
@@ -71,7 +71,7 @@ I'm also hoping to allow Windows to be placed on the Desktop (below all other wi
 
 ## JavaScript API
 You can import CSS and JavaScript files from the file system as normal.
-```
+```javascript
 spr.send(string message)
 spr.receive(string message)
 ```
