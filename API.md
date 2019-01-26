@@ -18,32 +18,29 @@ class Window:
   indexPath() -> str
   setIndexPath(str pathToIndex) # async
   
-  # Frame of window from lower left corner.
-  # [x, y, width, height]
-  frame() -> [float]
-  setFrame([float] newFrame)
+  # This lets a window become key and front and then return focus to where it was originally.
+  borrowOwnership()
+  returnOwnership()
   
-  # None is used to indicate the title bar should be hidden.
-  title() -> str
-  setTitle(str title)
-  
-  visible() -> bool
-  setVisible(bool visible)
-  
-  alpha() -> float
-  setAlpha(float alpha)
-  
-  minSize() -> [float]
-  setMinSize([float])
-
-  maxSize() -> [float]
-  setMaxSize([float])
+  # Everything Below this point is a "property". It has a getter and setter method.
+  # e.g. '[float] frame' means there is getter, frame(), and a setter, setFrame().
+  [float] frame() # From the lower left corner: [x, y, width, height]
+  str title
+  bool visible
+  float alpha
+  [float] minSize # [width, height]
+  [float] maxSize # [width, height]
+  bool movable
 
 class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # async
   makeWindow() -> Window
   print(str s) # async
   def quit() # async
+  activeApps() -> [str] # The bundle identifiers of the currently active apps.
+  mousePosition() -> [float] # From the lower left corner: [x, y]
+  searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
+      str path, function callback) # async
 
 spr = Sprout()
 ```
@@ -51,10 +48,6 @@ spr = Sprout()
 ### Planned
 ```
 class Window:
-  draggable() -> bool
-  setDraggable(bool draggable)
-  movable() -> bool
-  setMovable(bool movable)
   interactable() -> bool
   setInteractable(bool interactable)
 
@@ -66,9 +59,7 @@ class Sprout:
   runAppleScriptAtPath(str pathToScript)
   listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # async
   listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # async
-  mousePosition() -> [float]
   listenForWindowDrag(function callback) # async
-  activeApps() -> [str]
   quitApp(str appName) # async
   forceQuitApp(str appName) # async
   sleep() # async
