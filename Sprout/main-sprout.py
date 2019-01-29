@@ -28,5 +28,7 @@ wind.onMessage = server
 wind.onLoad = lambda: spr.print('I Loaded!')
 wind.setIndexPath('~/Projects/Sprout/Sprout/index.html')
 
+spr.print(str(spr.runningApps()))
+
 spr.doLater(3, lambda: spr.stopRepeat(timerId, lambda: spr.print('DONE')))
 timerId = spr.repeat(1, lambda: spr.print('REPEAT'))

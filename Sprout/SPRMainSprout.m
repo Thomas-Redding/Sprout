@@ -100,7 +100,7 @@
   NSString *commandType = [self firstWordInString:command];
   if ([commandType isEqualToString:@"print"]) {
     NSLog(@"Python Print: '%@'", [command substringFromIndex:commandType.length + 1]);
-  } else if ([commandType isEqualToString:@"quit"]) {
+  } else if ([commandType isEqualToString:@"quitSprout"]) {
     [self terminate];
   } else if ([commandType isEqualToString:@"registerHotKey"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
@@ -146,6 +146,26 @@
       [response appendString:app.bundleIdentifier];
     }
     [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"quitApp"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *bundleIdentifier = args[0];
+    NSArray<NSRunningApplication *> *apps = NSWorkspace.sharedWorkspace.runningApplications;
+    for (NSRunningApplication *app in apps) {
+      if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+        [app terminate];
+        break;
+      }
+    }
+  } else if ([commandType isEqualToString:@"forceQuitApp"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *bundleIdentifier = args[0];
+    NSArray<NSRunningApplication *> *apps = NSWorkspace.sharedWorkspace.runningApplications;
+    for (NSRunningApplication *app in apps) {
+      if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+        [app forceTerminate];
+        break;
+      }
+    }
   } else if ([commandType isEqualToString:@"mousePosition"]) {
     NSPoint pos = [NSEvent mouseLocation];
     [self sendToPython:[NSString stringWithFormat:@"mousePosition\t%f\t%f", pos.x, pos.y] withUniqueId:uniqueId];

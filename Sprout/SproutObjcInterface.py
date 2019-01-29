@@ -211,11 +211,17 @@ class Sprout:
   def print(self, s):
     self._server.sendAsynchronousMessage('print\t' + s, lambda x : x, False)
   
-  def quit(self):
-    self._server.sendAsynchronousMessage('quit', lambda x : x)
+  def quitSprout(self):
+    self._server.sendAsynchronousMessage('quitSprout', lambda x : x)
 
   def runningApps(self):
     return self._server.sendSynchronousMessage('runningApps')
+  
+  def quitApp(self, bundleIdentifier):
+    return self._server.sendAsynchronousMessage('quitApp\t' + bundleIdentifier, lambda x: x)
+  
+  def forceQuitApp(self, bundleIdentifier):
+    return self._server.sendAsynchronousMessage('forceQuitApp\t' + bundleIdentifier, lambda x: x)
 
   def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
     message = 'searchFiles\t'
