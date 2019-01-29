@@ -37,6 +37,7 @@ class Sprout:
   makeWindow(): Window
   activeApps(): [(str, str)] # (bundle identifiers, app name)
   mousePosition(): [float] # From the lower left corner: [x, y]
+  runAppleScriptAtPath(str script)
   
   # Async methods
   print(str s) # Print to Sprout's console.
@@ -52,7 +53,6 @@ class Sprout:
   stopRepeat(string timerId, function callback)
   searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
       str path, function callback): [string]
-  runAppleScriptAtPath(str script)
 
 spr = Sprout()
 ```
