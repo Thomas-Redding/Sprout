@@ -27,3 +27,5 @@ def server(requestStr):
 wind.onMessage = server
 wind.onLoad = lambda : spr.print('I Loaded!')
 wind.setIndexPath('~/Projects/Sprout/Sprout/index.html')
+
+spr.doLater(5, lambda x : spr.print('LATER'))

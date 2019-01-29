@@ -227,6 +227,9 @@ class Sprout:
   def mousePosition(self):
     return self._server.sendSynchronousMessage('mousePosition')
   
+  def doLater(self, waitTime, callback):
+    return self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
+  
   def parseResponse(self, message):
     command = self.commandFromLine(message)
     argStr = message[len(command)+1:]
@@ -246,6 +249,8 @@ class Sprout:
     elif command == 'mousePosition':
       x, y = self.argArrayFromArgStr(argStr, 2)
       return (float(x), float(y))
+    elif command == 'doLater':
+      None
     elif command == 'makeWindow':
       None
     elif command == 'window.setFrame' or command == 'window.getFrame':

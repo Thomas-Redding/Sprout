@@ -5,6 +5,7 @@
 
 #import "SPRWebWindow.h"
 
+
 @implementation SPRMainSprout {
   NSTask *_task;
   NSPipe *_inPipe;
@@ -145,6 +146,10 @@
   } else if ([commandType isEqualToString:@"mousePosition"]) {
     NSPoint pos = [NSEvent mouseLocation];
     [self sendToPython:[NSString stringWithFormat:@"mousePosition\t%f\t%f", pos.x, pos.y] withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"doLater"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    float waitTime = [args[0] floatValue];
+    [self performSelector:@selector(timerCallbackWithUniqueId:) withObject:uniqueId afterDelay:waitTime];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
@@ -366,6 +371,10 @@
   if (check) return;
   NSLog(@"ASSERT FAILED: %@", message);
   [self terminate];
+}
+
+- (void)timerCallbackWithUniqueId:(NSString *)uniqueId {
+  [self sendToPython:@"doLater" withUniqueId:uniqueId];
 }
 
 @end
