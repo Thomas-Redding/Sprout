@@ -43,11 +43,15 @@ class Sprout:
   def quitSprout()
   quitApp(str appName)
   forceQuitApp(str appName)
-  searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
-      str path, function callback): [string]
+  sleepScreen():
+  shutDown():
+  restart():
+  logOut():
   doLater(float waitTime, function callback)
   repeat(float waitTime, function callback): string # returns a unique timerId
   stopRepeat(string timerId, function callback)
+  searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
+      str path, function callback): [string]
 
 spr = Sprout()
 ```
@@ -67,8 +71,6 @@ class Sprout:
   listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # (async)
   listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # (async)
   listenForWindowDrag(function callback) # (async)
-  sleep() # (async)
-  shutDown() # (async)
 ```
 
 I'm also hoping to allow Windows to be placed on the Desktop (below all other windows) and above all other windows. (Note to self: look at `NSWindowLevel` and `kCGDesktopWindowLevel`).
