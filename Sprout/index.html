@@ -1,3 +1,4 @@
+<script src="jquery-3.3.1.js"></script>
 <script>
 onload = () => {
   document.getElementById('lorem').value = 'kale'
@@ -7,6 +8,22 @@ onload = () => {
   spr.receive = (message) => {
     document.getElementById('ipsum').value = message;
   };
+  spr.hotkeyCallbacks = [(c, keyCode, cmd, opt, ctrl, shift) => {
+    var press = jQuery.Event("keypress");
+    press.metaKey = cmd;
+    press.optKey = opt;
+    press.ctrlKey = ctrl;
+    press.shiftKey = shift;
+    press.which = keyCode;
+    $(document.activeElement).trigger(press);
+    var s = '';
+    if (cmd) s += 'cmd+';
+    if (opt) s += 'opt+';
+    if (ctrl) s += 'ctrl+';
+    if (shift) s += 'shift+';
+    s += c;
+    document.getElementById('dolor').value = s;
+  }];
 }
 </script>
 <style>
@@ -26,4 +43,5 @@ body {
 </style>
 <input id="lorem" type="text">
 <input id="ipsum" type="text">
+<input id="dolor" type="text">
 

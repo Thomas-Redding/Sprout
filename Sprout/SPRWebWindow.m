@@ -4,9 +4,22 @@
 
 #import "SPRSeed.h"
 
+static const int keyCodeConverter[47] = {65, 83, 68, 60, 72, 71, 90, 88, 67, 86, -1, 66, 81, 87,
+  69, 82, 89, 84, 49, 50, 51, 52, 54, 53, -1, 57, 55, -1, 56, 48, -1, 79, 85, -1, 73, 80, -1, 76,
+  74, -1, 75, -1, -1, -1, -1, 78, 77
+};
+
+@interface SPRWebView : WKWebView
+@end
+
+@implementation SPRWebView
+-(BOOL)acceptsFirstResponder { return YES; }
+-(BOOL)canBecomeKeyView { return YES; }
+@end
+
 @implementation SPRWebWindow {
   NSString *_windowId;
-  WKWebView *_webView;
+  SPRWebView *_webView;
 }
 
 - (instancetype)initWithId:(NSString *)windowId {
@@ -20,7 +33,7 @@
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     config.userContentController = controller;
-    _webView = [[WKWebView alloc] initWithFrame:NSZeroRect configuration:config];
+    _webView = [[SPRWebView alloc] initWithFrame:NSZeroRect configuration:config];
     [controller addScriptMessageHandler:self name:@"sprout_kyaQmKP75mE6RolA"];
     _webView.navigationDelegate = self;
     self.contentView = self->_webView;
@@ -37,6 +50,33 @@
   [self privateLayout];
 }
 
+/*
+NSEventModifierFlagCapsLock           = 1 << 16, // Set if Caps Lock key is pressed.
+NSEventModifierFlagShift              = 1 << 17, // Set if Shift key is pressed.
+NSEventModifierFlagControl            = 1 << 18, // Set if Control key is pressed.
+NSEventModifierFlagOption             = 1 << 19, // Set if Option or Alternate key is pressed.
+NSEventModifierFlagCommand            = 1 << 20, // Set if Command key is pressed.
+NSEventModifierFlagNumericPad         = 1 << 21, // Set if any key in the numeric keypad is pressed.
+NSEventModifierFlagHelp               = 1 << 22, // Set if the Help key is pressed.
+NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is pressed.
+*/
+
+- (void)keyDown:(NSEvent *)event {
+  // By default, WKWebView doesn't accept hotkeys, so we have to pass them in manually.
+  if (event.keyCode >= 47) { NSLog(@"UNKNOWN KEYCODE 1: %d", event.keyCode); return; }
+  int webKeyCode = keyCodeConverter[event.keyCode];
+  if (webKeyCode == -1) { NSLog(@"UNKNOWN KEYCODE 2: %d", event.keyCode); return; }
+  NSString *c = [event.characters substringToIndex:1];
+  NSString *keyCode = [NSString stringWithFormat:@"%d", webKeyCode];
+  NSString *cmd = ((event.modifierFlags & NSEventModifierFlagCommand) == NSEventModifierFlagCommand) ? @"true" : @"false";
+  NSString *opt = ((event.modifierFlags & NSEventModifierFlagOption) == NSEventModifierFlagOption) ? @"true" : @"false";
+  NSString *ctrl = ((event.modifierFlags & NSEventModifierFlagControl) == NSEventModifierFlagControl) ? @"true" : @"false";
+  NSString *shift = ((event.modifierFlags & NSEventModifierFlagShift) == NSEventModifierFlagShift) ? @"true" : @"false";
+  NSString *injection = [NSString stringWithFormat:@"window.spr._hotkey('%@', %@, %@, %@, %@, %@)", c, keyCode, cmd, opt, ctrl, shift];
+  NSLog(@"TFR: %@", injection);
+  [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {}];
+}
+
 # pragma mark - NSWindowDelegate
 
 - (void)windowDidResize:(NSNotification *)notification {
@@ -45,15 +85,22 @@
 
 # pragma mark - WKNavigationDelegate
 
-// - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation {
 -(void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+  // https://stackoverflow.com/a/12187302
   NSString *injection = @"\
   var spr = {\
     \"send\": (message) => {\
       window.webkit.messageHandlers.sprout_kyaQmKP75mE6RolA.postMessage(message);\
     },\
-    \"receive\": (message) => {}\
+    \"receive\": (message) => {},\
+    \"hotkeyCallbacks\": [],\
+    \"_hotkey\": (c, keyCode, cmd, opt, ctrl, shift) => {\
+      for (var i = 0; i < spr.hotkeyCallbacks.length; ++i) {\
+        spr.hotkeyCallbacks[i](c, keyCode, cmd, opt, ctrl, shift);\
+      }\
+    }\
   };";
+  NSLog(@"T:%@", injection);
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {
     [SPRSeed windowDidLoad:self->_windowId];
   }];
