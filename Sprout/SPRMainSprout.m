@@ -10,6 +10,7 @@
   NSTask *_task;
   NSPipe *_inPipe;
   NSPipe *_outPipe;
+  NSMutableDictionary<NSString *, NSTimer *> *_idToTimer;
   NSMutableDictionary<NSString *, NSRunningApplication *> *windowToOriginallyFocusedApp;
 };
 
@@ -18,6 +19,7 @@
 - (void)launch {
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
   windowToOriginallyFocusedApp = [[NSMutableDictionary alloc] init];
+  _idToTimer = [[NSMutableDictionary alloc] init];
   _task = [[NSTask alloc] init];
   _task.launchPath = @"/usr/local/bin/python";
   _task.arguments = @[ pathToSproutMain ];
@@ -150,6 +152,20 @@
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
     float waitTime = [args[0] floatValue];
     [self performSelector:@selector(timerCallbackWithUniqueId:) withObject:uniqueId afterDelay:waitTime];
+  } else if ([commandType isEqualToString:@"repeat"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    NSString *timerId = args[0];
+    float waitTime = [args[1] floatValue];
+    NSTimer *timer = [NSTimer timerWithTimeInterval:waitTime repeats:TRUE block:^(NSTimer *timer) {
+      [self sendToPython:@"repeat" withUniqueId:uniqueId];
+    }];
+    [_idToTimer setObject:timer forKey:timerId];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+  } else if ([commandType isEqualToString:@"stopRepeat"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *timerId = args[0];
+    NSTimer *timer = [_idToTimer objectForKey:timerId];
+    [timer invalidate];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];

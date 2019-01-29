@@ -11,9 +11,6 @@ def finder(s, c):
   return len(s) if index == -1 else index
 
 
-
-
-
 class ServerAPI:
   def __init__(self, praserCallback, unexpectedMessageCallback):
     self._queue = []
@@ -53,11 +50,9 @@ class ServerAPI:
     commandAndArgs = line[spaceIndex+1:]
     if uniqueId in self._callbacks:
       parsedResponse = self._praserCallback(commandAndArgs)
-      x = self._callbacks
-      y = x[uniqueId]
-      y(parsedResponse)
-      z = 4 + 2
-      del self._callbacks[uniqueId]
+      self._callbacks[uniqueId](parsedResponse)
+      if commandAndArgs[0:6] != 'repeat':
+        del self._callbacks[uniqueId]
     else:
       self._unexpectedMessageCallback(commandAndArgs)
 
@@ -225,10 +220,18 @@ class Sprout:
     self._server.sendAsynchronousMessage(message, callback)
   
   def mousePosition(self):
-    return self._server.sendSynchronousMessage('mousePosition')
+    self._server.sendSynchronousMessage('mousePosition')
   
   def doLater(self, waitTime, callback):
-    return self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
+    self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
+
+  def repeat(self, waitTime, callback):
+    timerId = generateUniqueId()
+    self._server.sendAsynchronousMessage('repeat\t' + timerId + '\t' + str(waitTime), callback)
+    return timerId
+
+  def stopRepeat(self, timerId, callback):
+    self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, callback)
   
   def parseResponse(self, message):
     command = self.commandFromLine(message)
@@ -249,7 +252,7 @@ class Sprout:
     elif command == 'mousePosition':
       x, y = self.argArrayFromArgStr(argStr, 2)
       return (float(x), float(y))
-    elif command == 'doLater':
+    elif command == 'doLater' or command == 'repeat':
       None
     elif command == 'makeWindow':
       None
