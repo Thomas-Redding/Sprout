@@ -35,12 +35,17 @@ class Window:
 class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   makeWindow(): Window
-  print(str s) # (async) Print to Sprout's console.
-  def quit() # (async) Quit Sprout.
   activeApps(): [str] # The bundle identifiers of the currently active apps.
   mousePosition(): [float] # From the lower left corner: [x, y]
+  
+  # Async methods
+  print(str s) # Print to Sprout's console.
+  def quit() # Quit Sprout.
   searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
-      str path, function callback) # (async)
+      str path, function callback): [string]
+  doLater(float waitTime, function callback)
+  repeat(float waitTime, function callback): string # returns a unique timerId
+  stopRepeat(string timerId, function callback)
 
 spr = Sprout()
 ```
@@ -64,7 +69,6 @@ class Sprout:
   forceQuitApp(str appName) # (async)
   sleep() # (async)
   shutDown() # (async)
-  callAfterDelay(float delay, function callback) # (async)
 ```
 
 I'm also hoping to allow Windows to be placed on the Desktop (below all other windows) and above all other windows. (Note to self: look at `NSWindowLevel` and `kCGDesktopWindowLevel`).
