@@ -141,9 +141,11 @@
     NSArray<NSRunningApplication *> *apps = NSWorkspace.sharedWorkspace.runningApplications;
     NSMutableString *response = [NSMutableString stringWithString:@"runningApps\t"];
     for (NSRunningApplication *app in apps) {
-      [response appendString:@" "];
       if (!app.bundleIdentifier) continue;
+      [response appendString:@"/"];
       [response appendString:app.bundleIdentifier];
+      [response appendString:@" "];
+      [response appendString:app.localizedName];
     }
     [self sendToPython:response withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"quitApp"]) {

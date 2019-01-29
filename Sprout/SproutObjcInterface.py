@@ -266,7 +266,11 @@ class Sprout:
     elif command == 'searchFiles':
       return argStr.split('\t')
     elif command == 'runningApps':
-      return argStr[0:-1].split(' ')
+      apps = argStr[0:-1].split('/')
+      for i in range(len(apps)):
+        firstSpace = helper.finder(apps[i], ' ')
+        apps[i] = (apps[i][:firstSpace], apps[i][firstSpace+1:])
+      return apps[1:]
     elif command == 'mousePosition':
       x, y = self.argArrayFromArgStr(argStr, 2)
       return (float(x), float(y))
