@@ -52,6 +52,7 @@ class Sprout:
   stopRepeat(string timerId, function callback)
   searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
       str path, function callback): [string]
+  runAppleScriptAtPath(str script)
 
 spr = Sprout()
 ```
@@ -67,7 +68,6 @@ class MenuBarItem:
 
 class Sprout:
   makeMenubar(): MenuBarItem # (async)
-  runAppleScriptAtPath(str pathToScript)
   listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # (async)
   listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # (async)
   listenForWindowDrag(function callback) # (async)
