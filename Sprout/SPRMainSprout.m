@@ -168,6 +168,18 @@
         break;
       }
     }
+  } else if ([commandType isEqualToString:@"power.sleepScreen"]) {
+    [self runAppleScript:@"tell application \"Finder\" to sleep"];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"power.shutDown"]) {
+    [self runAppleScript:@"tell application \"Finder\" to shut down"];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"power.restart"]) {
+    [self runAppleScript:@"tell application \"Finder\" to restart"];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"power.logOut"]) {
+    [self runAppleScript:@"tell application \"Finder\" to log out"];
+    [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"mousePosition"]) {
     NSPoint pos = [NSEvent mouseLocation];
     [self sendToPython:[NSString stringWithFormat:@"mousePosition\t%f\t%f", pos.x, pos.y] withUniqueId:uniqueId];
@@ -415,6 +427,13 @@
 
 - (void)timerCallbackWithUniqueId:(NSString *)uniqueId {
   [self sendToPython:@"doLater" withUniqueId:uniqueId];
+}
+
+- (void)runAppleScript:(NSString *)script {
+  // https://stackoverflow.com/a/4505664
+  NSAppleScript *appleScript = [[NSAppleScript alloc] initWithSource:script];
+  NSDictionary *errDict = nil;
+  [appleScript executeAndReturnError:&errDict];
 }
 
 @end

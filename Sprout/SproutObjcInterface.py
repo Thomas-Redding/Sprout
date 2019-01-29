@@ -218,10 +218,23 @@ class Sprout:
     return self._server.sendSynchronousMessage('runningApps')
   
   def quitApp(self, bundleIdentifier):
-    return self._server.sendAsynchronousMessage('quitApp\t' + bundleIdentifier, lambda x: x)
+    self._server.sendAsynchronousMessage('quitApp\t' + bundleIdentifier, lambda x: x)
   
   def forceQuitApp(self, bundleIdentifier):
-    return self._server.sendAsynchronousMessage('forceQuitApp\t' + bundleIdentifier, lambda x: x)
+    self._server.sendAsynchronousMessage('forceQuitApp\t' + bundleIdentifier, lambda x: x)
+  
+  def sleepScreen(self):
+    self._server.sendAsynchronousMessage('power.sleepScreen', lambda x: x)
+  def shutDown(self):
+    self._server.sendAsynchronousMessage('power.shutDown', lambda x: x)
+  def restart(self):
+    self._server.sendAsynchronousMessage('power.restart', lambda x: x)
+  def logOut(self):
+    self._server.sendAsynchronousMessage('power.logOut', lambda x: x)
+  
+  def runAppleScript(self, script):
+    script.replace('\\', '\\\\').replace("'", "\\'")
+    os.system('osascript -e \'' + script + '\'')
 
   def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
     message = 'searchFiles\t'
@@ -271,6 +284,8 @@ class Sprout:
         firstSpace = helper.finder(apps[i], ' ')
         apps[i] = (apps[i][:firstSpace], apps[i][firstSpace+1:])
       return apps[1:]
+    elif command == 'power.sleepScreen' or command == 'power.shutDown' or command == 'power.restart' or command == 'power.logOut':
+      None
     elif command == 'mousePosition':
       x, y = self.argArrayFromArgStr(argStr, 2)
       return (float(x), float(y))
