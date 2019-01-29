@@ -3,13 +3,18 @@ import random
 import string
 import sys
 
-def generateUniqueId():
-  return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
-def finder(s, c):
-  index = s.find(c)
-  return len(s) if index == -1 else index
-
+class Helper:
+  def __init__(self):
+    self._uniqueId = 0
+  def generateUniqueId(self):
+    # ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+    self._uniqueId += 1
+    return str(self._uniqueId)
+  def finder(self, s, c):
+    index = s.find(c)
+    return len(s) if index == -1 else index
+helper = Helper()
 
 class ServerAPI:
   def __init__(self, praserCallback, unexpectedMessageCallback):
@@ -22,12 +27,12 @@ class ServerAPI:
   # string return  : The message returned by the server.
   def sendSynchronousMessage(self, message):
     self.checkQueue()
-    uniqueId = generateUniqueId()
+    uniqueId = helper.generateUniqueId()
     sys.stdout.write(uniqueId + '\t' + message + '\n')
     sys.stdout.flush()
     queue = []
     for line in sys.stdin:
-      spaceIndex = finder(line, '\t')
+      spaceIndex = helper.finder(line, '\t')
       if line[0:spaceIndex] == uniqueId:
         return self._praserCallback(line[spaceIndex+1:])
       else:
@@ -38,19 +43,23 @@ class ServerAPI:
   # string   return          : The message returned by the server.
   def sendAsynchronousMessage(self, message, callback, debug=True):
     if debug: self.checkQueue()
-    uniqueId = generateUniqueId()
+    uniqueId = helper.generateUniqueId()
     sys.stdout.write(uniqueId + '\t' + message + '\n')
     sys.stdout.flush()
     self._callbacks[uniqueId] = callback
   
   def _respondToStandardInput(self, line):
     line = line[0:-1]
-    spaceIndex = finder(line, '\t')
+    spaceIndex = helper.finder(line, '\t')
     uniqueId = line[0:spaceIndex]
     commandAndArgs = line[spaceIndex+1:]
     if uniqueId in self._callbacks:
       parsedResponse = self._praserCallback(commandAndArgs)
-      self._callbacks[uniqueId](parsedResponse)
+      func = self._callbacks[uniqueId]
+      if commandAndArgs[0:7] == 'doLater' or commandAndArgs[0:6] == 'repeat' or commandAndArgs[0:10] == 'stopRepeat':
+        func()
+      else:
+        func(parsedResponse)
       if commandAndArgs[0:6] != 'repeat':
         del self._callbacks[uniqueId]
     else:
@@ -72,7 +81,7 @@ class ServerAPI:
 
 class Window:
   def __init__(self, spr):
-    self._windowId = generateUniqueId()
+    self._windowId = helper.generateUniqueId()
     self._spr = spr
     self.onCreate = None
     self.onLoad = None
@@ -226,12 +235,15 @@ class Sprout:
     self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
 
   def repeat(self, waitTime, callback):
-    timerId = generateUniqueId()
+    timerId = helper.generateUniqueId()
     self._server.sendAsynchronousMessage('repeat\t' + timerId + '\t' + str(waitTime), callback)
     return timerId
 
-  def stopRepeat(self, timerId, callback):
-    self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, callback)
+  def stopRepeat(self, timerId, callback=None):
+    if callback:
+      self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, callback)
+    else:
+      self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, lambda:None)
   
   def parseResponse(self, message):
     command = self.commandFromLine(message)
@@ -252,7 +264,7 @@ class Sprout:
     elif command == 'mousePosition':
       x, y = self.argArrayFromArgStr(argStr, 2)
       return (float(x), float(y))
-    elif command == 'doLater' or command == 'repeat':
+    elif command == 'doLater' or command == 'repeat' or command == 'stopRepeat':
       None
     elif command == 'makeWindow':
       None

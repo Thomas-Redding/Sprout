@@ -25,8 +25,8 @@ def server(requestStr):
   try: wind.sendMessage(str(eval(requestStr, {"__builtins__":None}, supportedMethods)))
   except: wind.sendMessage("")
 wind.onMessage = server
-wind.onLoad = lambda : spr.print('I Loaded!')
+wind.onLoad = lambda: spr.print('I Loaded!')
 wind.setIndexPath('~/Projects/Sprout/Sprout/index.html')
 
-spr.doLater(5, lambda x : spr.stopRepeat(timerId))
-timerId = spr.repeat(1, lambda x : spr.print('REPEAT'))
+spr.doLater(3, lambda: spr.stopRepeat(timerId, lambda: spr.print('DONE')))
+timerId = spr.repeat(1, lambda: spr.print('REPEAT'))

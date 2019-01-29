@@ -10,6 +10,7 @@
   NSTask *_task;
   NSPipe *_inPipe;
   NSPipe *_outPipe;
+  NSInteger _DoNotUseMe_UniqueId;
   NSMutableDictionary<NSString *, NSTimer *> *_idToTimer;
   NSMutableDictionary<NSString *, NSRunningApplication *> *windowToOriginallyFocusedApp;
 };
@@ -17,6 +18,7 @@
 # pragma mark - Public
 
 - (void)launch {
+  _DoNotUseMe_UniqueId = 0;
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
   windowToOriginallyFocusedApp = [[NSMutableDictionary alloc] init];
   _idToTimer = [[NSMutableDictionary alloc] init];
@@ -87,9 +89,8 @@
 # pragma mark - Private
 
 - (NSString *)generateUniqueId {
-  srand(time(NULL));
-  int r = rand() % 1000000;
-  return [NSString stringWithFormat:@"%d", r];
+  ++_DoNotUseMe_UniqueId;
+  return [NSString stringWithFormat:@"x%lu", _DoNotUseMe_UniqueId];
 }
 
 - (void)handleLineFromPython:(NSString *)line {
@@ -166,6 +167,7 @@
     NSString *timerId = args[0];
     NSTimer *timer = [_idToTimer objectForKey:timerId];
     [timer invalidate];
+    [self sendToPython:command withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
