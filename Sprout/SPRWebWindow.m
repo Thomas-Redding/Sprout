@@ -4,9 +4,20 @@
 
 #import "SPRSeed.h"
 
-static const int keyCodeConverter[47] = {65, 83, 68, 60, 72, 71, 90, 88, 67, 86, -1, 66, 81, 87,
-  69, 82, 89, 84, 49, 50, 51, 52, 54, 53, -1, 57, 55, -1, 56, 48, -1, 79, 85, -1, 73, 80, -1, 76,
-  74, -1, 75, -1, -1, -1, -1, 78, 77
+static const int keyCodeConverter[130] = {
+   65,  83,  68,  60,  72,  71, 90,  88, 67,  86,
+   -1,  66,  81,  87,  69,  82, 89,  84, 49,  50,
+   51,  52,  54,  53, 187,  57, 55, 189, 56,  48,
+  221,  79,  85, 219,  73,  80, -1,  76, 74, 222,
+   75, 186, 220, 188, 191,  78, 77, 190,  9,  -1,
+  192,   8,  -1,  27,  -1,  -1, -1,  -1, -1,  -1, // ` delete escape
+   -1,  -1,  -1,  -1,  -1,  -1, -1,  -1, -1,  -1,
+   -1,  -1,  -1,  -1,  -1,  -1, -1,  -1, -1,  -1,
+   -1,  -1,  -1,  -1,  -1,  -1, -1,  -1, -1,  -1,
+   -1,  -1,  -1,  -1,  -1,  -1, -1,  -1, -1,  -1,
+   -1,  -1,  -1,  -1,  -1,  -1, -1,  -1, -1,  -1,
+   -1,  -1,  -1,  -1,  -1,  -1, -1,  -1, -1,  -1,
+   -1,  -1,  -1,  37,  39,  40, 38,  -1, -1,  -1 // arrow keys
 };
 
 @interface SPRWebView : WKWebView
@@ -63,7 +74,7 @@ NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is p
 
 - (void)keyDown:(NSEvent *)event {
   // By default, WKWebView doesn't accept hotkeys, so we have to pass them in manually.
-  if (event.keyCode >= 47) { NSLog(@"UNKNOWN KEYCODE 1: %d", event.keyCode); return; }
+  if (event.keyCode >= 130) { NSLog(@"UNKNOWN KEYCODE 1: %d", event.keyCode); return; }
   int webKeyCode = keyCodeConverter[event.keyCode];
   if (webKeyCode == -1) { NSLog(@"UNKNOWN KEYCODE 2: %d", event.keyCode); return; }
   NSString *c = [event.characters substringToIndex:1];
