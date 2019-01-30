@@ -33,4 +33,16 @@ spr.print(str(spr.runningApps()))
 spr.doLater(3, lambda: spr.stopRepeat(timerId, lambda: spr.print('DONE')))
 timerId = spr.repeat(1, lambda: spr.print('REPEAT'))
 
-spr.listenForMouseButtons(lambda button, isDown: spr.print('X' + str(button) + ':' + str(isDown)))
+# Can use 20% of CPU if constantly moving mouse around.
+spr.shared['buttonCounter'] = 0
+spr.shared['dragCounter'] = 0
+spr.shared['moveCounter'] = 0
+def but(button, isDown):
+  spr.shared['buttonCounter'] += 1
+  wind.sendMessage(str(spr.shared['buttonCounter']) + ':' + str(spr.shared['dragCounter']) + ':' + str(spr.shared['moveCounter']))
+def mov(button):
+  if button == 0: spr.shared['moveCounter'] += 1
+  else: spr.shared['dragCounter'] += 1
+  wind.sendMessage(str(spr.shared['buttonCounter']) + ':' + str(spr.shared['dragCounter']) + ':' + str(spr.shared['moveCounter']))
+spr.listenForMouseButtons(but)
+spr.listenForMouseMove(mov)

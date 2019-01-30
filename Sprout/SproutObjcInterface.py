@@ -185,8 +185,10 @@ class Sprout:
     self._server = ServerAPI(lambda message : self.parseResponse(message),
                              lambda message : self.unexpectedMessageCallback(message))
     self._windows = {}
+    self.shared = {}
     self._hotkeyCallbacks = {}
     self._mouseButtonCallbacks = []
+    self._mouseMoveCallbacks = []
 
   def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
     x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
@@ -195,8 +197,10 @@ class Sprout:
     self._server.sendAsynchronousMessage('registerHotKey\t' + x, lambda x : x)
 
   def listenForMouseButtons(self, callback):
-    self.print('TTT:listenForMouseButtons')
     self._mouseButtonCallbacks.append(callback)
+  
+  def listenForMouseMove(self, callback):
+    self._mouseMoveCallbacks.append(callback)
 
   def _hotkeyStr(self, keyCode, cmd, opt, ctrl, shift):
     rtn = str(keyCode)
@@ -344,11 +348,17 @@ class Sprout:
     elif command == 'mouseButton':
       button, isDown = self.argArrayFromArgStr(argStr, 2)
       if button == 'left': button = 1
-      elif button == 'right': button = -1
-      elif button == 'other': button = 0
+      elif button == 'right': button = 2
+      elif button == 'other': button = 3
       if isDown == 'down': isDown = True
       elif isDown == 'up': isDown = False
       return (button, isDown)
+    elif command == 'mouseMove':
+      button = self.argArrayFromArgStr(argStr, 1)[0]
+      if button == 'left': return 1
+      elif button == 'right': return 2
+      elif button == 'other': return 3
+      elif button == 'none': return 0
     elif command == 'window.sendMessage':
       None
     elif command == 'window.request':
@@ -376,6 +386,12 @@ class Sprout:
       button, isDown = parsedMessage
       for callback in self._mouseButtonCallbacks:
         callback(button, isDown)
+    elif command == 'mouseMove':
+      button = parsedMessage
+      for callback in self._mouseMoveCallbacks:
+        callback(button)
+    elif command == 'mouseMove':
+      None
     else:
       self.print('Unknown UnexpectedMessageCallback: ' + message)
     # TODO: Use parsed message.
