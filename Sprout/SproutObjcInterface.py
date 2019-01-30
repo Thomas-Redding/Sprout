@@ -4,6 +4,7 @@ import string
 import sys
 
 
+
 class Helper:
   def __init__(self):
     self._uniqueId = 0
@@ -15,6 +16,8 @@ class Helper:
     index = s.find(c)
     return len(s) if index == -1 else index
 helper = Helper()
+
+
 
 class ServerAPI:
   def __init__(self, praserCallback, unexpectedMessageCallback):
@@ -74,8 +77,6 @@ class ServerAPI:
     self._queue = []
     for line in queue:
       self._respondToStandardInput(line)
-
-
 
 
 
@@ -171,12 +172,6 @@ class Window:
   def close(self):
     self._spr._server.sendAsynchronousMessage('window.close\t' + self._windowId, lambda x : x)
     self._windowId = None
-
-# ServerAPI
-#   sendSynchronousMessage(string message)
-#   sendAsynchronousMessage(string message, function callback)
-#   _respondToStandardInput(string line)
-#   respondToStandardInput(string line)
 
 
 
@@ -347,18 +342,11 @@ class Sprout:
       None
     elif command == 'mouseButton':
       button, isDown = self.argArrayFromArgStr(argStr, 2)
-      if button == 'left': button = 1
-      elif button == 'right': button = 2
-      elif button == 'other': button = 3
       if isDown == 'down': isDown = True
       elif isDown == 'up': isDown = False
-      return (button, isDown)
+      return (int(button), isDown)
     elif command == 'mouseMove':
-      button = self.argArrayFromArgStr(argStr, 1)[0]
-      if button == 'left': return 1
-      elif button == 'right': return 2
-      elif button == 'other': return 3
-      elif button == 'none': return 0
+      return int(self.argArrayFromArgStr(argStr, 1)[0])
     elif command == 'window.sendMessage':
       None
     elif command == 'window.request':
@@ -390,8 +378,6 @@ class Sprout:
       button = parsedMessage
       for callback in self._mouseMoveCallbacks:
         callback(button)
-    elif command == 'mouseMove':
-      None
     else:
       self.print('Unknown UnexpectedMessageCallback: ' + message)
     # TODO: Use parsed message.
@@ -419,10 +405,10 @@ class Sprout:
 spr = Sprout()
 
 
+
 PATH_TO_RC = '/Users/thomasredding/Library/Developer/Xcode/DerivedData/Sprout-hjjqxrkrofbtmobzhtbjvdwdspju/Build/Products/Debug/Sprout.app/Contents/Resources/main-sprout.py'
 with open(PATH_TO_RC) as rcFile:
   exec(rcFile.read(), { 'spr': spr })
-
 
 for line in sys.stdin:
   spr.respondToStandardInput(line)

@@ -69,22 +69,22 @@
 - (void)mouseButtonPressed:(NSEventType)eventType {
   switch (eventType) {
     case NSEventTypeLeftMouseDown:
-      [self sendToPython:@"mouseButton\tleft\tdown" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseButton\t1\tdown" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeLeftMouseUp:
-      [self sendToPython:@"mouseButton\tleft\tup" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseButton\t1\tup" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeRightMouseDown:
-      [self sendToPython:@"mouseButton\tright\tdown" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseButton\t2\tdown" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeRightMouseUp:
-      [self sendToPython:@"mouseButton\tright\tup" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseButton\t2\tup" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeOtherMouseDown:
-      [self sendToPython:@"mouseButton\tother\tdown" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseButton\t3\tdown" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeOtherMouseUp:
-      [self sendToPython:@"mouseButton\tother\tup" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseButton\t3\tup" withUniqueId:[self generateUniqueId]];
       break;
     default:
       [self assert:NO message:@"Unknown eventType in mouseButtonPressed:"];
@@ -95,16 +95,16 @@
   // Note: left mouse button takes precedence over right.
   switch (eventType) {
     case NSEventTypeMouseMoved:
-      [self sendToPython:@"mouseMove\tnone" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseMove\t0" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeLeftMouseDragged:
-      [self sendToPython:@"mouseMove\tleft" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseMove\t1" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeRightMouseDragged:
-      [self sendToPython:@"mouseMove\tright" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseMove\t2" withUniqueId:[self generateUniqueId]];
       break;
     case NSEventTypeOtherMouseDragged:
-      [self sendToPython:@"mouseMove\tother" withUniqueId:[self generateUniqueId]];
+      [self sendToPython:@"mouseMove\t3" withUniqueId:[self generateUniqueId]];
       break;
     default:
       [self assert:NO message:@"Unknown eventType in mouseMove:"];
