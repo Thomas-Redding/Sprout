@@ -63,11 +63,41 @@ static id<SPRSeedDelegate> _delegate;
 
 + (void)initialize {
   if (self == [SPRSeed self]) {
+    // Hotkey Events
+    _hotKeyToTarget = [[NSMutableDictionary alloc] init];
     EventTypeSpec eventType;
     eventType.eventClass=kEventClassKeyboard;
     eventType.eventKind=kEventHotKeyPressed;
     InstallApplicationEventHandler(&callback, 1, &eventType, (__bridge void *)self, NULL);
-    _hotKeyToTarget = [[NSMutableDictionary alloc] init];
+    
+    // Mouse Events
+    NSEventMask buttonMask = NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
+        NSEventMaskOtherMouseDown | NSEventMaskOtherMouseUp | NSEventMaskRightMouseDown |
+        NSEventMaskRightMouseUp;
+    [NSEvent addLocalMonitorForEventsMatchingMask:buttonMask handler:^NSEvent *(NSEvent *event) {
+      if ([self.delegate respondsToSelector:@selector(mouseButtonPressed:)]) {
+        [self.delegate mouseButtonPressed:event.type];
+      }
+      return event;
+    }];
+    [NSEvent addGlobalMonitorForEventsMatchingMask:buttonMask handler:^(NSEvent *event) {
+      if ([self.delegate respondsToSelector:@selector(mouseButtonPressed:)]) {
+        [self.delegate mouseButtonPressed:event.type];
+      }
+    }];
+    NSEventMask moveMask = NSEventMaskMouseMoved | NSEventMaskLeftMouseDragged | NSEventMaskRightMouseDragged | NSEventMaskOtherMouseDragged;
+    [NSEvent addLocalMonitorForEventsMatchingMask:moveMask handler:^NSEvent *(NSEvent *event) {
+      if ([self.delegate respondsToSelector:@selector(mouseMove:)]) {
+        [self.delegate mouseMove:event.type];
+      }
+      return event;
+    }];
+    [NSEvent addGlobalMonitorForEventsMatchingMask:moveMask handler:^(NSEvent *event) {
+      if ([self.delegate respondsToSelector:@selector(mouseMove:)]) {
+        [self.delegate mouseMove:event.type];
+      }
+    }];
+    
     _windowNumberToFrame = [[NSMutableDictionary alloc] init];
     _windowTrackingTimer = [NSTimer scheduledTimerWithTimeInterval:_windowTrackInterval target:[self class] selector:@selector(tickTock) userInfo:nil repeats:YES];
     _windows = [[NSMutableDictionary alloc] init];

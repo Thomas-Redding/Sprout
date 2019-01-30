@@ -16,8 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowAdded:(SPRWindowInfo *)windowInfo;
 - (void)windowMoved:(SPRWindowInfo *)windowInfo;
 - (void)windowRemoved;
-+ (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
-+ (void)windowDidLoad:(NSString *)windowId;
+- (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
+- (void)windowDidLoad:(NSString *)windowId;
+- (void)mouseButtonPressed:(NSEventType)eventType;
+- (void)mouseMove:(NSEventType)eventType;
 @end
 
 @interface SPRContact : NSObject
@@ -64,6 +66,11 @@ typedef NS_OPTIONS(NSUInteger, SPRMouseEvent) {
   SPRMouseEventOtherMouseDown,
   SPRMouseEventOtherMouseUp,
   SPRMouseEventOtherMouseDragged,
+};
+
+struct SPRMouseButtonEvent {
+  short button;
+  bool isDown;
 };
 
 typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {

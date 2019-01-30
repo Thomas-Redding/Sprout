@@ -32,3 +32,5 @@ spr.print(str(spr.runningApps()))
 
 spr.doLater(3, lambda: spr.stopRepeat(timerId, lambda: spr.print('DONE')))
 timerId = spr.repeat(1, lambda: spr.print('REPEAT'))
+
+spr.listenForMouseButtons(lambda button, isDown: spr.print('X' + str(button) + ':' + str(isDown)))

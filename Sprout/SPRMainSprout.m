@@ -66,6 +66,41 @@
   [self sendToPython:[NSString stringWithFormat:@"window.request\t%@\t%@", windowId, message] withUniqueId:[self generateUniqueId]];
 }
 
+- (void)mouseButtonPressed:(NSEventType)eventType {
+/* NSEventMaskLeftMouseDown, NSEventMaskLeftMouseUp,
+  NSEventMaskRightMouseDown, NSEventMaskRightMouseUp,
+  NSEventMaskOtherMouseDown, NSEventMaskOtherMouseUp */
+  switch (eventType) {
+    case NSEventTypeLeftMouseDown:
+      [self sendToPython:@"mouseButton\tleft\tdown" withUniqueId:[self generateUniqueId]];
+      break;
+    case NSEventTypeLeftMouseUp:
+      [self sendToPython:@"mouseButton\tleft\tup" withUniqueId:[self generateUniqueId]];
+      break;
+    case NSEventTypeRightMouseDown:
+      [self sendToPython:@"mouseButton\tright\tdown" withUniqueId:[self generateUniqueId]];
+      break;
+    case NSEventTypeRightMouseUp:
+      [self sendToPython:@"mouseButton\tright\tup" withUniqueId:[self generateUniqueId]];
+      break;
+    case NSEventTypeOtherMouseDown:
+      [self sendToPython:@"mouseButton\tother\tdown" withUniqueId:[self generateUniqueId]];
+      break;
+    case NSEventTypeOtherMouseUp:
+      [self sendToPython:@"mouseButton\tother\tup" withUniqueId:[self generateUniqueId]];
+      break;
+    default:
+      [self assert:NO message:@"Unknown eventType in mouseButtonPressed."];
+  }
+}
+
+- (void)mouseMove:(NSEventType)eventType {
+  /* NSEventMaskMouseMoved, NSEventMaskLeftMouseDragged, NSEventMaskRightMouseDragged,
+   NSEventMaskOtherMouseDragged *//*
+  if (eventType == NSEventTypeMouseMoved) NSLog(@"TFR:mouseMove");
+  else NSLog(@"TFR:mouseDrag");*/
+}
+
 # pragma mark - I/O
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {

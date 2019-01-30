@@ -186,12 +186,17 @@ class Sprout:
                              lambda message : self.unexpectedMessageCallback(message))
     self._windows = {}
     self._hotkeyCallbacks = {}
+    self._mouseButtonCallbacks = []
 
   def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
     x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
     if x not in self._hotkeyCallbacks: self._hotkeyCallbacks[x] = []
     self._hotkeyCallbacks[x].append(callback)
     self._server.sendAsynchronousMessage('registerHotKey\t' + x, lambda x : x)
+
+  def listenForMouseButtons(self, callback):
+    self.print('TTT:listenForMouseButtons')
+    self._mouseButtonCallbacks.append(callback)
 
   def _hotkeyStr(self, keyCode, cmd, opt, ctrl, shift):
     rtn = str(keyCode)
@@ -200,6 +205,14 @@ class Sprout:
     rtn += '1' if opt else '0'
     rtn += '1' if ctrl else '0'
     rtn += '1' if shift else '0'
+    return rtn
+
+  def _mouseButtonStr(self, button, isDown):
+    rtn = ''
+    if button == 1: rtn += 'L'
+    elif button == -1: rtn += 'R'
+    elif button == 0: rtn += 'O'
+    rtn += '1' if isDown else '0'
     return rtn
 
   def makeWindow(self):
@@ -328,13 +341,14 @@ class Sprout:
       None
     elif command == 'window.makeKeyAndFront':
       None
-    elif command == 'hotKeyPressed':
-      hotKeyCode = self.argArrayFromArgStr(argStr, 1)[0]
-      if hotKeyCode in self._hotkeyCallbacks:
-        keyCode, flags = self.argArrayFromArgStr(argStr, 2)
-        callbacks = self._hotkeyCallbacks[hotKeyCode]
-        for callback in callbacks:
-          callback(int(keyCode), int(flags[0]), int(flags[1]), int(flags[2]), int(flags[3]))
+    elif command == 'mouseButton':
+      button, isDown = self.argArrayFromArgStr(argStr, 2)
+      if button == 'left': button = 1
+      elif button == 'right': button = -1
+      elif button == 'other': button = 0
+      if isDown == 'down': isDown = True
+      elif isDown == 'up': isDown = False
+      return (button, isDown)
     elif command == 'window.sendMessage':
       None
     elif command == 'window.request':
@@ -358,6 +372,10 @@ class Sprout:
       callbacks = self._hotkeyCallbacks[hotKeyCode]
       for callback in callbacks:
         callback(int(keyCode), cmd, opt, ctrl, shift)
+    elif command == 'mouseButton':
+      button, isDown = parsedMessage
+      for callback in self._mouseButtonCallbacks:
+        callback(button, isDown)
     else:
       self.print('Unknown UnexpectedMessageCallback: ' + message)
     # TODO: Use parsed message.
