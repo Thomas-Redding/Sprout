@@ -5,6 +5,7 @@
 
 #import "SPRWebWindow.h"
 
+static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 @implementation SPRMainSprout {
   NSTask *_task;
@@ -13,12 +14,14 @@
   NSInteger _DoNotUseMe_UniqueId;
   NSMutableDictionary<NSString *, NSTimer *> *_idToTimer;
   NSMutableDictionary<NSString *, NSRunningApplication *> *windowToOriginallyFocusedApp;
+  NSMutableSet<NSString *> *_mouseMoveEventQueue;
 };
 
 # pragma mark - Public
 
 - (void)launch {
   _DoNotUseMe_UniqueId = 0;
+  _mouseMoveEventQueue = [[NSMutableSet alloc] init];
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
   windowToOriginallyFocusedApp = [[NSMutableDictionary alloc] init];
   _idToTimer = [[NSMutableDictionary alloc] init];
@@ -39,6 +42,15 @@
          selector:@selector(pythonSentMessage)
              name:NSFileHandleDataAvailableNotification
            object:_outPipe.fileHandleForReading];
+  [NSTimer scheduledTimerWithTimeInterval:kMinTimeBetweenMouseEvents
+                                  repeats:YES
+                                    block:^(NSTimer *timer) {
+    NSSet<NSString *> *events = [self->_mouseMoveEventQueue copy];
+    [self->_mouseMoveEventQueue removeAllObjects];
+    for (NSString *eventString in events) {
+      [self sendToPython:eventString withUniqueId:[self generateUniqueId]];
+    }
+  }];
   [_outPipe.fileHandleForReading waitForDataInBackgroundAndNotify];
   [_task launch];
 }
@@ -95,16 +107,16 @@
   // Note: left mouse button takes precedence over right.
   switch (eventType) {
     case NSEventTypeMouseMoved:
-      [self sendToPython:@"mouseMove\t0" withUniqueId:[self generateUniqueId]];
+      [_mouseMoveEventQueue addObject:@"mouseMove\t0"];
       break;
     case NSEventTypeLeftMouseDragged:
-      [self sendToPython:@"mouseMove\t1" withUniqueId:[self generateUniqueId]];
+      [_mouseMoveEventQueue addObject:@"mouseMove\t1"];
       break;
     case NSEventTypeRightMouseDragged:
-      [self sendToPython:@"mouseMove\t2" withUniqueId:[self generateUniqueId]];
+      [_mouseMoveEventQueue addObject:@"mouseMove\t2"];
       break;
     case NSEventTypeOtherMouseDragged:
-      [self sendToPython:@"mouseMove\t3" withUniqueId:[self generateUniqueId]];
+      [_mouseMoveEventQueue addObject:@"mouseMove\t3"];
       break;
     default:
       [self assert:NO message:@"Unknown eventType in mouseMove:"];
@@ -480,6 +492,10 @@
   NSAppleScript *appleScript = [[NSAppleScript alloc] initWithSource:script];
   NSDictionary *errDict = nil;
   [appleScript executeAndReturnError:&errDict];
+}
+
+- (CGFloat)time {
+  return [[NSDate date] timeIntervalSince1970];
 }
 
 @end
