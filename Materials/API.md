@@ -37,6 +37,7 @@ class Sprout:
   makeWindow(): Window
   activeApps(): [(str, str)] # (bundle identifiers, app name)
   mousePosition(): [float] # From the lower left corner: [x, y]
+  runAppleScriptAtPath(str script)
   
   # Async methods
   print(str s) # Print to Sprout's console.
@@ -67,7 +68,6 @@ class MenuBarItem:
 
 class Sprout:
   makeMenubar(): MenuBarItem # (async)
-  runAppleScriptAtPath(str pathToScript)
   listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # (async)
   listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # (async)
   listenForWindowDrag(function callback) # (async)
