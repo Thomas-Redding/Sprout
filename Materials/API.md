@@ -43,7 +43,7 @@ class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   listenForMouseButtons(function callbac)
   listenForMouseMove(function callbac)
-  def quitSprout()
+  quitSprout()
   quitApp(str appName)
   forceQuitApp(str appName)
   sleepScreen():
