@@ -33,7 +33,6 @@ class Window:
   bool movable
 
 class Sprout:
-  listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   makeWindow(): Window
   activeApps(): [(str, str)] # (bundle identifiers, app name)
   mousePosition(): [float] # From the lower left corner: [x, y]
@@ -41,7 +40,10 @@ class Sprout:
   
   # Async methods
   print(str s) # Print to Sprout's console.
-  def quitSprout()
+  listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
+  listenForMouseButtons(function callbac)
+  listenForMouseMove(function callbac)
+  quitSprout()
   quitApp(str appName)
   forceQuitApp(str appName)
   sleepScreen():
@@ -67,9 +69,7 @@ class MenuBarItem:
   ...
 
 class Sprout:
-  makeMenubar(): MenuBarItem # (async)
-  listenForMouseButtonEvent(float x, float y, MoustButtonEventType type, function callback) # (async)
-  listenForMouseMoveEvent(float x, float y, bool isLeftButtonDown, bool isRightButtonDown, bool isOtherButtonDown) # (async)
+  makeMenubar(): MenuBarItem
   listenForWindowDrag(function callback) # (async)
 ```
 
