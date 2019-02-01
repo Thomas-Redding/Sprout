@@ -37,8 +37,8 @@ static const int keyCodeConverter[130] = {
   self = [super init];
   if (self) {
     _windowId = windowId;
-    [self setOpaque:NO];
-    // self.titlebarAppearsTransparent = YES;
+    self.opaque = NO;
+    self.backgroundColor = NSColor.clearColor;
     self.delegate = self;
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
@@ -47,6 +47,7 @@ static const int keyCodeConverter[130] = {
     _webView = [[SPRWebView alloc] initWithFrame:NSZeroRect configuration:config];
     [controller addScriptMessageHandler:self name:@"sprout_kyaQmKP75mE6RolA"];
     _webView.navigationDelegate = self;
+    [_webView setValue:@YES forKey:@"drawsTransparentBackground"];
     self.contentView = self->_webView;
   }
   return self;

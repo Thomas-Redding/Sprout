@@ -1,0 +1,81 @@
+<script>
+
+onload = () => {
+  document.getElementById('lorem').value = '';
+  document.getElementById('lorem').onkeyup = (event) => {
+    spr.send('query\t' + document.getElementById('lorem').value);
+  };
+  spr.receive = (message) => {
+    queryResults = JSON.parse(message)
+    var html = '';
+    for (var result of queryResults) {
+      html += '<tr><td>' + result[2] + '</td></tr>';
+    }
+    document.getElementById('resultsTable').innerHTML = html;
+  };
+  spr.hotkeyCallbacks = [(c, keyCode, cmd, opt, ctrl, shift) => {
+    var s = '';
+    if (cmd) s += 'cmd+';
+    if (opt) s += 'opt+';
+    if (ctrl) s += 'ctrl+';
+    if (shift) s += 'shift+';
+    s += c;
+  }];
+  disableSmartPunctuationForTextInput(document.getElementById('lorem'));
+}
+
+function disableSmartPunctuationForTextInput(element) {
+  // https://stackoverflow.com/a/49139933
+  var conversionMap = {};
+  conversionMap[ 0x2018 ] = '\'';
+  conversionMap[ 0x201B ] = '\'';
+  conversionMap[ 0x201C ] = '"';
+  conversionMap[ 0x201F ] = '"';
+  conversionMap[ 0x2019 ] = '\'';
+  conversionMap[ 0x201D ] = '\"';
+  conversionMap[ 0x2032 ] = '\'';
+  conversionMap[ 0x2033 ] = '"';
+  conversionMap[ 0x2035 ] = '\'';
+  conversionMap[ 0x2036 ] = '"';
+  conversionMap[ 0x2014 ] = '-';
+  conversionMap[ 0x2013 ] = '-';
+  element.addEventListener('keypress', (event) => {
+    if( event.key.length != 1 ) return;
+    var code = event.key.codePointAt(0);
+    var replacement = conversionMap[code];
+    if (replacement) {
+      event.preventDefault();
+      element.value = element.value.substr(0, lorem.selectionStart) + replacement + element.value.substr(lorem.selectionEnd);
+      document.execCommand( 'insertText', 0, replacement );
+    }
+  });
+}
+
+</script>
+<style>
+body {
+  margin: 0;
+  background-color: none;
+}
+#lorem {
+  display: block;
+  width: 100vw;
+  font-size: 32px;
+  color: white;
+  border: none;
+  border-bottom: 1px solid #888;
+  background-color: #444;
+  font-family: sans-serif;
+}
+#resultsTable {
+  color: white;
+  width: 100vw;
+  border-collapse: collapse;
+  font-size: 24px;
+  background-color: #444;
+  font-family: sans-serif;
+}
+</style>
+<input id="lorem" type="text">
+<table id="resultsTable"><tbody>
+</tbody></table>

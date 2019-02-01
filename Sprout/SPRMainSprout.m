@@ -161,8 +161,10 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
+  NSLog(@"handleLineFromPython:%@:%@", command, commandType);
   if ([commandType isEqualToString:@"print"]) {
-    NSLog(@"Python Print: '%@'", [command substringFromIndex:commandType.length + 1]);
+    NSString *q = [command substringFromIndex:commandType.length + 1];
+    NSLog(@"Python Print: '%@'", [self stringByUnescaping:q]);
   } else if ([commandType isEqualToString:@"quitSprout"]) {
     [self terminate];
   } else if ([commandType isEqualToString:@"registerHotKey"]) {
@@ -442,6 +444,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
     NSString *windowId = args[0];
     NSString *message = args[1];
+    message = [self stringByUnescaping:message];
     [SPRSeed sendMessage:message toWindow:windowId];
     NSString *response = [NSString stringWithFormat:@"window.sendMessage\t%@\t%@", windowId, message];
     [self sendToPython:response withUniqueId:uniqueId];
@@ -514,6 +517,31 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 - (CGFloat)time {
   return [[NSDate date] timeIntervalSince1970];
+}
+
+- (NSString *)stringByEscaping:(NSString *)s {
+  NSString *rtn = [s stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+  rtn = [rtn stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+  rtn = [rtn stringByReplacingOccurrencesOfString:@"\t" withString:@"\\t"];
+  return rtn;
+}
+
+- (NSString *)stringByUnescaping:(NSString *)s {
+  BOOL consume = YES;
+  NSMutableString *rtn = [[NSMutableString alloc] init];
+  for (NSUInteger i = 0; i < s.length; ++i) {
+    unichar c = [s characterAtIndex:i];
+    if (consume) {
+      if (c == '\\') consume = NO;
+      else [rtn appendFormat:@"%C", c];
+    } else {
+      if (c == '\\') [rtn appendString:@"\\"];
+      else if (c == 't') [rtn appendString:@"\t"];
+      else if (c == 'n') [rtn appendString:@"\n"];
+      consume = YES;
+    }
+  }
+  return rtn;
 }
 
 @end
