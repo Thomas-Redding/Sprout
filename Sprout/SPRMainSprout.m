@@ -65,7 +65,12 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   // TODO: Use this event.
 }
 - (void)windowMoved:(SPRWindowInfo *)windowInfo {
-  // TODO: Use this event.
+  NSRunningApplication *app =
+      [NSRunningApplication runningApplicationWithProcessIdentifier:windowInfo.processID.intValue];
+  if (!app) return;
+  NSString *message = [NSString stringWithFormat:@"windowMoved\t%@\t%@\t%@\t%@", windowInfo.number,
+                       windowInfo.name, app.bundleIdentifier, app.localizedName];
+  [self sendToPython:message withUniqueId:[self generateUniqueId]];
 }
 - (void)windowRemoved {
   // TODO: Use this event.
@@ -227,20 +232,24 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
       }
     }
   } else if ([commandType isEqualToString:@"power.sleepScreen"]) {
-    [self runAppleScript:@"tell application \"Finder\" to sleep"];
+    [self _runAppleScript:@"tell application \"Finder\" to sleep"];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"power.shutDown"]) {
-    [self runAppleScript:@"tell application \"Finder\" to shut down"];
+    [self _runAppleScript:@"tell application \"Finder\" to shut down"];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"power.restart"]) {
-    [self runAppleScript:@"tell application \"Finder\" to restart"];
+    [self _runAppleScript:@"tell application \"Finder\" to restart"];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"power.logOut"]) {
-    [self runAppleScript:@"tell application \"Finder\" to log out"];
+    [self _runAppleScript:@"tell application \"Finder\" to log out"];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"mousePosition"]) {
     NSPoint pos = [NSEvent mouseLocation];
     [self sendToPython:[NSString stringWithFormat:@"mousePosition\t%f\t%f", pos.x, pos.y] withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"screenSize"]) {
+    CGFloat width = NSScreen.mainScreen.frame.size.width;
+    CGFloat height = NSScreen.mainScreen.frame.size.height;
+    [self sendToPython:[NSString stringWithFormat:@"screenSize\t%f\t%f", width, height] withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"doLater"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
     float waitTime = [args[0] floatValue];
@@ -259,6 +268,15 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     NSString *timerId = args[0];
     NSTimer *timer = [_idToTimer objectForKey:timerId];
     [timer invalidate];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"moveWindow"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:5];
+    NSString *windowNumber = args[0];
+    CGFloat x = [args[1] floatValue];
+    CGFloat y = [args[2] floatValue];
+    CGFloat w = [args[3] floatValue];
+    CGFloat h = [args[4] floatValue];
+    [SPRSeed setFrame:CGRectMake(x, y, w, h) ofWindowWithNumber:windowNumber];
     [self sendToPython:command withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
@@ -487,7 +505,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   [self sendToPython:@"doLater" withUniqueId:uniqueId];
 }
 
-- (void)runAppleScript:(NSString *)script {
+- (void)_runAppleScript:(NSString *)script {
   // https://stackoverflow.com/a/4505664
   NSAppleScript *appleScript = [[NSAppleScript alloc] initWithSource:script];
   NSDictionary *errDict = nil;

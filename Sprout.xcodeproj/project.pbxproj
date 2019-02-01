@@ -11,11 +11,9 @@
 		2832035621DF4A2C0078D811 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2832035521DF4A2C0078D811 /* Assets.xcassets */; };
 		2832035921DF4A2C0078D811 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2832035721DF4A2C0078D811 /* MainMenu.xib */; };
 		2832035C21DF4A2C0078D811 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832035B21DF4A2C0078D811 /* main.m */; };
-		2832036421DF4B250078D811 /* main-sprout.py in Resources */ = {isa = PBXBuildFile; fileRef = 2832036321DF4B250078D811 /* main-sprout.py */; };
 		2832036721DF4B4E0078D811 /* SPRSeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832036621DF4B4E0078D811 /* SPRSeed.m */; };
 		28459FAC21E05F1800ABAFCC /* SproutObjcInterface.py in Resources */ = {isa = PBXBuildFile; fileRef = 28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */; };
 		28A33AC721F68AFF0057B59D /* SPRWebWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 28A33AC621F68AFF0057B59D /* SPRWebWindow.m */; };
-		28A33AC921F68C090057B59D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 28A33AC821F68C090057B59D /* index.html */; };
 		28B3F50921DFC992006879E1 /* SPRMainSprout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28B3F50821DFC992006879E1 /* SPRMainSprout.m */; };
 /* End PBXBuildFile section */
 
@@ -28,13 +26,11 @@
 		2832035A21DF4A2C0078D811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2832035B21DF4A2C0078D811 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2832035D21DF4A2C0078D811 /* Sprout.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sprout.entitlements; sourceTree = "<group>"; };
-		2832036321DF4B250078D811 /* main-sprout.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "main-sprout.py"; sourceTree = "<group>"; };
 		2832036521DF4B4E0078D811 /* SPRSeed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRSeed.h; sourceTree = "<group>"; };
 		2832036621DF4B4E0078D811 /* SPRSeed.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRSeed.m; sourceTree = "<group>"; };
 		28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = SproutObjcInterface.py; sourceTree = "<group>"; };
 		28A33AC521F68AFF0057B59D /* SPRWebWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRWebWindow.h; sourceTree = "<group>"; };
 		28A33AC621F68AFF0057B59D /* SPRWebWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRWebWindow.m; sourceTree = "<group>"; };
-		28A33AC821F68C090057B59D /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		28B3F50721DFC992006879E1 /* SPRMainSprout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRMainSprout.h; sourceTree = "<group>"; };
 		28B3F50821DFC992006879E1 /* SPRMainSprout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRMainSprout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,9 +73,7 @@
 				2832036621DF4B4E0078D811 /* SPRSeed.m */,
 				28A33AC521F68AFF0057B59D /* SPRWebWindow.h */,
 				28A33AC621F68AFF0057B59D /* SPRWebWindow.m */,
-				2832036321DF4B250078D811 /* main-sprout.py */,
 				28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */,
-				28A33AC821F68C090057B59D /* index.html */,
 				2832035521DF4A2C0078D811 /* Assets.xcassets */,
 				2832035721DF4A2C0078D811 /* MainMenu.xib */,
 				2832035A21DF4A2C0078D811 /* Info.plist */,
@@ -151,10 +145,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28A33AC921F68C090057B59D /* index.html in Resources */,
 				2832035621DF4A2C0078D811 /* Assets.xcassets in Resources */,
 				28459FAC21E05F1800ABAFCC /* SproutObjcInterface.py in Resources */,
-				2832036421DF4B250078D811 /* main-sprout.py in Resources */,
 				2832035921DF4A2C0078D811 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -84,9 +84,9 @@ class Window:
   def __init__(self, spr):
     self._windowId = helper.generateUniqueId()
     self._spr = spr
-    self.onCreate = None
-    self.onLoad = None
-    self.onMessage = None
+    self.onCreate = lambda:None
+    self.onLoad = lambda:None
+    self.onMessage = lambda:None
     self._indexPath = None
   def windowId(self):
     return self._windowId
@@ -184,6 +184,7 @@ class Sprout:
     self._hotkeyCallbacks = {}
     self._mouseButtonCallbacks = []
     self._mouseMoveCallbacks = []
+    self._windowMovedCallbacks = []
 
   def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
     x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
@@ -196,6 +197,9 @@ class Sprout:
   
   def listenForMouseMove(self, callback):
     self._mouseMoveCallbacks.append(callback)
+  
+  def listenForWindowMove(self, callback):
+    self._windowMovedCallbacks.append(callback)
 
   def _hotkeyStr(self, keyCode, cmd, opt, ctrl, shift):
     rtn = str(keyCode)
@@ -206,12 +210,12 @@ class Sprout:
     rtn += '1' if shift else '0'
     return rtn
 
-  def _mouseButtonStr(self, button, isDown):
+  def _mouseButtonStr(self, button, goingDown):
     rtn = ''
     if button == 1: rtn += 'L'
     elif button == -1: rtn += 'R'
     elif button == 0: rtn += 'O'
-    rtn += '1' if isDown else '0'
+    rtn += '1' if goingDown else '0'
     return rtn
 
   def makeWindow(self):
@@ -260,7 +264,19 @@ class Sprout:
     self._server.sendAsynchronousMessage(message, callback)
   
   def mousePosition(self):
-    self._server.sendSynchronousMessage('mousePosition')
+    return self._server.sendSynchronousMessage('mousePosition')
+  
+  def screenSize(self):
+    return self._server.sendSynchronousMessage('screenSize')
+  
+  def moveWindow(self, windowNumber, x, y, width, height):
+    message = 'moveWindow'
+    message += '\t' + windowNumber
+    message += '\t' + str(x)
+    message += '\t' + str(y)
+    message += '\t' + str(width)
+    message += '\t' + str(height)
+    return self._server.sendSynchronousMessage(message)
   
   def doLater(self, waitTime, callback):
     self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
@@ -301,8 +317,16 @@ class Sprout:
     elif command == 'mousePosition':
       x, y = self.argArrayFromArgStr(argStr, 2)
       return (float(x), float(y))
+    elif command == 'screenSize':
+      width, height = self.argArrayFromArgStr(argStr, 2)
+      return (float(width), float(height))
     elif command == 'doLater' or command == 'repeat' or command == 'stopRepeat':
       None
+    elif command == 'windowMoved':
+      windowNumber, windowName, bundleIdentifier, appName = self.argArrayFromArgStr(argStr, 4)
+      return (windowNumber, windowName, bundleIdentifier, appName)
+    elif command == 'moveWindow':
+      return None
     elif command == 'makeWindow':
       None
     elif command == 'window.setFrame' or command == 'window.getFrame':
@@ -341,10 +365,10 @@ class Sprout:
     elif command == 'window.makeKeyAndFront':
       None
     elif command == 'mouseButton':
-      button, isDown = self.argArrayFromArgStr(argStr, 2)
-      if isDown == 'down': isDown = True
-      elif isDown == 'up': isDown = False
-      return (int(button), isDown)
+      button, goingDown = self.argArrayFromArgStr(argStr, 2)
+      if goingDown == 'down': goingDown = True
+      elif goingDown == 'up': goingDown = False
+      return (int(button), goingDown)
     elif command == 'mouseMove':
       return int(self.argArrayFromArgStr(argStr, 1)[0])
     elif command == 'window.sendMessage':
@@ -371,13 +395,17 @@ class Sprout:
       for callback in callbacks:
         callback(int(keyCode), cmd, opt, ctrl, shift)
     elif command == 'mouseButton':
-      button, isDown = parsedMessage
+      button, goingDown = parsedMessage
       for callback in self._mouseButtonCallbacks:
-        callback(button, isDown)
+        callback(button, goingDown)
     elif command == 'mouseMove':
       button = parsedMessage
       for callback in self._mouseMoveCallbacks:
         callback(button)
+    elif command == 'windowMoved':
+      windowNumber, windowName, bundleIdentifier, appName = parsedMessage
+      for callback in self._windowMovedCallbacks:
+        callback(windowNumber, windowName, bundleIdentifier, appName)
     else:
       self.print('Unknown UnexpectedMessageCallback: ' + message)
     # TODO: Use parsed message.
@@ -406,7 +434,7 @@ spr = Sprout()
 
 
 
-PATH_TO_RC = '/Users/thomasredding/Library/Developer/Xcode/DerivedData/Sprout-hjjqxrkrofbtmobzhtbjvdwdspju/Build/Products/Debug/Sprout.app/Contents/Resources/main-sprout.py'
+PATH_TO_RC = '/Users/thomasredding/Projects/Sprout/Plugins/rc.py'
 with open(PATH_TO_RC) as rcFile:
   exec(rcFile.read(), { 'spr': spr })
 

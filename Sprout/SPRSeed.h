@@ -83,6 +83,8 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 
 @interface SPRSeed : NSObject
 
++ (void)setFrame:(CGRect)rect ofWindowWithNumber:(NSNumber *)windowNumber;
+
 /**
  @brief Calls a selector when the user presses a hotkey.
  @discussion Each hotkey can only be registered once.

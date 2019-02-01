@@ -63,12 +63,14 @@ static id<SPRSeedDelegate> _delegate;
 
 + (void)initialize {
   if (self == [SPRSeed self]) {
+    [self requestA11y];
     // Hotkey Events
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
     EventTypeSpec eventType;
     eventType.eventClass=kEventClassKeyboard;
     eventType.eventKind=kEventHotKeyPressed;
     InstallApplicationEventHandler(&callback, 1, &eventType, (__bridge void *)self, NULL);
+    
     
     // Mouse Events
     NSEventMask buttonMask = NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
@@ -106,6 +108,53 @@ static id<SPRSeedDelegate> _delegate;
 }
 
 #pragma mark - Public
+
+// https://stackoverflow.com/a/6365105
+// https://stackoverflow.com/a/4744315
+// https://stackoverflow.com/a/17011107
+// https://stackoverflow.com/q/6178860
++ (void)setFrame:(CGRect)rect ofWindowWithNumber:(NSNumber *)windowNumber {
+  // There's no (known) way to identify a window's a11y refernece from it's windowNumber, so we
+  // assume windows are uniquely identified by process and frame.
+  CGWindowID windowId = windowNumber.intValue;
+  CFArrayRef windowIdArray = CFArrayCreate(NULL, (const void **)(&windowId), 1, NULL);
+  CFArrayRef windowArray = CGWindowListCreateDescriptionFromArray(windowIdArray);
+  if (CFArrayGetCount(windowArray) != 1) return;
+  NSDictionary *windowInfo = CFArrayGetValueAtIndex(windowArray, 0);
+  NSDictionary *bounds = [windowInfo objectForKey:@"kCGWindowBounds"];
+  CGRect currentFrame = CGRectMake([bounds[@"X"] floatValue], [bounds[@"Y"] floatValue], [bounds[@"Width"] floatValue], [bounds[@"Height"] floatValue]);
+  int processId = [[windowInfo objectForKey:@"kCGWindowOwnerPID"] intValue];
+  
+  // Accessibility
+  AXUIElementRef appRef = AXUIElementCreateApplication(processId);
+  CFArrayRef appWindows;
+  AXUIElementCopyAttributeValues(appRef, kAXWindowsAttribute, 0, 1024, &appWindows);
+  if (!appWindows) return;
+  CFIndex count = CFArrayGetCount(appWindows);
+  for (CFIndex i = 0; i < count; ++i) {
+    AXUIElementRef windowRef = (AXUIElementRef)CFArrayGetValueAtIndex(appWindows, 0);
+    
+    CGPoint windowOrigin = CGPointZero;
+    AXValueRef originVal;
+    AXUIElementCopyAttributeValue(windowRef, kAXPositionAttribute, (CFTypeRef*)&originVal);
+    AXValueGetValue(originVal, kAXValueCGPointType, &windowOrigin);
+    
+    CGSize windowSize = CGSizeZero;
+    AXValueRef sizeValue;
+    AXUIElementCopyAttributeValue(windowRef, kAXSizeAttribute, (CFTypeRef*)&sizeValue);
+    AXValueGetValue(sizeValue, kAXValueCGSizeType, &windowSize);
+    
+    if (!CGSizeEqualToSize(currentFrame.size, windowSize)) continue;
+    if (fabs(currentFrame.origin.x - windowOrigin.x) + fabs(currentFrame.origin.y - windowOrigin.y) > 10) continue;
+    
+    // Since this window has the same process ID, size, and (roughly) position, its probably the one we want.
+    AXValueRef positionRef = AXValueCreate(kAXValueCGPointType, &rect.origin);
+    AXValueRef sizeRef = AXValueCreate(kAXValueCGSizeType, &rect.size);
+    AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, positionRef);
+    AXUIElementSetAttributeValue(windowRef, kAXSizeAttribute, sizeRef);
+    break;
+  }
+}
 
 + (BOOL)registerHotKeyFromKeyCode:(UInt32)keyCode
                           keyFlag:(SPRKeyFlag)keyFlag
@@ -314,11 +363,10 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
       [processesWithMovedWindows addObject:movedWindows[w][@"kCGWindowOwnerPID"]];
     }
     // If zero processes have moving windows, nothing is happening.
-    // If more than one process has moving windows, we're probably changing worksapces.
+    // If more than one process has moving windows, we're probably changing workspaces.
     if (processesWithMovedWindows.count == 1) {
       NSDictionary *windowDict = movedWindows[movedWindows.allKeys.firstObject];
-      [_delegate performSelector:@selector(windowMoved:)
-                                  withObject:[self windowInfoFromDict:windowDict]];
+      [_delegate performSelector:@selector(windowMoved:) withObject:[self windowInfoFromDict:windowDict]];
     }
   }
   
@@ -421,6 +469,27 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   } else {
     return result.stringValue;
   }
+}
+
+# pragma mark - Private
+
+/*
+ * @return Whether the app has a11y permission.
+ */
++ (BOOL)a11yEnabled {
+  NSDictionary *options = @{(__bridge id) kAXTrustedCheckOptionPrompt : @NO};
+  BOOL accessibilityEnabled = AXIsProcessTrustedWithOptions((__bridge CFDictionaryRef) options);
+  return accessibilityEnabled;
+}
+
+/*
+ * If, the app has a11y permission, return true. Otherwise, return false and asynchronously shows a
+ * dialog requesting a11y permission.
+ */
++ (BOOL)requestA11y {
+  NSDictionary *options = @{(__bridge id) kAXTrustedCheckOptionPrompt : @YES};
+  BOOL accessibilityEnabled = AXIsProcessTrustedWithOptions((__bridge CFDictionaryRef) options);
+  return accessibilityEnabled;
 }
 
 @end
