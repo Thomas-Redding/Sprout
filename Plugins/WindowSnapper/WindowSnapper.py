@@ -11,6 +11,16 @@ class WindowSnapper:
         self.lastWindowMovedTime = 0
         self.spr.listenForWindowMove(lambda windowNumber, windowName, bundleIdentifier, appName : self.windowMoved(windowNumber))
         self.spr.listenForMouseButtons(lambda button, goingDown : self.mouseButtonChanged(button, goingDown))
+        # CMD + OPT + LeftArrow
+        self.spr.listenForHotkey(123, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.0, 0.0, 0.5, 1.0))
+        # CMD + OPT + RightArrow
+        self.spr.listenForHotkey(124, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.5, 0.0, 0.5, 1.0))
+        # CMD + OPT + DownArrow
+        self.spr.listenForHotkey(125, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.5, 0.5, 0.5, 0.5))
+        # CMD + OPT + UpArrow
+        self.spr.listenForHotkey(126, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.5, 0.0, 0.5, 0.5))
+        # CMD + OPT + /
+        self.spr.listenForHotkey(44, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.0, 0.0, 1.0, 1.0))
 
     def windowMoved(self, windowNumber):
         self.lastWindowMoved = windowNumber
@@ -28,20 +38,57 @@ class WindowSnapper:
         elif (y > self.screenSize[1] - self.padding): vertical = 'top'
         else: vertical = 'center'
         if horizontal == 'left':
-            if vertical == 'top':      self.resizeWindow(0.0, 0.0, 0.5, 0.5) # Top-Left
-            elif vertical == 'bottom': self.resizeWindow(0.0, 0.5, 0.5, 0.5) # Bottom-Left
-            else:                      self.resizeWindow(0.0, 0.0, 0.5, 1.0) # Left
+            if vertical == 'top':      self.resizeDraggedWindow(0.0, 0.0, 0.5, 0.5) # Top-Left
+            elif vertical == 'bottom': self.resizeDraggedWindow(0.0, 0.5, 0.5, 0.5) # Bottom-Left
+            else:                      self.resizeDraggedWindow(0.0, 0.0, 0.5, 1.0) # Left
         elif horizontal == 'right':
-            if vertical == 'top':      self.resizeWindow(0.5, 0.0, 0.5, 0.5) # Top-Right
-            elif vertical == 'bottom': self.resizeWindow(0.5, 0.5, 0.5, 0.5) # Bototm-Right
-            else:                      self.resizeWindow(0.5, 0.0, 0.5, 1.0) # Right
+            if vertical == 'top':      self.resizeDraggedWindow(0.5, 0.0, 0.5, 0.5) # Top-Right
+            elif vertical == 'bottom': self.resizeDraggedWindow(0.5, 0.5, 0.5, 0.5) # Bototm-Right
+            else:                      self.resizeDraggedWindow(0.5, 0.0, 0.5, 1.0) # Right
         else:
-            if vertical == 'top':      self.resizeWindow(0.0, 0.0, 1.0, 1.0) # Top
-            elif vertical == 'bottom': self.resizeWindow(0.0, 0.0, 1.0, 1.0) # Bottom
+            if vertical == 'top':      self.resizeDraggedWindow(0.0, 0.0, 1.0, 1.0) # Top
+            elif vertical == 'bottom': self.resizeDraggedWindow(0.0, 0.0, 1.0, 1.0) # Bottom
 
-    def resizeWindow(self, newX, newY, newWidth, newHeight):
+    def resizeDraggedWindow(self, newX, newY, newWidth, newHeight):
         newX *= self.screenSize[0]
         newWidth *= self.screenSize[0]
         newY *= self.screenSize[1]
         newHeight *= self.screenSize[1]
         self.spr.moveWindow(self.lastWindowMoved, newX, newY, newWidth, newHeight)
+
+    def resizeMainWindow(self, newX, newY, newWidth, newHeight):
+        appleScript = """
+set x to $x
+set y to $y
+set w to $w
+set h to $h
+tell application "Finder"
+    set {screen_left, screen_top, screen_width, screen_height} to bounds of window of desktop
+end tell
+tell application "System Events"
+    set myFrontMost to name of first item of (processes whose frontmost is true)
+    tell process myFrontMost
+        set {old_w, old_h} to get size of window 1
+        set {old_x, old_y} to get position of window 1
+        if x is equal to -1 then
+            set x to old_x / screen_width
+        end if
+        if y is equal to -1 then
+            set y to old_y / screen_height
+        end if
+        if w is equal to -1 then
+            set w to old_w / screen_width
+        end if
+        if h is equal to -1 then
+            set h to old_h / screen_height
+        end if
+        set size of window 1 to {(screen_width * w), (screen_height * h)}
+        set position of window 1 to {(screen_width * x), (screen_height * y)}
+    end tell
+end tell
+"""
+        appleScript = appleScript.replace('$x', str(newX))
+        appleScript = appleScript.replace('$y', str(newY))
+        appleScript = appleScript.replace('$w', str(newWidth))
+        appleScript = appleScript.replace('$h', str(newHeight))
+        self.spr.runAppleScript(appleScript)

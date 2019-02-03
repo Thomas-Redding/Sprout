@@ -511,8 +511,8 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   BOOL opt = ((flags & 2) != 0);
   BOOL ctrl = ((flags & 4) != 0);
   BOOL shift = ((flags & 8) != 0);
-  [self sendToPython:[NSString stringWithFormat:@"hotKeyPressed\t%u\t%d%d%d%d", keyCode, cmd, opt, ctrl, shift]
-        withUniqueId:[self generateUniqueId]];
+  NSString *message = [NSString stringWithFormat:@"hotKeyPressed\t%u\t%d%d%d%d", keyCode, cmd, opt, ctrl, shift];
+  [self sendToPython:message withUniqueId:[self generateUniqueId]];
 }
 
 - (void)sproutMainTerminated {

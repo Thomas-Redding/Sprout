@@ -64,7 +64,7 @@ static id<SPRSeedDelegate> _delegate;
 + (void)initialize {
   if (self == [SPRSeed self]) {
     // Commented out to speed up development.
-    // [self requestA11y];
+    [self requestA11y];
     
     // Hotkey Events
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
@@ -327,7 +327,7 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
 }
 
 + (void)tickTock:(BOOL)alertDelegate {
-  // Perform window snapping.
+  // Check for moving windows.
   NSArray<NSDictionary *> *windows = (__bridge NSArray*)CGWindowListCopyWindowInfo(kCGWindowListOptionAll, kCGNullWindowID);
   NSMutableSet<NSString *> *newWindowNumbers = [[NSMutableSet alloc] init];
   NSMutableDictionary<NSString *, NSDictionary *> *movedWindows = [[NSMutableDictionary alloc] init];

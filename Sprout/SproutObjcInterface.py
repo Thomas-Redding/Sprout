@@ -216,6 +216,7 @@ class Sprout:
         self._mouseMoveCallbacks = []
         self._windowMovedCallbacks = []
 
+    # For keyCodes, see https://stackoverflow.com/a/16125341 or https://eastmanreference.com/complete-list-of-applescript-key-codes.
     def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
         x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
         if x not in self._hotkeyCallbacks: self._hotkeyCallbacks[x] = []
@@ -279,8 +280,12 @@ class Sprout:
         self._server.sendAsynchronousMessage('power.logOut', lambda x: x)
     
     def runAppleScript(self, script):
-        script.replace('\\', '\\\\').replace("'", "\\'")
-        os.system('osascript -e \'' + script + '\'')
+        script = script.replace('\\', '\\\\').replace("'", "\\'")
+        lines = script.split('\n')
+        command = 'osascript'
+        for line in lines:
+            command += " -e '" + line + "'"
+        os.system(command)
 
     def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
         message = 'searchFiles\t'
