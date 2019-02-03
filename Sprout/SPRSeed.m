@@ -240,7 +240,7 @@ static id<SPRSeedDelegate> _delegate;
   _windows[windowId].webWindowDelegate = self;
 }
 
-+ (NSWindow *)windowForId:(NSString *)windowId {
++ (SPRWebWindow *)windowForId:(NSString *)windowId {
   return [_windows objectForKey:windowId];
 }
 

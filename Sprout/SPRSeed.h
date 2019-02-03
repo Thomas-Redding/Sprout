@@ -113,7 +113,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
                andSelector:(SEL)selector;
 
 + (void)makeWindowWithId:(NSString *)windowId;
-+ (NSWindow *)windowForId:(NSString *)windowId;
++ (SPRWebWindow *)windowForId:(NSString *)windowId;
 + (void)closeWindow:(NSString *)windowId;
 
 + (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;

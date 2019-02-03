@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setIndexPath:(NSString *)indexPath;
 - (void)sendMessage:(NSString *)string;
 
+@property BOOL supportsUserActions;
 @property id<SPRWebWindowDelegate> webWindowDelegate;
 
 @end

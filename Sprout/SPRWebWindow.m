@@ -21,11 +21,13 @@ static const int keyCodeConverter[130] = {
 };
 
 @interface SPRWebView : WKWebView
+@property BOOL supportsUserActions;
 @end
 
 @implementation SPRWebView
 -(BOOL)acceptsFirstResponder { return YES; }
 -(BOOL)canBecomeKeyView { return YES; }
+- (NSView *)hitTest:(NSPoint)point { return self.supportsUserActions ? [super hitTest:point] : nil; }
 @end
 
 @implementation SPRWebWindow {
@@ -45,6 +47,7 @@ static const int keyCodeConverter[130] = {
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     config.userContentController = controller;
     _webView = [[SPRWebView alloc] initWithFrame:NSZeroRect configuration:config];
+    _webView.supportsUserActions = YES;
     [controller addScriptMessageHandler:self name:@"sprout_kyaQmKP75mE6RolA"];
     _webView.navigationDelegate = self;
     // https://stackoverflow.com/a/49736463
@@ -57,7 +60,7 @@ static const int keyCodeConverter[130] = {
 
 # pragma mark - Super
 
-- (BOOL)canBecomeKeyWindow { return YES; }
+- (BOOL)canBecomeKeyWindow { return _webView.supportsUserActions; }
 - (BOOL)canBecomeMainWindow { return YES; }
 - (void)setTitlebarAppearsTransparent:(BOOL)titlebarAppearsTransparent {
   super.titlebarAppearsTransparent = titlebarAppearsTransparent;
@@ -152,6 +155,13 @@ NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is p
 
 - (void)setIndexPath:(NSString *)indexPath {
   [_webView loadFileURL:[NSURL fileURLWithPath:indexPath] allowingReadAccessToURL:[NSURL fileURLWithPath:@"/"]];
+}
+
+- (BOOL)supportsUserActions { return _webView.supportsUserActions; }
+
+- (void)setSupportsUserActions:(BOOL)supportsUserActions {
+  _webView.supportsUserActions = supportsUserActions;
+  if (!_webView.supportsUserActions) [self resignKeyWindow];
 }
 
 # pragma mark - Private

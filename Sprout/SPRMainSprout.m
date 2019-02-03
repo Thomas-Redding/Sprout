@@ -439,6 +439,18 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [[NSApplication sharedApplication] activateIgnoringOtherApps:NO];
     [[SPRSeed windowForId:windowId] orderOut:self];
     [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.getSupportsUserActions"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *windowId = args[0];
+    BOOL value = [[SPRSeed windowForId:windowId] supportsUserActions];
+    NSString *message = [NSString stringWithFormat:@"window.getSupportsUserActions\t%@\t%d", windowId, value];
+    [self sendToPython:message withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.setSupportsUserActions"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    NSString *windowId = args[0];
+    BOOL newValue = [args[1] boolValue];
+    [[SPRSeed windowForId:windowId] setSupportsUserActions:newValue];
+    [self sendToPython:command withUniqueId:uniqueId];
 /********** WebView Commands **********/
   } else if ([commandType isEqualToString:@"window.setIndexPath"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
