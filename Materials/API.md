@@ -35,6 +35,7 @@ class Window:
   [float] minSize # [width, height]
   [float] maxSize # [width, height]
   bool movable
+  bool supportsUserActions
 
 class Sprout:
   makeWindow(): Window
@@ -67,16 +68,11 @@ spr = Sprout()
 
 ### Planned
 ```
-class Window:
-  interactable(): bool
-  setInteractable(bool interactable)
-
 class MenuBarItem:
   ...
 
 class Sprout:
   makeMenubar(): MenuBarItem
-  listenForWindowDrag(function callback) # (async)
 ```
 
 I'm also hoping to allow Windows to be placed on the Desktop (below all other windows) and above all other windows. (Note to self: look at `NSWindowLevel` and `kCGDesktopWindowLevel`).
