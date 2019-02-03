@@ -13,6 +13,7 @@ class Window:
   sendMessage(str message) # (async)
   
   # Callbacks
+  function onLoad()               # Called when the webpage loads.
   function onMessage(str message) # The string comes from the JavaScript method spr.send().
   function didBecomeMain()        # Called when the window becomes "main" status.
   function didResignMain()        # Called when the window resigns "main" status.
