@@ -11,8 +11,11 @@ class Window:
   makeKeyAndFront()
   # A string given here is passed to the JavaScript function spr.receive().
   sendMessage(str message) # (async)
-  func onLoad                 # Called when the page loads.
-  func onMessage(str message) # The string comes from the JavaScript method spr.send().
+  
+  # Callbacks
+  function onMessage(str message) # The string comes from the JavaScript method spr.send().
+  function didBecomeMain()        # Called when the window becomes "main" status.
+  function didResignMain()        # Called when the window resigns "main" status.
   
   # Path to HTML source.
   indexPath(): str
