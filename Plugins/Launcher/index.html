@@ -6,12 +6,24 @@ onload = () => {
     spr.send('query\t' + document.getElementById('lorem').value);
   };
   spr.receive = (message) => {
-    queryResults = JSON.parse(message)
-    var html = '';
-    for (var result of queryResults) {
-      html += '<tr><td>' + result[2] + '</td></tr>';
+    var i = message.indexOf('\t');
+    if (i == -1) i = message.length;
+    var command = message.substr(0, i);
+    var arg = null;
+    try {
+      arg = JSON.parse(message.substr(i+1));
+    } catch (err) {}
+    if (command == 'suggestions') {
+      queryResults = arg
+      var html = '';
+      for (var result of queryResults) {
+        html += '<tr><td>' + result[2] + '</td></tr>';
+      }
+      document.getElementById('resultsTable').innerHTML = html;
+    } else if (command == 'clear') {
+      document.getElementById('lorem').value = '';
+      document.getElementById('resultsTable').innerHTML = '';
     }
-    document.getElementById('resultsTable').innerHTML = html;
   };
   spr.hotkeyCallbacks = [(c, keyCode, cmd, opt, ctrl, shift) => {
     var s = '';

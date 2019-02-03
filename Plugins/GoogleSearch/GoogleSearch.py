@@ -18,7 +18,7 @@ class GoogleSearch:
         callback(rtn)
 
     def action(self, key):
-        # TODO: Copy to clipboard.
+        # TODO: Navigate to result...
         None
 
     def googleSuggest(self, s):

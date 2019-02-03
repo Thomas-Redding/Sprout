@@ -9,6 +9,7 @@ class Launcher:
         self._window.setFrame([100, 100, 500, 500])
         self._window.setTitle(None)
         self._window.onMessage = lambda requestStr : self.server(requestStr)
+        self._window.didResignMain = lambda: self._window.setVisible(False)
         self._window.setIndexPath('~/Projects/Sprout/Plugins/Launcher/index.html')
         self.spr.listenForHotkey(49, False, True, False, False, lambda a, b, c, d, e : self.toggleWindowHide())
         self.plugins = []
@@ -18,7 +19,9 @@ class Launcher:
     def toggleWindowHide(self):
         isVisible = self._window.visible()
         if isVisible: self._window.returnOwnership()
-        else: self._window.borrowOwnership()
+        else:
+            self._window.borrowOwnership()
+            self._window.sendMessage('clear')
 
     def server(self, requestStr):
         tabIndex = requestStr.find('\t')
@@ -40,4 +43,4 @@ class Launcher:
     def _resultsChanged(self):
         # Sort by priority.
         self._results = sorted(self._results, key=lambda item: -item[1])
-        self._window.sendMessage(json.dumps(self._results))
+        self._window.sendMessage('suggestions\t' + json.dumps(self._results))

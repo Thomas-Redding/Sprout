@@ -47,7 +47,9 @@ static const int keyCodeConverter[130] = {
     _webView = [[SPRWebView alloc] initWithFrame:NSZeroRect configuration:config];
     [controller addScriptMessageHandler:self name:@"sprout_kyaQmKP75mE6RolA"];
     _webView.navigationDelegate = self;
-    [_webView setValue:@YES forKey:@"drawsTransparentBackground"];
+    // https://stackoverflow.com/a/49736463
+    [_webView setValue:@NO forKey:@"drawsBackground"];
+    // [_webView setValue:@YES forKey:@"drawsTransparentBackground"];
     self.contentView = self->_webView;
   }
   return self;
@@ -85,7 +87,6 @@ NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is p
   NSString *ctrl = ((event.modifierFlags & NSEventModifierFlagControl) == NSEventModifierFlagControl) ? @"true" : @"false";
   NSString *shift = ((event.modifierFlags & NSEventModifierFlagShift) == NSEventModifierFlagShift) ? @"true" : @"false";
   NSString *injection = [NSString stringWithFormat:@"window.spr._hotkey('%@', %@, %@, %@, %@, %@)", c, keyCode, cmd, opt, ctrl, shift];
-  NSLog(@"TFR: %@", injection);
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {}];
 }
 
@@ -93,6 +94,16 @@ NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is p
 
 - (void)windowDidResize:(NSNotification *)notification {
   [self privateLayout];
+}
+
+- (void)windowDidBecomeMain:(NSNotification *)notification {
+  // Might want `windowDidBecomeKey:`.
+  [self.webWindowDelegate webWindowDidBecomeMain:_windowId];
+}
+
+- (void)windowDidResignMain:(NSNotification *)notification {
+  // Might want `windowDidResignKey:`.
+  [self.webWindowDelegate webWindowDidResignMain:_windowId];
 }
 
 # pragma mark - WKNavigationDelegate
@@ -112,9 +123,8 @@ NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is p
       }\
     }\
   };";
-  NSLog(@"T:%@", injection);
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {
-    [SPRSeed windowDidLoad:self->_windowId];
+    [SPRSeed webWindowDidLoad:self->_windowId];
   }];
 }
 

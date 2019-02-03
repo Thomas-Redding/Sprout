@@ -17,9 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowMoved:(SPRWindowInfo *)windowInfo;
 - (void)windowRemoved;
 - (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
-- (void)windowDidLoad:(NSString *)windowId;
 - (void)mouseButtonPressed:(NSEventType)eventType;
 - (void)mouseMove:(NSEventType)eventType;
+- (void)webWindowDidLoad:(NSString *)windowId;
+- (void)webWindowDidBecomeMain:(NSString *)windowId;
+- (void)webWindowDidResignMain:(NSString *)windowId;
 @end
 
 @interface SPRContact : NSObject
@@ -81,7 +83,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
   SPRKeyFlagShift   = 8,
 };
 
-@interface SPRSeed : NSObject
+@interface SPRSeed : NSObject <SPRWebWindowDelegate>
 
 + (void)setFrame:(CGRect)rect ofWindowWithNumber:(NSNumber *)windowNumber;
 
@@ -115,7 +117,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 + (void)closeWindow:(NSString *)windowId;
 
 + (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;
-+ (void)windowDidLoad:(NSString *)windowId;
++ (void)webWindowDidLoad:(NSString *)windowId;
 + (void)sendMessage:(NSString *)message toWindow:(NSString *)windowId;
 
 /**

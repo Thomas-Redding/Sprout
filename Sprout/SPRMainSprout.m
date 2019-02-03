@@ -32,7 +32,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   _outPipe = [[NSPipe alloc] init];
   _task.standardInput = _inPipe;
   _task.standardOutput = _outPipe;
-  [SPRSeed setDelegate:self];
+  SPRSeed.delegate = self;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(sproutMainTerminated)
                                                name:NSTaskDidTerminateNotification
@@ -75,10 +75,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 - (void)windowRemoved {
   // TODO: Use this event.
 }
-- (void)windowDidLoad:(NSString *)windowId {
-  // TODO: Use this event.
-  [self sendToPython:[NSString stringWithFormat:@"window.didLoad\t%@", windowId] withUniqueId:[self generateUniqueId]];
-}
+
 - (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId {
   [self sendToPython:[NSString stringWithFormat:@"window.request\t%@\t%@", windowId, message] withUniqueId:[self generateUniqueId]];
 }
@@ -129,6 +126,19 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   }
 }
 
+- (void)webWindowDidLoad:(NSString *)windowId {
+  // TODO: Use this event.
+  [self sendToPython:[NSString stringWithFormat:@"window.didLoad\t%@", windowId] withUniqueId:[self generateUniqueId]];
+}
+
+- (void)webWindowDidBecomeMain:(NSString *)windowId {
+  [self sendToPython:[NSString stringWithFormat:@"window.didBecomeMain\t%@", windowId] withUniqueId:[self generateUniqueId]];
+}
+
+- (void)webWindowDidResignMain:(NSString *)windowId {
+  [self sendToPython:[NSString stringWithFormat:@"window.didResignMain\t%@", windowId] withUniqueId:[self generateUniqueId]];
+}
+
 # pragma mark - I/O
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
@@ -161,7 +171,6 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
-  NSLog(@"handleLineFromPython:%@:%@", command, commandType);
   if ([commandType isEqualToString:@"print"]) {
     NSString *q = [command substringFromIndex:commandType.length + 1];
     NSLog(@"Python Print: '%@'", [self stringByUnescaping:q]);

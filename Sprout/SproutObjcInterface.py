@@ -107,6 +107,8 @@ class Window:
         self.onCreate = lambda:None
         self.onLoad = lambda:None
         self.onMessage = lambda:None
+        self.didBecomeMain = lambda:None
+        self.didResignMain = lambda:None
         self._indexPath = None
     def windowId(self):
         return self._windowId
@@ -398,6 +400,9 @@ class Sprout:
             return (windowId, message)
         elif command == 'window.borrowOwnership' or command == 'window.returnOwnership':
             None
+        elif command == 'window.didBecomeMain' or command == 'window.didResignMain':
+            windowId = self.argArrayFromArgStr(argStr, 1)[0]
+            return windowId
         else:
             self.print('UNKNOWN COMMAND: ' + message)
 
@@ -426,6 +431,12 @@ class Sprout:
             windowNumber, windowName, bundleIdentifier, appName = parsedMessage
             for callback in self._windowMovedCallbacks:
                 callback(windowNumber, windowName, bundleIdentifier, appName)
+        elif command == 'window.didBecomeMain':
+            windowId = parsedMessage
+            self._windows[parsedMessage].didBecomeMain()
+        elif command == 'window.didResignMain':
+            windowId = parsedMessage
+            self._windows[parsedMessage].didResignMain()
         else:
             self.print('Unknown UnexpectedMessageCallback: ' + message)
         # TODO: Use parsed message.

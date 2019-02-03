@@ -63,7 +63,9 @@ static id<SPRSeedDelegate> _delegate;
 
 + (void)initialize {
   if (self == [SPRSeed self]) {
-    [self requestA11y];
+    // Commented out to speed up development.
+    // [self requestA11y];
+    
     // Hotkey Events
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
     EventTypeSpec eventType;
@@ -235,6 +237,7 @@ static id<SPRSeedDelegate> _delegate;
 + (void)makeWindowWithId:(NSString *)windowId {
   if ([_windows objectForKey:windowId]) return;
   _windows[windowId] = [[SPRWebWindow alloc] initWithId:windowId];
+  _windows[windowId].webWindowDelegate = self;
 }
 
 + (NSWindow *)windowForId:(NSString *)windowId {
@@ -257,8 +260,8 @@ static id<SPRSeedDelegate> _delegate;
   [_windows[windowId] sendMessage:message];
 }
 
-+ (void)windowDidLoad:(NSString *)windowId {
-  [_delegate windowDidLoad:windowId];
++ (void)webWindowDidLoad:(NSString *)windowId {
+  [_delegate webWindowDidLoad:windowId];
 }
 
 # pragma mark - Private
@@ -471,6 +474,16 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   }
 }
 
+# pragma mark - SPRWebWindowDelegate
+
++ (void)webWindowDidBecomeMain:(NSString *)windowId {
+  [self.delegate webWindowDidBecomeMain:windowId];
+}
+
++ (void)webWindowDidResignMain:(NSString *)windowId {
+  [self.delegate webWindowDidResignMain:windowId];
+}
+
 # pragma mark - Private
 
 /*
@@ -490,6 +503,7 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   NSDictionary *options = @{(__bridge id) kAXTrustedCheckOptionPrompt : @YES};
   BOOL accessibilityEnabled = AXIsProcessTrustedWithOptions((__bridge CFDictionaryRef) options);
   return accessibilityEnabled;
+  return NO;
 }
 
 @end
