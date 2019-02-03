@@ -372,8 +372,19 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [[SPRSeed windowForId:windowId] setMovable:isMovable];
     NSString *response = [NSString stringWithFormat:@"window.setMovable\t%@\t%d", windowId, isMovable];
     [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"window.getInteractable"]) {
-  } else if ([commandType isEqualToString:@"window.setInteractable"]) {
+  } else if ([commandType isEqualToString:@"window.getIsWidget"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *windowId = args[0];
+    BOOL isWidget = [[SPRSeed windowForId:windowId] isWidget];
+    NSString *response = [NSString stringWithFormat:@"window.getIsWidget\t%@\t%d", windowId, isWidget];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.setIsWidget"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    NSString *windowId = args[0];
+    BOOL isWidget = ![args[1] isEqualToString:@"0"];
+    [[SPRSeed windowForId:windowId] setIsWidget:isWidget];
+    NSString *response = [NSString stringWithFormat:@"window.setIsWidget\t%@\t%d", windowId, isWidget];
+    [self sendToPython:response withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"window.getMinSize"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
     NSString *windowId = args[0];

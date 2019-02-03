@@ -27,12 +27,15 @@ static const int keyCodeConverter[130] = {
 @implementation SPRWebView
 -(BOOL)acceptsFirstResponder { return YES; }
 -(BOOL)canBecomeKeyView { return YES; }
-- (NSView *)hitTest:(NSPoint)point { return self.supportsUserActions ? [super hitTest:point] : nil; }
+// - (NSView *)hitTest:(NSPoint)point { return self.supportsUserActions ? [super hitTest:point] : nil; }
+-(void)mouseDown:(NSEvent *)theEvent {}
 @end
 
 @implementation SPRWebWindow {
+  CGPoint _initialMousePos;
   NSString *_windowId;
   SPRWebView *_webView;
+  BOOL _isWidget;
 }
 
 - (instancetype)initWithId:(NSString *)windowId {
@@ -42,6 +45,7 @@ static const int keyCodeConverter[130] = {
     self.opaque = NO;
     self.backgroundColor = NSColor.clearColor;
     self.delegate = self;
+    _isWidget = NO;
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
@@ -60,11 +64,41 @@ static const int keyCodeConverter[130] = {
 
 # pragma mark - Super
 
+- (void)setIsWidget:(BOOL)isWidget {
+  _isWidget = isWidget;
+  self.level = kCGDesktopIconWindowLevel - 1;
+}
+-(BOOL)isWidget {
+  self.level = 0;
+  return _isWidget;
+}
+
 - (BOOL)canBecomeKeyWindow { return _webView.supportsUserActions; }
 - (BOOL)canBecomeMainWindow { return YES; }
 - (void)setTitlebarAppearsTransparent:(BOOL)titlebarAppearsTransparent {
+  // https://github.com/electron/electron/issues/15008
   super.titlebarAppearsTransparent = titlebarAppearsTransparent;
+  if (titlebarAppearsTransparent) {
+    self.styleMask = (self.styleMask & !NSWindowStyleMaskTitled);
+  } else {
+    self.styleMask = (self.styleMask | NSWindowStyleMaskTitled);
+    [self setMovableByWindowBackground:NO];
+  }
   [self privateLayout];
+}
+
+- (void)sendEvent:(NSEvent *)event {
+  if(event.type == NSEventTypeLeftMouseDown) {
+    _initialMousePos = NSEvent.mouseLocation;
+  } else if(event.type == NSEventTypeLeftMouseDragged) {
+    CGPoint mouse = NSEvent.mouseLocation;
+    CGFloat dx = mouse.x - _initialMousePos.x;
+    CGFloat dy = mouse.y - _initialMousePos.y;
+    CGPoint newOrigin = CGPointMake(self.frame.origin.x + dx, self.frame.origin.y + dy);
+    _initialMousePos = mouse;
+    [self setFrameOrigin:newOrigin];
+  }
+  [super sendEvent:event];
 }
 
 /*

@@ -182,6 +182,15 @@ class Window:
             return self._spr._server.sendSynchronousMessage('window.setSupportsUserActions\t' + self._windowId + '\t1')
         else:
             return self._spr._server.sendSynchronousMessage('window.setSupportsUserActions\t' + self._windowId + '\t0')
+    def isWidget(self):
+        if not self._windowId: return None
+        return self._spr._server.sendSynchronousMessage('window.getIsWidget\t' + self._windowId)
+    def setIsWidget(self, newValue):
+        if not self._windowId: return None
+        if newValue:
+            return self._spr._server.sendSynchronousMessage('window.setIsWidget\t' + self._windowId + '\t1')
+        else:
+            return self._spr._server.sendSynchronousMessage('window.setIsWidget\t' + self._windowId + '\t0')
     def isKey(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getKey\t' + self._windowId)
@@ -417,6 +426,9 @@ class Sprout:
             windowId = self.argArrayFromArgStr(argStr, 1)[0]
             return windowId
         elif command == 'window.getSupportsUserActions' or command == 'window.setSupportsUserActions':
+            windowId, value = self.argArrayFromArgStr(argStr, 2)
+            return value
+        elif command == 'window.getIsWidget' or command == 'window.setIsWidget':
             windowId, value = self.argArrayFromArgStr(argStr, 2)
             return value
         else:
