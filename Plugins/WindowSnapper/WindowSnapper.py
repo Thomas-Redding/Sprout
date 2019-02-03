@@ -11,16 +11,9 @@ class WindowSnapper:
         self.lastWindowMovedTime = 0
         self.spr.listenForWindowMove(lambda windowNumber, windowName, bundleIdentifier, appName : self.windowMoved(windowNumber))
         self.spr.listenForMouseButtons(lambda button, goingDown : self.mouseButtonChanged(button, goingDown))
-        # CMD + OPT + LeftArrow
-        self.spr.listenForHotkey(123, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.0, 0.0, 0.5, 1.0))
-        # CMD + OPT + RightArrow
-        self.spr.listenForHotkey(124, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.5, 0.0, 0.5, 1.0))
-        # CMD + OPT + DownArrow
-        self.spr.listenForHotkey(125, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.5, 0.5, 0.5, 0.5))
-        # CMD + OPT + UpArrow
-        self.spr.listenForHotkey(126, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.5, 0.0, 0.5, 0.5))
-        # CMD + OPT + /
-        self.spr.listenForHotkey(44, True, True, False, False, lambda a, b, c, d, e : self.resizeMainWindow(0.0, 0.0, 1.0, 1.0))
+
+    def connectHotKeyToFrame(self, keyCode, cmd, opt, ctrl, shift, x, y, w, h):
+        self.spr.listenForHotkey(keyCode, cmd, opt, ctrl, shift, lambda a, b, c, d, e : self.resizeMainWindow(x, y, w, h))
 
     def windowMoved(self, windowNumber):
         self.lastWindowMoved = windowNumber
