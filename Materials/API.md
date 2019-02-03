@@ -11,8 +11,12 @@ class Window:
   makeKeyAndFront()
   # A string given here is passed to the JavaScript function spr.receive().
   sendMessage(str message) # (async)
-  func onLoad                 # Called when the page loads.
-  func onMessage(str message) # The string comes from the JavaScript method spr.send().
+  
+  # Callbacks
+  function onLoad()               # Called when the webpage loads.
+  function onMessage(str message) # The string comes from the JavaScript method spr.send().
+  function didBecomeMain()        # Called when the window becomes "main" status.
+  function didResignMain()        # Called when the window resigns "main" status.
   
   # Path to HTML source.
   indexPath(): str
@@ -34,6 +38,7 @@ class Window:
 
 class Sprout:
   makeWindow(): Window
+  moveWindow(str windowNumber, x, y, width, height)
   activeApps(): [(str, str)] # (bundle identifiers, app name)
   mousePosition(): [float] # From the lower left corner: [x, y]
   runAppleScriptAtPath(str script)
@@ -43,6 +48,7 @@ class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   listenForMouseButtons(function callbac)
   listenForMouseMove(function callbac)
+  listenForWindowMove(function callback)
   quitSprout()
   quitApp(str appName)
   forceQuitApp(str appName)
