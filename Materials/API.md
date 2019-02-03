@@ -38,6 +38,7 @@ class Window:
 
 class Sprout:
   makeWindow(): Window
+  moveWindow(str windowNumber, x, y, width, height)
   activeApps(): [(str, str)] # (bundle identifiers, app name)
   mousePosition(): [float] # From the lower left corner: [x, y]
   runAppleScriptAtPath(str script)
@@ -47,6 +48,7 @@ class Sprout:
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   listenForMouseButtons(function callbac)
   listenForMouseMove(function callbac)
+  listenForWindowMove(function callback)
   quitSprout()
   quitApp(str appName)
   forceQuitApp(str appName)
