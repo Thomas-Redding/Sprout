@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #import "SPRWebWindow.h"
+#import "SPRStatusMenu.h"
 
 static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
@@ -287,7 +288,8 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     CGFloat y = [args[2] floatValue];
     CGFloat w = [args[3] floatValue];
     CGFloat h = [args[4] floatValue];
-    [SPRSeed setFrame:CGRectMake(x, y, w, h) ofWindowWithNumber:windowNumber];
+    [SPRSeed setFrame:CGRectMake(x, y, w, h)
+   ofWindowWithNumber:[NSNumber numberWithUnsignedLongLong:[windowNumber integerValue]]];
     [self sendToPython:command withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
@@ -480,6 +482,67 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [SPRSeed sendMessage:message toWindow:windowId];
     NSString *response = [NSString stringWithFormat:@"window.sendMessage\t%@\t%@", windowId, message];
     [self sendToPython:response withUniqueId:uniqueId];
+/********** Status Bar **********/
+  } else if ([commandType isEqualToString:@"status.root.create"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    [SPRStatusMenu rootCreate:args[0]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.getSpace"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *response = [NSString stringWithFormat:@"status.root.getSpace\t%@\t%f", args[0], [SPRStatusMenu rootGetSpace:args[0]]];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.setSpace"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu root:args[0] setSpace:[args[1] floatValue]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.getText"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *response = [NSString stringWithFormat:@"status.root.getText\t%@\t%@", args[0], [SPRStatusMenu rootGetText:args[0]]];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.setText"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu root:args[0] setText:args[1]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.addChild"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:3];
+    [SPRStatusMenu root:args[0] addChild:args[1] atIndex:[args[2] integerValue]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.removeChild"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu root:args[0] removeChildAtIndex:[args[1] integerValue]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.root.destroy"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    [SPRStatusMenu rootDestroy:args[0]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.text.getText"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *response = [NSString stringWithFormat:@"status.text.getText\t%@\t%@", args[0], [SPRStatusMenu textGetText:args[0]]];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.text.setText"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu text:args[0] setText:args[1]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.text.addChild"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:3];
+    [SPRStatusMenu text:args[0] addChild:args[1] atIndex:[args[2] integerValue]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.text.removeChild"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu text:args[0] removeChildAtIndex:[args[1] integerValue]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.web.getIndexPath"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *response = [NSString stringWithFormat:@"status.web.getIndexPath\t%@\t%@", args[0], [SPRStatusMenu webGetIndexPath:args[0]]];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.web.setIndexPath"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu web:args[0] setIndexPath:args[1]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"status.web.sendMessage"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    [SPRStatusMenu web:args[0] sendMessage:args[1]];
+    [self sendToPython:command withUniqueId:uniqueId];
   } else {
     NSLog(@"Unrecognized Command: '%@'", command);
   }

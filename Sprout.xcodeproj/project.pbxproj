@@ -13,6 +13,7 @@
 		2832035C21DF4A2C0078D811 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832035B21DF4A2C0078D811 /* main.m */; };
 		2832036721DF4B4E0078D811 /* SPRSeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832036621DF4B4E0078D811 /* SPRSeed.m */; };
 		28459FAC21E05F1800ABAFCC /* SproutObjcInterface.py in Resources */ = {isa = PBXBuildFile; fileRef = 28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */; };
+		287C21772207D5C8006F1339 /* SPRStatusMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 287C21762207D5C8006F1339 /* SPRStatusMenu.m */; };
 		28A33AC721F68AFF0057B59D /* SPRWebWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 28A33AC621F68AFF0057B59D /* SPRWebWindow.m */; };
 		28B3F50921DFC992006879E1 /* SPRMainSprout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28B3F50821DFC992006879E1 /* SPRMainSprout.m */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,8 @@
 		2832036521DF4B4E0078D811 /* SPRSeed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRSeed.h; sourceTree = "<group>"; };
 		2832036621DF4B4E0078D811 /* SPRSeed.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRSeed.m; sourceTree = "<group>"; };
 		28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = SproutObjcInterface.py; sourceTree = "<group>"; };
+		287C21752207D5C8006F1339 /* SPRStatusMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRStatusMenu.h; sourceTree = "<group>"; };
+		287C21762207D5C8006F1339 /* SPRStatusMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRStatusMenu.m; sourceTree = "<group>"; };
 		28A33AC521F68AFF0057B59D /* SPRWebWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRWebWindow.h; sourceTree = "<group>"; };
 		28A33AC621F68AFF0057B59D /* SPRWebWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPRWebWindow.m; sourceTree = "<group>"; };
 		28B3F50721DFC992006879E1 /* SPRMainSprout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPRMainSprout.h; sourceTree = "<group>"; };
@@ -71,6 +74,8 @@
 				28B3F50821DFC992006879E1 /* SPRMainSprout.m */,
 				2832036521DF4B4E0078D811 /* SPRSeed.h */,
 				2832036621DF4B4E0078D811 /* SPRSeed.m */,
+				287C21752207D5C8006F1339 /* SPRStatusMenu.h */,
+				287C21762207D5C8006F1339 /* SPRStatusMenu.m */,
 				28A33AC521F68AFF0057B59D /* SPRWebWindow.h */,
 				28A33AC621F68AFF0057B59D /* SPRWebWindow.m */,
 				28459FAB21E05F1800ABAFCC /* SproutObjcInterface.py */,
@@ -163,6 +168,7 @@
 				2832035C21DF4A2C0078D811 /* main.m in Sources */,
 				28A33AC721F68AFF0057B59D /* SPRWebWindow.m in Sources */,
 				2832035421DF4A2C0078D811 /* AppDelegate.m in Sources */,
+				287C21772207D5C8006F1339 /* SPRStatusMenu.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
