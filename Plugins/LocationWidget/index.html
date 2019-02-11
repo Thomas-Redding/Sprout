@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+<script>
+onload = () => {
+  spr.receive = (message) => {
+    var data = message.split('\t');
+    var html = '<table><tbody>';
+    html += '<tr><td>Lat</td><td>' + data[0] + '˚</td></tr>';
+    html += '<tr><td>Long</td><td>' + data[1] + '˚</td></tr>';
+    html += '<tr><td>City</td><td>' + data[2] + '</td></tr>';
+    html += '</tbody></table>';
+    document.getElementById("location").innerHTML = html;
+  }
+}
+</script>
+<style>
+body {
+    border: 1px solid #888;
+    color: white;
+}
+</style>
+<div id="location">Loading...</div>

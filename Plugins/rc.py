@@ -22,7 +22,10 @@ windowSnapper.connectHotKeyToFrame(44, True, True, False, False, 0.0, 0.0, 1.0, 
 from LocationWidget import LocationWidget
 locationWidget = LocationWidget.LocationWidget(spr)
 
-
+import os
+from TimeTracker import TimeTracker
+outputPath = os.path.expanduser('~') + '/Desktop/time-tracking/'
+timeTracker = TimeTracker.TimeTracker(spr, outputPath, 2)
 
 from Launcher import Launcher
 launcher = Launcher.Launcher(spr)
