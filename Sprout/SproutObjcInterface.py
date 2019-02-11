@@ -1,5 +1,6 @@
 import os
 import random
+import subprocess
 import string
 import sys
 
@@ -365,7 +366,7 @@ class Sprout:
         command = 'osascript'
         for line in lines:
             command += " -e '" + line + "'"
-        os.system(command)
+        return subprocess.check_output(command, shell=True).decode('UTF-8')
 
     def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
         message = 'searchFiles\t'
