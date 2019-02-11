@@ -126,7 +126,7 @@ class StatusItemText:
     def __init__(self, spr):
         self._spr = spr
         self._id = helper.generateUniqueId()
-        self.callback = labmda:None
+        self.callback = lambda:None
         self._children = []
         self._text = ''
     def text(self, newText):
@@ -144,7 +144,7 @@ class StatusItemText:
     def len(self):
         return len(self._children)
     def _toJSON(self):
-        rtn = '{"id": "' self._id + '", "type": "text", "text": "' + helper.escapeQuotes(self._text) + '", "children": ['
+        rtn = '{"id": "' + self._id + '", "type": "text", "text": "' + helper.escapeQuotes(self._text) + '", "children": ['
         for i in range(len(self._children)):
             child = self._children[i]
             if i != 0: rtn += ', '

@@ -37,9 +37,9 @@
   if (self) _itemId = itemId;
   return self;
 }
-- (CGFloat)space {}
+- (CGFloat)space { return 0; }
 - (void)setSpace:(CGFloat)space {}
-- (NSString *)text {}
+- (NSString *)text { return nil; }
 - (void)setText:(NSString *)text {}
 - (void)insertChild:(SPRStatusItem *)item atIndex:(NSUInteger)index {}
 - (void)removeChildAtIndex:(NSUInteger)index {}
@@ -55,7 +55,7 @@
 - (void)removeChildAtIndex:(NSUInteger)index;
 @end
 @implementation SPRTextStatusItem
-- (NSString *)text {}
+- (NSString *)text { return nil; }
 - (void)setText:(NSString *)text {}
 - (void)insertChild:(SPRStatusItem *)item atIndex:(NSUInteger)index {}
 - (void)removeChildAtIndex:(NSUInteger)index {}
