@@ -291,6 +291,13 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [SPRSeed setFrame:CGRectMake(x, y, w, h)
    ofWindowWithNumber:[NSNumber numberWithUnsignedLongLong:[windowNumber integerValue]]];
     [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"frontmostApp"]) {
+    NSRunningApplication *app = [NSWorkspace.sharedWorkspace frontmostApplication];
+    NSMutableString *response = [NSMutableString stringWithString:@"frontmostApp\t"];
+    [response appendString:app.bundleIdentifier];
+    [response appendString:@"\t"];
+    [response appendString:app.localizedName];
+    [self sendToPython:response withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];

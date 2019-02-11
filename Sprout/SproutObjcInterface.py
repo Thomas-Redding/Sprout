@@ -340,6 +340,9 @@ class Sprout:
 
     def runningApps(self):
         return self._server.sendSynchronousMessage('runningApps')
+
+    def frontmostApp(self):
+        return self._server.sendSynchronousMessage('frontmostApp')
     
     def quitApp(self, bundleIdentifier):
         self._server.sendAsynchronousMessage('quitApp\t' + bundleIdentifier, lambda x: x)
@@ -424,6 +427,9 @@ class Sprout:
                 firstSpace = helper.finder(apps[i], ' ')
                 apps[i] = (apps[i][:firstSpace], apps[i][firstSpace+1:])
             return apps[1:]
+        elif command == 'frontmostApp':
+            bundleId, appName = self.argArrayFromArgStr(argStr[:-1], 2)
+            return (bundleId, appName)
         elif command == 'power.sleepScreen' or command == 'power.shutDown' or command == 'power.restart' or command == 'power.logOut':
             None
         elif command == 'mousePosition':
