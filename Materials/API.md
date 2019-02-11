@@ -36,6 +36,7 @@ class Window:
   [float] maxSize # [width, height]
   bool movable
   bool supportsUserActions
+  bool isWidget # A widget is a non-movable, non-interactable window between file icons and the desktop wallpaper.
 
 class Sprout:
   makeWindow(): Window
