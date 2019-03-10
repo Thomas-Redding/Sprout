@@ -251,15 +251,84 @@ class Window:
             return self._spr._server.sendSynchronousMessage('window.setSupportsUserActions\t' + self._windowId + '\t1')
         else:
             return self._spr._server.sendSynchronousMessage('window.setSupportsUserActions\t' + self._windowId + '\t0')
-    def isWidget(self):
+    def inDesktop(self):
         if not self._windowId: return None
-        return self._spr._server.sendSynchronousMessage('window.getIsWidget\t' + self._windowId)
-    def setIsWidget(self, newValue):
+        return self._spr._server.sendSynchronousMessage('window.getInDesktop\t' + self._windowId)
+    def setInDesktop(self, newValue):
         if not self._windowId: return None
         if newValue:
-            return self._spr._server.sendSynchronousMessage('window.setIsWidget\t' + self._windowId + '\t1')
+            return self._spr._server.sendSynchronousMessage('window.setInDesktop\t' + self._windowId + '\t1')
         else:
-            return self._spr._server.sendSynchronousMessage('window.setIsWidget\t' + self._windowId + '\t0')
+            return self._spr._server.sendSynchronousMessage('window.setInDesktop\t' + self._windowId + '\t0')
+    # 0 = Normal Window; 1 = Window on all spaces (like menu bar); 2 = When the window becomes active
+    def getSpaceBehavior(self):
+        if not self._windowId: return None
+        bitmask = self._spr._server.sendSynchronousMessage('window.getCollectionBehavior\t' + self._windowId)
+        if bitmask & 1: return 1
+        if bitmask & 2: return 2
+        else: return 0
+    def setSpaceBehavior(self, newValue):
+        if not self._windowId: return None
+        if type(newValue) != int:
+            raise Exception('window.spaceBehavior must be an integer.')
+        if newValue < 0 or 2 < newValue:
+            raise Exception('window.spaceBehavior must be 0, 1 or 2.')
+        bitmask = self._spr._server.sendSynchronousMessage('window.getCollectionBehavior\t' + self._windowId)
+        if newValue == 0:
+            bitmask &= ~1
+            bitmask &= ~2
+        elif newValue == 1:
+            bitmask |= 1
+            bitmask &= ~2
+        else:
+            bitmask &= ~1
+            bitmask |= 2
+        self._spr._server.sendSynchronousMessage('window.setCollectionBehavior\t' + self._windowId + '\t' + str(bitmask))
+    # 0 = Managed; 1 = Transient; 2 = Stationary
+    def getExposeBehavior(self):
+        if not self._windowId: return None
+        if bitmask & 4: return 0
+        if bitmask & 8: return 1
+        if bitmask & 16: return 2
+        raise Exception('window.getExposeBehavior() exception')
+    def setExposeBehavior(self, newValue):
+        if not self._windowId: return None
+        if type(newValue) != int:
+            raise Exception('window.exposeBehavior must be an integer.')
+        if newValue < 0 or 2 < newValue:
+            raise Exception('window.exposeBehavior must be 0, 1 or 2.')
+        bitmask = self._spr._server.sendSynchronousMessage('window.getCollectionBehavior\t' + self._windowId)
+        if newValue == 0:
+            bitmask |= 4
+            bitmask &= ~8
+            bitmask &= ~16
+        elif newValue == 1:
+            bitmask &= ~4
+            bitmask |= 8
+            bitmask &= ~16
+        else:
+            bitmask &= ~4
+            bitmask &= ~8
+            bitmask |= 16
+        self._spr._server.sendSynchronousMessage('window.setCollectionBehavior\t' + self._windowId + '\t' + str(bitmask))
+    def participatesInCycle(self):
+        if not self._windowId: return None
+        bitmask = self._spr._server.sendSynchronousMessage('window.getCollectionBehavior\t' + self._windowId)
+        return bool(bitmask & 32)
+    def setParticipatesInCycle(self, newValue):
+        if not self._windowId: return None
+        if type(newValue) != int:
+            raise Exception('window.cycleBehavior must be an integer.')
+        if newValue < 0 or 2 < newValue:
+            raise Exception('window.cycleBehavior must be 0 or 1.')
+        bitmask = self._spr._server.sendSynchronousMessage('window.getCollectionBehavior\t' + self._windowId)
+        if newValue:
+            bitmask |= 32
+            bitmask &= ~64
+        else:
+            bitmask &= ~32
+            bitmask |= 64
+        self._spr._server.sendSynchronousMessage('window.setCollectionBehavior\t' + self._windowId + '\t' + str(bitmask))
     def isKey(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getKey\t' + self._windowId)
@@ -361,12 +430,17 @@ class Sprout:
         self._server.sendAsynchronousMessage('power.logOut', lambda x: x)
     
     def runAppleScript(self, script):
-        script = script.replace('\\', '\\\\').replace("'", "\\'")
+        # Note: Bash strings denoted by single quotes can't contain single quotes (even if they're "escaped").
+        # That's why we use double quotes.
+        script = script.replace('\\', '\\\\').replace('"', '\\"')
         lines = script.split('\n')
         command = 'osascript'
         for line in lines:
-            command += " -e '" + line + "'"
-        return subprocess.check_output(command, shell=True).decode('UTF-8')
+            command += ' -e "' + line + '"'
+        try:
+            return subprocess.check_output(command, shell=True).decode('UTF-8')
+        except:
+            return None
 
     def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
         message = 'searchFiles\t'
@@ -381,9 +455,6 @@ class Sprout:
     
     def mousePosition(self):
         return self._server.sendSynchronousMessage('mousePosition')
-    
-    def screenSize(self):
-        return self._server.sendSynchronousMessage('screenSize')
     
     def moveWindow(self, windowNumber, x, y, width, height):
         message = 'moveWindow'
@@ -407,7 +478,10 @@ class Sprout:
             self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, callback)
         else:
             self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, lambda:None)
-    
+
+    def screenFrames(self):
+        return self._server.sendSynchronousMessage('screenFrames')
+
     def parseResponse(self, message):
         command = self.commandFromLine(message)
         argStr = message[len(command)+1:]
@@ -436,9 +510,6 @@ class Sprout:
         elif command == 'mousePosition':
             x, y = self.argArrayFromArgStr(argStr, 2)
             return (float(x), float(y))
-        elif command == 'screenSize':
-            width, height = self.argArrayFromArgStr(argStr, 2)
-            return (float(width), float(height))
         elif command == 'doLater' or command == 'repeat' or command == 'stopRepeat':
             None
         elif command == 'windowMoved':
@@ -448,6 +519,17 @@ class Sprout:
             return None
         elif command == 'makeWindow':
             None
+        elif command == 'screenFrames':
+            frameStrings = argStr.split('\t')
+            frames = []
+            for frameString in frameStrings:
+                frames.append(frameString.split(' '))
+            for i in range(len(frames)):
+                frames[i][0] = float(frames[i][0])
+                frames[i][1] = float(frames[i][1])
+                frames[i][2] = float(frames[i][2])
+                frames[i][3] = float(frames[i][3])
+            return frames
         elif command == 'window.setFrame' or command == 'window.getFrame':
             windowId, x, y, w, h = self.argArrayFromArgStr(argStr, 5)
             x = float(x)
@@ -566,7 +648,13 @@ class Sprout:
 
 spr = Sprout()
 
-
+# We run some trivial AppleScript code here to get permissions upon app launch.
+spr.runAppleScript('tell application "Finder" to return target of Finder window 1')
+spr.runAppleScript('tell application "Google Chrome" to return URL of active tab of front window')
+spr.runAppleScript('tell application "Safari" to return URL of front document')
+spr.runAppleScript('tell application "TextEdit" to return path of front document')
+spr.runAppleScript('tell application "Xcode" to return path of front document')
+spr.runAppleScript('tell application "System Events" to set myFrontMost to name of first item of (processes whose frontmost is true)')
 
 PATH_TO_RC = '/Users/thomasredding/Projects/Sprout/Plugins/rc.py'
 with open(PATH_TO_RC) as rcFile:

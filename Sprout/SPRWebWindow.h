@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendMessage:(NSString *)string;
 
 @property BOOL supportsUserActions;
-@property BOOL isWidget;
+@property BOOL inDesktop;
 @property id<SPRWebWindowDelegate> webWindowDelegate;
 
 @end

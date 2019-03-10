@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #import "SPRWebWindow.h"
-#import "SPRStatusMenu.h"
 
 static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
@@ -258,10 +257,6 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   } else if ([commandType isEqualToString:@"mousePosition"]) {
     NSPoint pos = [NSEvent mouseLocation];
     [self sendToPython:[NSString stringWithFormat:@"mousePosition\t%f\t%f", pos.x, pos.y] withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"screenSize"]) {
-    CGFloat width = NSScreen.mainScreen.frame.size.width;
-    CGFloat height = NSScreen.mainScreen.frame.size.height;
-    [self sendToPython:[NSString stringWithFormat:@"screenSize\t%f\t%f", width, height] withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"doLater"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
     float waitTime = [args[0] floatValue];
@@ -297,6 +292,12 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [response appendString:app.bundleIdentifier];
     [response appendString:@"\t"];
     [response appendString:app.localizedName];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"screenFrames"]){
+    NSMutableString *response = [[NSMutableString alloc] initWithString:@"screenFrames"];
+    for (NSScreen *screen in NSScreen.screens) {
+      [response appendFormat:@"\t%f %f %f %f", screen.frame.origin.x, screen.frame.origin.y, screen.frame.size.width, screen.frame.size.height];
+    }
     [self sendToPython:response withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
@@ -381,18 +382,31 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [[SPRSeed windowForId:windowId] setMovable:isMovable];
     NSString *response = [NSString stringWithFormat:@"window.setMovable\t%@\t%d", windowId, isMovable];
     [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"window.getIsWidget"]) {
+  } else if ([commandType isEqualToString:@"window.getInDesktop"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
     NSString *windowId = args[0];
-    BOOL isWidget = [[SPRSeed windowForId:windowId] isWidget];
-    NSString *response = [NSString stringWithFormat:@"window.getIsWidget\t%@\t%d", windowId, isWidget];
+    BOOL inDesktop = [[SPRSeed windowForId:windowId] inDesktop];
+    NSString *response = [NSString stringWithFormat:@"window.getInDesktop\t%@\t%d", windowId, inDesktop];
     [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"window.setIsWidget"]) {
+  } else if ([commandType isEqualToString:@"window.setInDesktop"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
     NSString *windowId = args[0];
-    BOOL isWidget = ![args[1] isEqualToString:@"0"];
-    [[SPRSeed windowForId:windowId] setIsWidget:isWidget];
-    NSString *response = [NSString stringWithFormat:@"window.setIsWidget\t%@\t%d", windowId, isWidget];
+    BOOL inDesktop = ![args[1] isEqualToString:@"0"];
+    [[SPRSeed windowForId:windowId] setInDesktop:inDesktop];
+    NSString *response = [NSString stringWithFormat:@"window.setInDesktop\t%@\t%d", windowId, inDesktop];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.getCollectionBehavior"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *windowId = args[0];
+    NSUInteger behaviorBitmask = [SPRSeed windowForId:windowId].collectionBehavior;
+    NSString *response = [NSString stringWithFormat:@"window.getCollectionBehavior\t%@\t%lu", windowId, (unsigned long)behaviorBitmask];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"window.setCollectionBehavior"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
+    NSString *windowId = args[0];
+    NSUInteger behaviorBitmask = [args[1] longLongValue];
+    [SPRSeed windowForId:windowId].collectionBehavior = behaviorBitmask;
+    NSString *response = [NSString stringWithFormat:@"window.setCollectionBehavior\t%@\t%lu", windowId, (unsigned long)behaviorBitmask];
     [self sendToPython:response withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"window.getMinSize"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
@@ -489,67 +503,6 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [SPRSeed sendMessage:message toWindow:windowId];
     NSString *response = [NSString stringWithFormat:@"window.sendMessage\t%@\t%@", windowId, message];
     [self sendToPython:response withUniqueId:uniqueId];
-/********** Status Bar **********/
-  } else if ([commandType isEqualToString:@"status.root.create"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
-    [SPRStatusMenu rootCreate:args[0]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.getSpace"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
-    NSString *response = [NSString stringWithFormat:@"status.root.getSpace\t%@\t%f", args[0], [SPRStatusMenu rootGetSpace:args[0]]];
-    [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.setSpace"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu root:args[0] setSpace:[args[1] floatValue]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.getText"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
-    NSString *response = [NSString stringWithFormat:@"status.root.getText\t%@\t%@", args[0], [SPRStatusMenu rootGetText:args[0]]];
-    [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.setText"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu root:args[0] setText:args[1]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.addChild"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:3];
-    [SPRStatusMenu root:args[0] addChild:args[1] atIndex:[args[2] integerValue]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.removeChild"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu root:args[0] removeChildAtIndex:[args[1] integerValue]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.root.destroy"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
-    [SPRStatusMenu rootDestroy:args[0]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.text.getText"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
-    NSString *response = [NSString stringWithFormat:@"status.text.getText\t%@\t%@", args[0], [SPRStatusMenu textGetText:args[0]]];
-    [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.text.setText"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu text:args[0] setText:args[1]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.text.addChild"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:3];
-    [SPRStatusMenu text:args[0] addChild:args[1] atIndex:[args[2] integerValue]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.text.removeChild"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu text:args[0] removeChildAtIndex:[args[1] integerValue]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.web.getIndexPath"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
-    NSString *response = [NSString stringWithFormat:@"status.web.getIndexPath\t%@\t%@", args[0], [SPRStatusMenu webGetIndexPath:args[0]]];
-    [self sendToPython:response withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.web.setIndexPath"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu web:args[0] setIndexPath:args[1]];
-    [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"status.web.sendMessage"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
-    [SPRStatusMenu web:args[0] sendMessage:args[1]];
-    [self sendToPython:command withUniqueId:uniqueId];
   } else {
     NSLog(@"Unrecognized Command: '%@'", command);
   }

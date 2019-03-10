@@ -35,7 +35,7 @@ static const int keyCodeConverter[130] = {
   CGPoint _initialMousePos;
   NSString *_windowId;
   SPRWebView *_webView;
-  BOOL _isWidget;
+  BOOL _inDesktop;
 }
 
 - (instancetype)initWithId:(NSString *)windowId {
@@ -45,7 +45,7 @@ static const int keyCodeConverter[130] = {
     self.opaque = NO;
     self.backgroundColor = NSColor.clearColor;
     self.delegate = self;
-    _isWidget = NO;
+    _inDesktop = NO;
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
@@ -64,13 +64,17 @@ static const int keyCodeConverter[130] = {
 
 # pragma mark - Super
 
-- (void)setIsWidget:(BOOL)isWidget {
-  _isWidget = isWidget;
-  self.level = kCGDesktopIconWindowLevel - 1;
+- (void)setInDesktop:(BOOL)inDesktop {
+  if (_inDesktop == inDesktop) return;
+  _inDesktop = inDesktop;
+  if (_inDesktop) {
+    self.level = kCGDesktopIconWindowLevel - 1;
+  } else {
+    self.level = 0;
+  }
 }
--(BOOL)isWidget {
-  self.level = 0;
-  return _isWidget;
+-(BOOL)inDesktop {
+  return _inDesktop;
 }
 
 - (BOOL)canBecomeKeyWindow { return _webView.supportsUserActions; }
