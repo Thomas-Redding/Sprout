@@ -15,15 +15,16 @@ class WindowSnapper:
 
         self.lastWindowMoved = None
         self.lastWindowMovedTime = 0
-        self.spr.listenForWindowMove(lambda windowNumber, windowName, bundleIdentifier, appName : self.windowMoved(windowNumber))
+        self.spr.listenForWindowMove(lambda liteWindow : self.windowMoved(liteWindow))
         self.spr.listenForMouseButtons(lambda button, goingDown : self.mouseButtonChanged(button, goingDown))
 
     # Typically takes between 0.1 and 0.4 seconds.
     def connectHotKeyToFrame(self, keyCode, cmd, opt, ctrl, shift, x, y, w, h):
         self.spr.listenForHotkey(keyCode, cmd, opt, ctrl, shift, lambda a, b, c, d, e : self.resizeMainWindow(x, y, w, h))
 
-    def windowMoved(self, windowNumber):
-        self.lastWindowMoved = windowNumber
+    def windowMoved(self, liteWindow):
+        self.spr.print('FOO:' + str(liteWindow.number()))
+        self.lastWindowMoved = liteWindow
         self.lastWindowMovedTime = time.time()
 
     def mouseButtonChanged(self, button, goingDown):

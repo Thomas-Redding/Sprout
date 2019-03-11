@@ -283,6 +283,18 @@ class Window:
         self._spr._server.sendAsynchronousMessage('window.close\t' + self._windowId, lambda x : x)
         self._windowId = None
 
+class LiteWindow:
+    def __init__(self, spr, windowNumber, bundleIdentifier, appName):
+        self._spr = spr
+        self._number = windowNumber
+        self._bundleIdentifier = bundleIdentifier
+        self._appName = appName
+    def number(self): return self._number
+    def setNumber(self, newVal): self._number = newVal
+    def bundleIdentifier(self): return self._bundleIdentifier
+    def setBundleIdentifier(self, newVal): self._bundleIdentifier = newVal
+    def appName(self): return self._appName
+    def setAppName(self, newVal): self._appName = newVal
 
 class Sprout:
     def __init__(self):
@@ -388,9 +400,9 @@ class Sprout:
     def mousePosition(self):
         return self._server.sendSynchronousMessage('mousePosition')
     
-    def moveWindow(self, windowNumber, x, y, width, height):
-        message = 'moveWindow'
-        message += '\t' + windowNumber
+    def moveWindow(self, liteWindow, x, y, width, height):
+        message = 'liteWindow.moveWindow'
+        message += '\t' + str(liteWindow.number())
         message += '\t' + str(x)
         message += '\t' + str(y)
         message += '\t' + str(width)
@@ -444,13 +456,13 @@ class Sprout:
             return (float(x), float(y))
         elif command == 'doLater' or command == 'repeat' or command == 'stopRepeat':
             None
-        elif command == 'windowMoved':
-            windowNumber, windowName, bundleIdentifier, appName = self.argArrayFromArgStr(argStr, 4)
-            return (windowNumber, windowName, bundleIdentifier, appName)
-        elif command == 'moveWindow':
+        elif command == 'liteWindow.windowMoved':
+            windowNumber, bundleIdentifier, appName = self.argArrayFromArgStr(argStr, 3)
+            return LiteWindow(self, windowNumber, bundleIdentifier, appName)
+        elif command == 'liteWindow.moveWindow':
             return None
         elif command == 'makeWindow':
-            None
+            return None
         elif command == 'screenFrames':
             frameStrings = argStr.split('\t')
             frames = []
@@ -544,10 +556,9 @@ class Sprout:
             button = parsedMessage
             for callback in self._mouseMoveCallbacks:
                 callback(button)
-        elif command == 'windowMoved':
-            windowNumber, windowName, bundleIdentifier, appName = parsedMessage
+        elif command == 'liteWindow.windowMoved':
             for callback in self._windowMovedCallbacks:
-                callback(windowNumber, windowName, bundleIdentifier, appName)
+                callback(parsedMessage)
         elif command == 'window.didBecomeMain':
             windowId = parsedMessage
             self._windows[parsedMessage].didBecomeMain()

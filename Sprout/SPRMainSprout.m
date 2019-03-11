@@ -69,8 +69,8 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   NSRunningApplication *app =
       [NSRunningApplication runningApplicationWithProcessIdentifier:windowInfo.processID.intValue];
   if (!app) return;
-  NSString *message = [NSString stringWithFormat:@"windowMoved\t%@\t%@\t%@\t%@", windowInfo.number,
-                       windowInfo.name, app.bundleIdentifier, app.localizedName];
+  NSString *message = [NSString stringWithFormat:@"liteWindow.windowMoved\t%@\t%@\t%@", windowInfo.number,
+                       app.bundleIdentifier, app.localizedName];
   [self sendToPython:message withUniqueId:[self generateUniqueId]];
 }
 - (void)windowRemoved {
@@ -277,7 +277,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     NSTimer *timer = [_idToTimer objectForKey:timerId];
     [timer invalidate];
     [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"moveWindow"]) {
+  } else if ([commandType isEqualToString:@"liteWindow.moveWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:5];
     NSString *windowNumber = args[0];
     CGFloat x = [args[1] floatValue];
@@ -285,7 +285,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     CGFloat w = [args[3] floatValue];
     CGFloat h = [args[4] floatValue];
     [SPRSeed setFrame:CGRectMake(x, y, w, h)
-   ofWindowWithNumber:[NSNumber numberWithUnsignedLongLong:[windowNumber integerValue]]];
+        ofWindowWithNumber:[NSNumber numberWithUnsignedLongLong:[windowNumber integerValue]]];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"frontmostApp"]) {
     NSRunningApplication *app = [NSWorkspace.sharedWorkspace frontmostApplication];
