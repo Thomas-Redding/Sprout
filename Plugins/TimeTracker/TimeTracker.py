@@ -20,11 +20,24 @@ class TimeTracker:
             info = self.spr.runAppleScript('tell application "TextEdit" to return path of front document')
         elif identifier == 'com.apple.dt.Xcode':
             info = self.spr.runAppleScript('tell application "Xcode" to return path of front document')
+        elif identifier == 'com.apple.systempreferences':
+            info = self.spr.runAppleScript('tell application "System Preferences" to get id of current pane')
+        elif identifier == 'com.apple.Terminal':
+            # https://stackoverflow.com/a/16073987
+            tty = self.spr.runAppleScript('tell application "Terminal" to tty of front tab of front window')[:-1]
+            cmd = """
+tell application "Terminal"
+    do shell script "lsof -a -p `lsof -a -c bash -u $USER -d 0 -n | tail -n +2 | awk '{if($NF==\"<tty>\"){print $2}}'` -d cwd -n | tail -n +2 | awk '{print $NF}'"
+end tell
+"""
+            cmd = cmd.replace('<tty>', tty)
+            info = self.spr.runAppleScript(cmd)
+            info = info[info.find('/'):]
+            # bash    31900 thomasredding  cwd    DIR    1,4      288 3506773 /Users/thomasredding/Projects/Sprout
         elif identifier == 'com.apple.finder':
             info = self.spr.runAppleScript('tell application "Finder" to return target of Finder window 1')
             reversedPath = info.replace(' of folder ', '/')[7:-17].split('/')
             info = '/'.join(reversedPath[::-1])
-            # Users/.../data/imports
         path = self.outputPath + '/' + datetime.datetime.today().strftime('%Y-%m-%d') + '.txt'
         with open(path, "a+") as myfile:
             # 1549868894  com.google.Chrome   https://en.wikipedia.org

@@ -37,6 +37,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
                                            selector:@selector(sproutMainTerminated)
                                                name:NSTaskDidTerminateNotification
                                              object:_task];
+  [self makeLaunchOnLogin];
   [NSNotificationCenter.defaultCenter
       addObserver:self
          selector:@selector(pythonSentMessage)
@@ -597,6 +598,25 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     }
   }
   return rtn;
+}
+
+- (void)makeLaunchOnLogin {
+  // This relies on a deprecated API.
+  // https://stackoverflow.com/a/23627055
+  NSURL *bundleURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+  LSSharedFileListRef loginItemsListRef = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
+  NSDictionary *properties;
+  properties = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.loginitem.HideOnLaunch"];
+  LSSharedFileListItemRef itemRef = LSSharedFileListInsertItemURL(loginItemsListRef,
+                                                                  kLSSharedFileListItemLast,
+                                                                  NULL,
+                                                                  NULL,
+                                                                  (__bridge CFURLRef)bundleURL,
+                                                                  (__bridge CFDictionaryRef)properties,
+                                                                  NULL);
+  if (itemRef) {
+    CFRelease(itemRef);
+  }
 }
 
 @end

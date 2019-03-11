@@ -17,12 +17,10 @@ class LocationWidget:
         self.update()
 
     def update(self):
-        self.spr.print('update')
         try:
             g = geocoder.ip('me')
             message = str(g.latlng[0]) + '\t' + str(g.latlng[1])
             message += '\t' + g.city
             self._window.sendMessage(message)
-            self.spr.print('')
         except:
             None
