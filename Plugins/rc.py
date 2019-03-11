@@ -25,7 +25,7 @@ locationWidget = LocationWidget.LocationWidget(spr)
 import os
 from TimeTracker import TimeTracker
 outputPath = os.path.expanduser('~') + '/Desktop/time-tracking/'
-timeTracker = TimeTracker.TimeTracker(spr, outputPath, 2)
+timeTracker = TimeTracker.TimeTracker(spr, outputPath, 10)
 
 from Launcher import Launcher
 launcher = Launcher.Launcher(spr)
