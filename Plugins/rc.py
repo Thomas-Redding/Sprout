@@ -44,4 +44,8 @@ from Launcher_File import Launcher_File
 fileLauncher = Launcher_File.Launcher_File(spr)
 launcher.plugins.append(fileLauncher)
 
+from Launcher_System import Launcher_System
+launcherSystem = Launcher_System.Launcher_System(spr)
+launcher.plugins.append(launcherSystem)
+
 spr.print('END LOADING')
