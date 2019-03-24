@@ -6,7 +6,8 @@ class LocationWidget:
     def __init__(self, spr):
         self.spr = spr
         self._window = self.spr.makeWindow()
-        # self._window.setInDesktop(True)
+        self._window.setInDesktop(True)
+        self._window.setSpaceBehavior(1)
         self._window.setVisible(True)
         self._window.setSupportsUserActions(False)
         screenSize = [self.spr.screenFrames()[0][2], self.spr.screenFrames()[0][3]]

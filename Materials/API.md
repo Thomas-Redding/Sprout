@@ -36,7 +36,11 @@ class Window:
   [float] maxSize # [width, height]
   bool movable
   bool supportsUserActions
-  bool isWidget # A widget is a non-movable, non-interactable window between file icons and the desktop wallpaper.
+  bool inDesktop     # Whether this window should appear beneath file icons.
+  int spaceBehavior  # 0 = Normal Window; 1 = All Spaces; 2 = ??
+  int exposeBehavior # 0 = Managed; 1 = Transient; 2 = Stationary
+  # Whether this window participates in the "Cycle Through Windows Window menu item"
+  bool participatesInCycle
 
 class Sprout:
   makeWindow(): Window
