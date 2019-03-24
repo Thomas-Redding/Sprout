@@ -49,7 +49,7 @@ class ServerAPI:
 
     def _pipe(self, message):
         uniqueId = helper.generateUniqueId()
-        sys.stdout.write(uniqueId + '\t' + message  + '\n')
+        sys.stdout.write(uniqueId + '\t' + message  + '\n\n')
         sys.stdout.flush()
         return uniqueId
     
@@ -386,15 +386,18 @@ class Sprout:
         except:
             return None
 
-    def searchFiles(self, maxResults, descendSubdirs, searchHidden, excludeDirs, excludeFiles, extensions, path, callback):
+    def searchFiles(self, filePattern, maxResults, descendSubdirs, includeHidden, includeDirs, includeFiles, skipNoIndex, extensions, path, pathsToExclude, callback):
         message = 'searchFiles\t'
+        message += str(filePattern) + '\t'
         message += str(maxResults) + '\t'
         message += ('1' if descendSubdirs else '0')
-        message += ('1' if searchHidden else '0')
-        message += ('1' if excludeDirs else '0')
-        message += ('1' if excludeFiles else '0')
+        message += ('1' if includeHidden else '0')
+        message += ('1' if includeDirs else '0')
+        message += ('1' if includeFiles else '0')
+        message += ('1' if skipNoIndex else '0')
         message += '\t' + ' '.join(extensions)
         message += '\t' + path
+        message += '\t' + '\t'.join(pathsToExclude)
         self._server.sendAsynchronousMessage(message, callback)
     
     def mousePosition(self):

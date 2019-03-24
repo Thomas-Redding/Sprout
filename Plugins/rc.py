@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0, '/Users/thomasredding/Projects/Sprout/Plugins')
 
+spr.listenForHotkey(44, True, True, False, False, lambda a, b, c, d, e : spr.quitSprout())
+
 spr.print('BEGIN LOADING')
 
 from WindowSnapper import WindowSnapper
@@ -15,7 +17,7 @@ windowSnapper.connectHotKeyToFrame(125, True, True, False, False, 0.5, 0.5, 0.5,
 # CMD + OPT + UpArrow
 windowSnapper.connectHotKeyToFrame(126, True, True, False, False, 0.5, 0.0, 0.5, 0.5)
 # CMD + OPT + /
-windowSnapper.connectHotKeyToFrame(44, True, True, False, False, 0.0, 0.0, 1.0, 1.0)
+# windowSnapper.connectHotKeyToFrame(44, True, True, False, False, 0.0, 0.0, 1.0, 1.0)
 
 
 
@@ -37,5 +39,10 @@ launcher.plugins.append(calculator)
 from GoogleSearch import GoogleSearch
 googleSearch = GoogleSearch.GoogleSearch(spr)
 launcher.plugins.append(googleSearch)
+
+from Launcher_File import Launcher_File
+fileLauncher = Launcher_File.Launcher_File(spr)
+# fileLauncher.pathsToExclude.append('~/Projects/fd75++.noindex')
+launcher.plugins.append(fileLauncher)
 
 spr.print('END LOADING')

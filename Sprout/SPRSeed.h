@@ -33,14 +33,16 @@ NS_ASSUME_NONNULL_BEGIN
  On modern computers, roughly 40,000 files can be found in a second.
  */
 @interface SPRFileSearchQuery : NSObject
+@property(nonatomic) NSString *filePattern;
 /* Whether or not to consider files in subdirs. */
 @property(nonatomic) BOOL descendSubdirs;
 /* Skip hidden files and dirs for both matching and descending. */
 @property(nonatomic) BOOL searchHidden;
 /* Include direcories in results/ */
-@property(nonatomic) BOOL excludeDirs;
+@property(nonatomic) BOOL includeDirs;
 /* Include files in results/ */
-@property(nonatomic) BOOL excludeFiles;
+@property(nonatomic) BOOL includeFiles;
+@property(nonatomic) BOOL skipNoIndex;
 /**
  The path to the dir whose contents to search.
  If nil, the query searches from the home directory.
@@ -48,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) NSString *path;
 /* The extensions to search for. If nil, this finds all files. */
 @property(nonatomic) NSSet<NSString *> *extensions;
+@property(nonatomic) NSSet<NSString *> *pathsToExclude;
 /**
  The maximum number of files to return. Files closest to the given `path` are prioritized.
  If 0, this returns all matching files. This is discouraged, because this can take a long time.

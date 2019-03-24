@@ -148,13 +148,13 @@ static id<SPRSeedDelegate> _delegate;
     
     if (!CGSizeEqualToSize(currentFrame.size, windowSize)) continue;
     if (fabs(currentFrame.origin.x - windowOrigin.x) + fabs(currentFrame.origin.y - windowOrigin.y) > 10) continue;
+    NSLog(@"TFR----------");
     
     // Since this window has the same process ID, size, and (roughly) position, its probably the one we want.
     AXValueRef positionRef = AXValueCreate(kAXValueCGPointType, &rect.origin);
     AXValueRef sizeRef = AXValueCreate(kAXValueCGSizeType, &rect.size);
     AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, positionRef);
     AXUIElementSetAttributeValue(windowRef, kAXSizeAttribute, sizeRef);
-    break;
   }
 }
 
@@ -424,41 +424,64 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   if ([query.path characterAtIndex:0] == '~') {
     query.path = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), [query.path substringFromIndex:1]];
   }
+  NSMutableSet<NSString *> *pathsToExclude = [NSMutableSet setWithArray:@[]];
+  for (NSString *path in query.pathsToExclude) {
+    if ([path characterAtIndex:0] == '~') {
+      NSString *expandedPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), [path substringFromIndex:1]];
+      [pathsToExclude addObject:expandedPath];
+    } else {
+      [pathsToExclude addObject:path];
+    }
+  }
   NSFileManager *manager = NSFileManager.defaultManager;
   NSMutableArray<NSString *> *rtn = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *queue = [[NSMutableArray alloc] initWithObjects:query.path, nil];
-  for (NSUInteger queueIndex = 0; queueIndex < queue.count; ++queueIndex) {
-    NSString *dirPath = queue[queueIndex];
-    NSArray<NSString *> *contents = [manager contentsOfDirectoryAtPath:dirPath error:nil];
-    for (NSString *p in contents) {
-      NSString *pa = [NSString stringWithFormat:@"%@/%@", dirPath, p];
-      BOOL isDir;
-      [manager fileExistsAtPath:pa isDirectory:&isDir];
-      if (isDir) {
-        if (!query.searchHidden) {
-          NSNumber *isHidden;
-          [[NSURL fileURLWithPath:pa] getResourceValue:&isHidden
-                                                forKey:NSURLIsHiddenKey
-                                                 error:nil];
-          if (isHidden.intValue) continue;
-        }
-        if (query.descendSubdirs) [queue addObject:pa];
-        if (!query.excludeDirs) [rtn addObject:pa];
-      } else {
-        if (query.extensions && ![query.extensions containsObject:pa.pathExtension]) continue;
-        if (!query.searchHidden) {
-          NSNumber *isHidden;
-          [[NSURL fileURLWithPath:pa] getResourceValue:&isHidden
-                                                forKey:NSURLIsHiddenKey
-                                                 error:nil];
-          if (isHidden.intValue) continue;
-        }
-        if (!query.excludeFiles) [rtn addObject:pa];
+  NSError *error;
+  NSRegularExpression *pattern =
+      [[NSRegularExpression alloc] initWithPattern:query.filePattern options:0 error:&error];
+  NSUInteger totalLength = 0;
+  
+  NSDirectoryEnumerationOptions options = 0;
+  if (!query.descendSubdirs) options |= NSDirectoryEnumerationSkipsSubdirectoryDescendants;
+  if (!query.searchHidden) options |= NSDirectoryEnumerationSkipsHiddenFiles;
+  // NSDirectoryEnumerationSkipsPackageDescendants
+  NSDirectoryEnumerator<NSURL *> *enumerator =
+      [manager enumeratorAtURL:[NSURL fileURLWithPath:query.path]
+    includingPropertiesForKeys:@[ NSURLIsDirectoryKey, NSURLIsHiddenKey, NSURLPathKey ]
+                       options:options
+                  errorHandler:nil];
+  for (NSURL *fileURL in enumerator) {
+    NSString *name = nil;
+    [fileURL getResourceValue:&name forKey:NSURLNameKey error:nil];
+    NSNumber *isDir;
+    [fileURL getResourceValue:&isDir forKey:NSURLIsDirectoryKey error:nil];
+    NSNumber *isHidden;
+    [fileURL getResourceValue:&isHidden forKey:NSURLIsHiddenKey error:nil];
+    if (!query.searchHidden && isHidden.intValue) continue;
+    if (isDir.intValue) {
+      if ([pathsToExclude containsObject:fileURL.path]) {
+        [enumerator skipDescendants];
+        continue;
+      }
+      if (query.skipNoIndex && [name hasSuffix:@".noindex"]) {
+        [enumerator skipDescendants];
+        continue;
+      }
+      if (query.includeDirs) {
+        if ([pattern rangeOfFirstMatchInString:name options:0 range:NSMakeRange(0, name.length)].location == NSNotFound) continue;
+        [rtn addObject:fileURL.path];
+        if (rtn.count >= query.maxResults) return rtn;
+      }
+    } else {
+      if (query.extensions && ![query.extensions containsObject:fileURL.pathExtension]) continue;
+      if (query.includeFiles) {
+        if ([pattern rangeOfFirstMatchInString:name options:0 range:NSMakeRange(0, name.length)].location == NSNotFound) continue;
+        [rtn addObject:fileURL.path];
         if (rtn.count >= query.maxResults) return rtn;
       }
     }
   }
-  return rtn;
+  return [rtn subarrayWithRange:NSMakeRange(0, MIN(rtn.count, query.maxResults))];
 }
 
 #pragma mark - Run Scripts - Public

@@ -15,6 +15,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   NSMutableDictionary<NSString *, NSTimer *> *_idToTimer;
   NSMutableDictionary<NSString *, NSRunningApplication *> *windowToOriginallyFocusedApp;
   NSMutableSet<NSString *> *_mouseMoveEventQueue;
+  NSMutableString *messageSoFar;
 };
 
 # pragma mark - Public
@@ -144,7 +145,6 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
   NSString *flushString = [NSString stringWithFormat:@"%@\t%@\n", uniqueId, string];
-  // NSLog(@"sendToPython:%@", flushString);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
   [_inPipe.fileHandleForWriting writeData:data];
 }
@@ -155,8 +155,15 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   [_outPipe.fileHandleForReading waitForDataInBackgroundAndNotify];
   NSArray<NSString *> *lines = [outStr componentsSeparatedByString:@"\n"];
   for (NSString *line in lines) {
-    if (line.length == 0) continue;
-    [self handleLineFromPython:line];
+    if (line.length == 0) {
+      if (messageSoFar) {
+        [self handleMessageFromPython:messageSoFar];
+        messageSoFar = nil;
+      }
+    } else {
+      if (!messageSoFar) messageSoFar = [[NSMutableString alloc] init];
+      [messageSoFar appendString:line];
+    }
   }
 }
 
@@ -167,8 +174,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   return [NSString stringWithFormat:@"x%lu", _DoNotUseMe_UniqueId];
 }
 
-- (void)handleLineFromPython:(NSString *)line {
-  // NSLog(@"handleLineFromPython:%@", line);
+- (void)handleMessageFromPython:(NSString *)line {
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
@@ -192,19 +198,26 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
                            andSelector:@selector(hotkeyPressed:withFlags:)];
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"searchFiles"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:4];
-    NSUInteger maxResults = [args[0] integerValue];
-    NSString *flags = args[1];
-    NSArray<NSString *> *extensions = [args[2] componentsSeparatedByString:@" "];
-    NSString *path = args[3];
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:6];
+    NSString *filePattern = args[0];
+    NSUInteger maxResults = [args[1] integerValue];
+    NSString *flags = args[2];
+    NSArray<NSString *> *extensions = [args[3] componentsSeparatedByString:@" "];
+    if (extensions.count == 1 && !extensions[0].length) extensions = nil;
+    NSString *path = args[4];
+    NSArray<NSString *> *pathsToExclude = [[args objectAtIndex:5] componentsSeparatedByString:@"\t"];
+    if (pathsToExclude.count == 1 && !pathsToExclude[0].length) pathsToExclude = @[];
     SPRFileSearchQuery *query = [[SPRFileSearchQuery alloc] init];
+    query.filePattern = filePattern;
     query.maxResults = maxResults;
     query.descendSubdirs = ([flags characterAtIndex:0] != '0');
     query.searchHidden = ([flags characterAtIndex:1] != '0');
-    query.excludeDirs = ([flags characterAtIndex:2] != '0');
-    query.excludeFiles = ([flags characterAtIndex:3] != '0');
-    query.extensions = [NSSet setWithArray:extensions];
+    query.includeDirs = ([flags characterAtIndex:2] != '0');
+    query.includeFiles = ([flags characterAtIndex:3] != '0');
+    query.skipNoIndex = ([flags characterAtIndex:4] != '0');
+    query.extensions = extensions ? [NSSet setWithArray:extensions] : nil;
     query.path = path;
+    query.pathsToExclude = [NSSet setWithArray:pathsToExclude];
     NSArray<NSString *> *matches = [SPRSeed searchFilesWithQuery:query];
     NSMutableString *response = [NSMutableString stringWithString:@"searchFiles"];
     for (NSString *match in matches) {

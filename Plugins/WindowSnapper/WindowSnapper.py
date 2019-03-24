@@ -23,7 +23,6 @@ class WindowSnapper:
         self.spr.listenForHotkey(keyCode, cmd, opt, ctrl, shift, lambda a, b, c, d, e : self.resizeMainWindow(x, y, w, h))
 
     def windowMoved(self, liteWindow):
-        self.spr.print('FOO:' + str(liteWindow.number()))
         self.lastWindowMoved = liteWindow
         self.lastWindowMovedTime = time.time()
 
@@ -36,10 +35,10 @@ class WindowSnapper:
         for frame in frames:
             relX = x - frame[0]
             relY = y - frame[1]
-            if 0 < relX < self.padding: horizontal = 'left'
+            if 0 <= relX <= self.padding: horizontal = 'left'
             elif frame[2] - self.padding <= relX <= frame[2]: horizontal = 'right'
             else: horizontal = 'center'
-            if 0 < relY < self.padding: vertical = 'bottom'
+            if 0 <= relY <= self.padding: vertical = 'bottom'
             elif frame[3] - self.padding <= relY <= frame[3]: vertical = 'top'
             else: vertical = 'center'
             if horizontal == 'left':
@@ -101,7 +100,6 @@ end tell"""
             screenOfFocusedWindow = screens[0]
             newFrame = [0, 0, 0, 0]
         else:
-            self.spr.print('[WindowSnapper] ERROR: 0 Screens')
             return None
         if newX != -1:      newFrame[0] = newX * screenOfFocusedWindow[2]     + screenOfFocusedWindow[0]
         if newY != -1:      newFrame[1] = newY * screenOfFocusedWindow[3]     + screenOfFocusedWindow[1]

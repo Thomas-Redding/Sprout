@@ -61,8 +61,7 @@ class Sprout:
   doLater(float waitTime, function callback)
   repeat(float waitTime, function callback): string # returns a unique timerId
   stopRepeat(string timerId, function callback)
-  searchFiles(int maxResults, bool descendSubdirs, bool searchHidden, bool excludeDirs, bool excludeFiles, bool extensions,
-      str path, function callback): [string]
+  searchFiles(str filePattern, int maxResults, bool descendSubdirs, bool includeHidden, bool includeDirs, bool includeFiles, [str] extensions, str path, [str] pathsToExclude, function callback)
 
 spr = Sprout()
 ```
