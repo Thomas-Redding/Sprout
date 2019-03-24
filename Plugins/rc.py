@@ -42,7 +42,6 @@ launcher.plugins.append(googleSearch)
 
 from Launcher_File import Launcher_File
 fileLauncher = Launcher_File.Launcher_File(spr)
-# fileLauncher.pathsToExclude.append('~/Projects/fd75++.noindex')
 launcher.plugins.append(fileLauncher)
 
 spr.print('END LOADING')
