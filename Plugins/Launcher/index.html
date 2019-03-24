@@ -1,10 +1,14 @@
+<script src="search.js"></script>
 <script>
 
+var search;
 onload = () => {
-  document.getElementById('lorem').value = '';
-  document.getElementById('lorem').onkeyup = (event) => {
-    spr.send('query\t' + document.getElementById('lorem').value);
-  };
+  var div = document.getElementById('lorem');
+  div.classList.add('search');
+  search = new Search(div);
+  search.onchange = (value) => {
+    spr.send('query\t' + value);
+  }
   spr.receive = (message) => {
     var i = message.indexOf('\t');
     if (i == -1) i = message.length;
@@ -14,17 +18,16 @@ onload = () => {
       arg = JSON.parse(message.substr(i+1));
     } catch (err) {}
     if (command == 'suggestions') {
-      queryResults = arg
-      var html = '';
-      for (var result of queryResults) {
-        html += '<tr><td>' + result[2] + '</td></tr>';
-      }
-      document.getElementById('resultsTable').innerHTML = html;
+      search.setSuggestions(arg);
     } else if (command == 'clear') {
-      document.getElementById('lorem').value = '';
-      document.getElementById('resultsTable').innerHTML = '';
+      search.setSuggestions([]);
     }
   };
+  search.onsubmit = (value) => {
+    search.setSuggestions([]);
+    search.setValue('');
+    spr.send('submit\t' + value);
+  }
   spr.hotkeyCallbacks = [(c, keyCode, cmd, opt, ctrl, shift) => {
     var s = '';
     if (cmd) s += 'cmd+';
@@ -33,7 +36,6 @@ onload = () => {
     if (shift) s += 'shift+';
     s += c;
   }];
-  disableSmartPunctuationForTextInput(document.getElementById('lorem'));
 }
 
 function disableSmartPunctuationForTextInput(element) {
@@ -69,25 +71,25 @@ body {
   margin: 0;
   background-color: none;
 }
-#lorem {
+.search > input {
   display: block;
-  width: 100vw;
-  font-size: 32px;
+  width: 100%;
+  background-color: #333;
   color: white;
   border: none;
-  border-bottom: 1px solid #888;
-  background-color: #444;
-  font-family: sans-serif;
+  font-size: 2em;
+  margin: 0;
 }
-#resultsTable {
-  color: white;
-  width: 100vw;
-  border-collapse: collapse;
-  font-size: 24px;
+.search > table {
   background-color: #444;
-  font-family: sans-serif;
+  color: white;
+  width: 100%;
+  border-collapse: collapse;
+  cursor: pointer;
+  font-size: 2em;
+}
+.search > table > tbody > tr.selected {
+  background-color: #222;
 }
 </style>
-<input id="lorem" type="text">
-<table id="resultsTable"><tbody>
-</tbody></table>
+<div id="lorem"></div>

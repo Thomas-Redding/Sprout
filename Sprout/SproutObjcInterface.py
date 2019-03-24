@@ -532,6 +532,9 @@ class Sprout:
         elif command == 'window.getSupportsUserActions' or command == 'window.setSupportsUserActions':
             windowId, value = self.argArrayFromArgStr(argStr, 2)
             return value
+        elif command == 'window.getCollectionBehavior' or command == 'window.setCollectionBehavior':
+             windowId, value = self.argArrayFromArgStr(argStr, 2)
+             return int(value)
         elif command == 'window.getIsWidget' or command == 'window.setIsWidget':
             windowId, value = self.argArrayFromArgStr(argStr, 2)
             return value

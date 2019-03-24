@@ -29,16 +29,17 @@ from TimeTracker import TimeTracker
 outputPath = os.path.expanduser('~') + '/Desktop/time-tracking/'
 timeTracker = TimeTracker.TimeTracker(spr, outputPath, 10)
 
+
 from Launcher import Launcher
 launcher = Launcher.Launcher(spr)
 
-from Calculator import Calculator
-calculator = Calculator.Calculator()
-launcher.plugins.append(calculator)
+from Launcher_Calculator import Launcher_Calculator
+calculatorLauncher = Launcher_Calculator.Launcher_Calculator()
+launcher.plugins.append(calculatorLauncher)
 
-from GoogleSearch import GoogleSearch
-googleSearch = GoogleSearch.GoogleSearch(spr)
-launcher.plugins.append(googleSearch)
+from Launcher_GoogleSearch import Launcher_GoogleSearch
+googleSearchLauncher = Launcher_GoogleSearch.Launcher_GoogleSearch(spr)
+launcher.plugins.append(googleSearchLauncher)
 
 from Launcher_File import Launcher_File
 fileLauncher = Launcher_File.Launcher_File(spr)

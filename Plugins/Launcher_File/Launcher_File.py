@@ -1,15 +1,16 @@
 import json
-from math import *
-import requests # pip install requests;
+import os
 
 class Launcher_File:
     def __init__(self, spr):
         self.spr = spr
         self.validExtensions = [
-            'jpg', 'png', 'gif',
-            'mp4',
-            'txt', 'md', 'doc', 'docx',
-            'py', 'h', 'c', 'cpp', 'm'
+            'gif', 'jpeg', 'jpg', 'pdf', 'png', 'svg', 'tif',
+            'avi', 'flv', 'mp4', 'webm',
+            'doc', 'docx', 'md', 'txt',
+            'xlsx',
+            'c', 'css', 'cpp', 'h', 'html', 'js', 'm', 'py', 'sh',
+            'diff', 'dmg', 'json', 'sql', 'xml', 'tgz', 'zip',
         ]
         self.path = '~'
         self.pathsToExclude = [ '~/Library', '~/Music' ]
@@ -29,11 +30,14 @@ class Launcher_File:
             response = responses[i]
             if response == '': continue
             x = '&nbsp;/&nbsp;'.join(response.split('/')[::-1])
-            rtn.append([response, 100-i, x])
+            rtn.append(['Launcher_File:' + response, 100-i, x])
         callback(rtn)
 
     def action(self, key):
-        self.spr.print('qq:' + key)
+        if key[0:14] == 'Launcher_File:':
+            os.system("open " + key[14:])
+            return True
+        return False
 
     def suggest(self, query, callback):
         spaceIndex = query.index(' ')

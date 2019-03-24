@@ -1,8 +1,9 @@
 import json
-from math import *
 import requests # pip install requests;
+import webbrowser
 
-class GoogleSearch:
+
+class Launcher_GoogleSearch:
 
     def __init__(self, spr):
         self.spr = spr
@@ -14,12 +15,15 @@ class GoogleSearch:
         rtn = []
         for i in range(len(responses)):
             response = responses[i]
-            rtn.append([response, 5-i, response])
+            rtn.append(['Launcher_GoogleSearch:' + response, 5-i, response])
         callback(rtn)
 
     def action(self, key):
-        # TODO: Navigate to result...
-        None
+        if key[0:22] == 'Launcher_GoogleSearch:':
+            url = 'https://www.google.com/search?q=' + key[22:].replace(' ', '+')
+            webbrowser.open(url)
+            return True
+        return False
 
     def googleSuggest(self, s):
         if s == '': return []

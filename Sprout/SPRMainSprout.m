@@ -8,6 +8,7 @@
 static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 @implementation SPRMainSprout {
+  BOOL shouldLogAllPipes;
   NSTask *_task;
   NSPipe *_inPipe;
   NSPipe *_outPipe;
@@ -21,6 +22,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 # pragma mark - Public
 
 - (void)launch {
+  shouldLogAllPipes = YES;
   _DoNotUseMe_UniqueId = 0;
   _mouseMoveEventQueue = [[NSMutableSet alloc] init];
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
@@ -145,6 +147,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
   NSString *flushString = [NSString stringWithFormat:@"%@\t%@\n", uniqueId, string];
+  if (shouldLogAllPipes) NSLog(@"  TO PYTHON:%@", flushString);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
   [_inPipe.fileHandleForWriting writeData:data];
 }
@@ -175,6 +178,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 }
 
 - (void)handleMessageFromPython:(NSString *)line {
+  if (shouldLogAllPipes) NSLog(@"FROM PYTHON:%@", line);
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];

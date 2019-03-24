@@ -1,6 +1,7 @@
 from math import *
+import os
 
-class Calculator:
+class Launcher_Calculator:
 
     def __init__(self):
         self.supportedMethods = {'acos': acos, 'asin': asin, 'atan': atan, 'atan2': atan2, 'ceil': ceil,
@@ -14,8 +15,11 @@ class Calculator:
         result = None
         try: result = str(eval(userInput, {"__builtins__":None}, self.supportedMethods))
         except: return None
-        callback([(result, 10, result)])
+        callback([('Launcher_Calculator:' + result, 10, result)])
 
     def action(self, key):
-        # TODO: Copy to clipboard.
-        None
+        if key[0:20] == 'Launcher_Calculator:':
+            # Copy to clipboard.
+            os.system('echo "' + key[20:] + '" | tr -d "\n" | pbcopy')
+            return True
+        return False
