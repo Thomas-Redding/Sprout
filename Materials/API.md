@@ -51,6 +51,8 @@ class Sprout:
   
   # Async methods
   print(str s) # Print to Sprout's console.
+  # For keyCodes, see https://stackoverflow.com/a/16125341 or
+  # https://eastmanreference.com/complete-list-of-applescript-key-codes
   listenForHotkey(self, int keyCode, bool cmd, bool opt, bool ctrl, bool shift, function callback) # (async)
   listenForMouseButtons(function callbac)
   listenForMouseMove(function callbac)

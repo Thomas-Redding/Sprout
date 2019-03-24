@@ -21,6 +21,7 @@ onload = () => {
       search.setSuggestions(arg);
     } else if (command == 'clear') {
       search.setSuggestions([]);
+      search.setValue('');
     }
   };
   search.onsubmit = (value) => {

@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 /* Include files in results/ */
 @property(nonatomic) BOOL includeFiles;
 @property(nonatomic) BOOL skipNoIndex;
+@property(nonatomic) BOOL caseSensitive;
 /**
  The path to the dir whose contents to search.
  If nil, the query searches from the home directory.

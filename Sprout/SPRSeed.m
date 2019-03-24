@@ -435,20 +435,19 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   }
   NSFileManager *manager = NSFileManager.defaultManager;
   NSMutableArray<NSString *> *rtn = [[NSMutableArray alloc] init];
-  NSMutableArray<NSString *> *queue = [[NSMutableArray alloc] initWithObjects:query.path, nil];
   NSError *error;
+  NSRegularExpressionOptions options = query.caseSensitive ? 0 : NSRegularExpressionCaseInsensitive;
   NSRegularExpression *pattern =
-      [[NSRegularExpression alloc] initWithPattern:query.filePattern options:0 error:&error];
-  NSUInteger totalLength = 0;
+      [[NSRegularExpression alloc] initWithPattern:query.filePattern options:options error:&error];
   
-  NSDirectoryEnumerationOptions options = 0;
-  if (!query.descendSubdirs) options |= NSDirectoryEnumerationSkipsSubdirectoryDescendants;
-  if (!query.searchHidden) options |= NSDirectoryEnumerationSkipsHiddenFiles;
+  NSDirectoryEnumerationOptions enumOptions = 0;
+  if (!query.descendSubdirs) enumOptions |= NSDirectoryEnumerationSkipsSubdirectoryDescendants;
+  if (!query.searchHidden) enumOptions |= NSDirectoryEnumerationSkipsHiddenFiles;
   // NSDirectoryEnumerationSkipsPackageDescendants
   NSDirectoryEnumerator<NSURL *> *enumerator =
       [manager enumeratorAtURL:[NSURL fileURLWithPath:query.path]
     includingPropertiesForKeys:@[ NSURLIsDirectoryKey, NSURLIsHiddenKey, NSURLPathKey ]
-                       options:options
+                       options:enumOptions
                   errorHandler:nil];
   for (NSURL *fileURL in enumerator) {
     NSString *name = nil;

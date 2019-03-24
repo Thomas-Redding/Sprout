@@ -19,10 +19,11 @@ class Launcher:
 
     def toggleWindowHide(self):
         isVisible = self._window.visible()
-        if isVisible: self._window.returnOwnership()
+        if isVisible:
+            self._window.sendMessage('clear')
+            self._window.returnOwnership()
         else:
             self._window.borrowOwnership()
-            self._window.sendMessage('clear')
 
     def server(self, requestStr):
         tabIndex = requestStr.find('\t')

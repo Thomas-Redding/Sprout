@@ -45,11 +45,11 @@ class Launcher_File:
         regexStr = query[spaceIndex+1:]
         if regexStr == '': callback([])
         if ext == 'o':
-            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, True, True, True, [], self.path, self.pathsToExclude, callback)
+            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, True, True, True, False, [], self.path, self.pathsToExclude, callback)
         elif ext == 'fo':
-            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, True, False, True, [], self.path, self.pathsToExclude, callback)
+            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, True, False, True, False, [], self.path, self.pathsToExclude, callback)
         else:
-            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, False, True, True, [ext], self.path, self.pathsToExclude, callback)
+            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, False, True, True, False, [ext], self.path, self.pathsToExclude, callback)
 
     def unescape(self, s):
         state = 0

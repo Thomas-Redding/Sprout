@@ -22,7 +22,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 # pragma mark - Public
 
 - (void)launch {
-  shouldLogAllPipes = YES;
+  shouldLogAllPipes = NO;
   _DoNotUseMe_UniqueId = 0;
   _mouseMoveEventQueue = [[NSMutableSet alloc] init];
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
@@ -219,6 +219,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     query.includeDirs = ([flags characterAtIndex:2] != '0');
     query.includeFiles = ([flags characterAtIndex:3] != '0');
     query.skipNoIndex = ([flags characterAtIndex:4] != '0');
+    query.caseSensitive = ([flags characterAtIndex:5] != '0');
     query.extensions = extensions ? [NSSet setWithArray:extensions] : nil;
     query.path = path;
     query.pathsToExclude = [NSSet setWithArray:pathsToExclude];

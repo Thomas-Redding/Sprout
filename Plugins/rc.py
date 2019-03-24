@@ -1,8 +1,6 @@
 import sys
 sys.path.insert(0, '/Users/thomasredding/Projects/Sprout/Plugins')
 
-spr.listenForHotkey(44, True, True, False, False, lambda a, b, c, d, e : spr.quitSprout())
-
 spr.print('BEGIN LOADING')
 
 from WindowSnapper import WindowSnapper
@@ -17,12 +15,12 @@ windowSnapper.connectHotKeyToFrame(125, True, True, False, False, 0.5, 0.5, 0.5,
 # CMD + OPT + UpArrow
 windowSnapper.connectHotKeyToFrame(126, True, True, False, False, 0.5, 0.0, 0.5, 0.5)
 # CMD + OPT + /
-# windowSnapper.connectHotKeyToFrame(44, True, True, False, False, 0.0, 0.0, 1.0, 1.0)
-
+windowSnapper.connectHotKeyToFrame(44, True, True, False, False, 0.0, 0.0, 1.0, 1.0)
 
 
 from LocationWidget import LocationWidget
 locationWidget = LocationWidget.LocationWidget(spr)
+
 
 import os
 from TimeTracker import TimeTracker

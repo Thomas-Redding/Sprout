@@ -386,7 +386,7 @@ class Sprout:
         except:
             return None
 
-    def searchFiles(self, filePattern, maxResults, descendSubdirs, includeHidden, includeDirs, includeFiles, skipNoIndex, extensions, path, pathsToExclude, callback):
+    def searchFiles(self, filePattern, maxResults, descendSubdirs, includeHidden, includeDirs, includeFiles, skipNoIndex, caseSensitive, extensions, path, pathsToExclude, callback):
         message = 'searchFiles\t'
         message += str(filePattern) + '\t'
         message += str(maxResults) + '\t'
@@ -395,6 +395,7 @@ class Sprout:
         message += ('1' if includeDirs else '0')
         message += ('1' if includeFiles else '0')
         message += ('1' if skipNoIndex else '0')
+        message += ('1' if caseSensitive else '0')
         message += '\t' + ' '.join(extensions)
         message += '\t' + path
         message += '\t' + '\t'.join(pathsToExclude)
@@ -532,6 +533,9 @@ class Sprout:
         elif command == 'window.getSupportsUserActions' or command == 'window.setSupportsUserActions':
             windowId, value = self.argArrayFromArgStr(argStr, 2)
             return value
+        elif command == 'window.getInDesktop' or command == 'window.setInDesktop':
+            windowId, value = self.argArrayFromArgStr(argStr, 2)
+            return bool(value)
         elif command == 'window.getCollectionBehavior' or command == 'window.setCollectionBehavior':
              windowId, value = self.argArrayFromArgStr(argStr, 2)
              return int(value)
