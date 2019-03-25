@@ -5,7 +5,7 @@ class Launcher_System:
 
     def query(self, userInput, callback):
         if 'quit sprout'[0:len(userInput)] == userInput.lower():
-            callback([('Launcher_System:quitSprout', 1000, 'Quit Sprout')])
+            callback([('Launcher_System:quitSprout', 1000, 'quit Sprout')])
 
     def action(self, key):
         if key == 'Launcher_System:quitSprout':

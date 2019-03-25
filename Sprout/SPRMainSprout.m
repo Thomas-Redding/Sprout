@@ -308,6 +308,22 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     CGFloat h = [args[3] floatValue];
     [SPRSeed setFrontmostWindowFrame:CGRectMake(x, y, w, h)];
     [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"define"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *word = args[0];
+    NSArray<NSArray<NSString *> *> *arr = [SPRSeed dictionaryEntryForWord:word];
+    if (arr.count == 0) {
+      [self sendToPython:@"" withUniqueId:uniqueId];
+    } else {
+      NSMutableString *message = [[NSMutableString alloc] initWithString:@"define"];
+      for (int i = 0; i < arr.count; ++i) {
+        [message appendString:@"\t"];
+        [message appendString:[arr[i][0] stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"]];
+        [message appendString:@"\t"];
+        [message appendString:[arr[i][1] stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"]];
+      }
+      [self sendToPython:message withUniqueId:uniqueId];
+    }
   } else if ([commandType isEqualToString:@"liteWindow.moveWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:5];
     NSString *windowNumber = args[0];

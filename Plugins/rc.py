@@ -51,4 +51,10 @@ from Launcher_System import Launcher_System
 launcherSystem = Launcher_System.Launcher_System(spr)
 launcher.plugins.append(launcherSystem)
 
+from Launcher_Dictionary import Launcher_Dictionary
+launcherDictionary = Launcher_Dictionary.Launcher_Dictionary(spr)
+launcher.plugins.append(launcherDictionary)
+
 spr.print('END LOADING')
+
+spr.print('!!' + str(spr.runningApps()))

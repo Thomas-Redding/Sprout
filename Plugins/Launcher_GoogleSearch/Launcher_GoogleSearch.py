@@ -15,7 +15,7 @@ class Launcher_GoogleSearch:
         rtn = []
         for i in range(len(responses)):
             response = responses[i]
-            rtn.append(['Launcher_GoogleSearch:' + response, 5-i, response])
+            rtn.append(['Launcher_GoogleSearch:' + response, 5-i, 'google ' + response])
         callback(rtn)
 
     def action(self, key):

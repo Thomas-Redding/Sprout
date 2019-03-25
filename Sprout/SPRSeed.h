@@ -153,6 +153,11 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 
 + (CGRect)getFrontmostWindowFrame;
 + (void)setFrontmostWindowFrame:(CGRect)windowFrame;
+
+// Note: rtn.count may be greater than 1.
+// rtn[i][0] = text
+// rtn[i][1] = html
++ (NSArray<NSArray<NSString *> *> *)dictionaryEntryForWord:(NSString *)word;
 @end
 
 NS_ASSUME_NONNULL_END

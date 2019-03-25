@@ -15,7 +15,7 @@ class Launcher_Calculator:
         result = None
         try: result = str(eval(userInput, {"__builtins__":None}, self.supportedMethods))
         except: return None
-        callback([('Launcher_Calculator:' + result, 10, result)])
+        callback([('Launcher_Calculator:' + result, 10, '=' + result)])
 
     def action(self, key):
         if key[0:20] == 'Launcher_Calculator:':

@@ -424,6 +424,10 @@ class Sprout:
         message += '\t' + str(newFrame[3])
         return self._server.sendSynchronousMessage(message)
     
+    def define(self, word):
+        message = 'define\t' + word;
+        return self._server.sendSynchronousMessage(message)
+    
     def doLater(self, waitTime, callback):
         self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
 
@@ -492,6 +496,19 @@ class Sprout:
                 frames[i][2] = float(frames[i][2])
                 frames[i][3] = float(frames[i][3])
             return frames
+        elif command == 'define':
+            argsLeft = argStr
+            args = []
+            while True:
+                index = argsLeft.find('\t')
+                if index == -1: break
+                args.append(argsLeft[0:index])
+                argsLeft = argsLeft[index + 1:]
+            args.append(argsLeft)
+            rtn = []
+            for i in range(0, len(args), 2):
+                rtn.append([args[i], args[i+1]])
+            return rtn
         elif command == 'window.setFrame' or command == 'window.getFrame':
             windowId, x, y, w, h = self.argArrayFromArgStr(argStr, 5)
             x = float(x)

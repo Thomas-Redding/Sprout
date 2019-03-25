@@ -9,6 +9,7 @@
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #import <Contacts/Contacts.h>
+#import <CoreServices/CoreServices.h>
 
 #import "SPRSeed.h"
 #import "SPRWebWindow.h"
@@ -64,7 +65,7 @@ static id<SPRSeedDelegate> _delegate;
 + (void)initialize {
   if (self == [SPRSeed self]) {
     // Commented out to speed up development.
-    [self requestA11y];
+    // [self requestA11y];
     
     // Hotkey Events
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
@@ -300,6 +301,44 @@ static id<SPRSeedDelegate> _delegate;
   AXUIElementSetAttributeValue(frontWindow, kAXPositionAttribute, positionRef);
   AXUIElementSetAttributeValue(frontWindow, kAXSizeAttribute, sizeRef);
   CFRelease(frontWindow);
+}
+
+extern CFArrayRef DCSCopyAvailableDictionaries();
+extern CFStringRef DCSDictionaryGetName(DCSDictionaryRef dictionary);
+extern CFArrayRef DCSCopyRecordsForSearchString(DCSDictionaryRef dictionary, CFStringRef string, void *, void *);
+extern CFStringRef DCSRecordGetHeadword(CFTypeRef record);
+extern CFStringRef DCSRecordCopyData(CFTypeRef record, long version);
+
++ (NSArray<NSArray<NSString *> *> *)dictionaryEntryForWord:(NSString *)word {
+  id goodDictionary; // DCSDictionaryRef
+  for (id dictionary in (__bridge NSArray *)DCSCopyAvailableDictionaries()) {
+    NSString *name = (__bridge NSString *)DCSDictionaryGetName((__bridge DCSDictionaryRef)dictionary);
+    if ([name isEqualToString:@"New Oxford American Dictionary"]) {
+      goodDictionary = dictionary;
+    }
+  }
+
+  CFRange termRange = DCSGetTermRangeInString((__bridge DCSDictionaryRef)goodDictionary, (__bridge CFStringRef)word, 0);
+  if (termRange.location == kCFNotFound) {
+    return @[];
+  }
+  NSString *term = [word substringWithRange:NSMakeRange(termRange.location, termRange.length)];
+  CFArrayRef c = DCSCopyRecordsForSearchString((__bridge DCSDictionaryRef)goodDictionary, (__bridge CFStringRef)term, NULL, NULL);
+  NSArray *records = (__bridge_transfer NSArray *)c;
+  NSMutableArray<NSArray<NSString *> *> *rtn = [[NSMutableArray alloc] init];
+  if (records) {
+    for (id record in records) {
+      CFStringRef d = DCSRecordGetHeadword((__bridge CFTypeRef)record);
+      NSString *headword = (__bridge NSString *)d;
+      if (headword) {
+        NSString *definition = (__bridge_transfer NSString*)DCSCopyTextDefinition((__bridge DCSDictionaryRef)goodDictionary, (__bridge CFStringRef)headword, CFRangeMake(0, [headword length]));
+        CFStringRef e = DCSRecordCopyData((__bridge CFTypeRef)record, 0);
+        NSString *html = (__bridge_transfer NSString*)e;
+        [rtn addObject:@[definition, html]];
+      }
+    }
+  }
+  return rtn;
 }
 
 # pragma mark - Private
