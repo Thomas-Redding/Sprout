@@ -56,5 +56,3 @@ launcherDictionary = Launcher_Dictionary.Launcher_Dictionary(spr)
 launcher.plugins.append(launcherDictionary)
 
 spr.print('END LOADING')
-
-spr.print('!!' + str(spr.runningApps()))

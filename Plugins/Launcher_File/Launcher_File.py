@@ -35,7 +35,7 @@ class Launcher_File:
 
     def action(self, key):
         if key[0:14] == 'Launcher_File:':
-            os.system("open " + key[14:])
+            os.system('open "' + key[14:] + '"')
             return True
         return False
 
