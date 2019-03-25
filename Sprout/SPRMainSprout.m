@@ -22,7 +22,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 # pragma mark - Public
 
 - (void)launch {
-  shouldLogAllPipes = NO;
+  shouldLogAllPipes = YES;
   _DoNotUseMe_UniqueId = 0;
   _mouseMoveEventQueue = [[NSMutableSet alloc] init];
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
@@ -111,6 +111,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 - (void)mouseMove:(NSEventType)eventType {
   // Note: left mouse button takes precedence over right.
+  /*
   switch (eventType) {
     case NSEventTypeMouseMoved:
       [_mouseMoveEventQueue addObject:@"mouseMove\t0"];
@@ -127,7 +128,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     default:
       [self assert:NO message:@"Unknown eventType in mouseMove:"];
       break;
-  }
+  }*/
 }
 
 - (void)webWindowDidLoad:(NSString *)windowId {
@@ -147,7 +148,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
   NSString *flushString = [NSString stringWithFormat:@"%@\t%@\n", uniqueId, string];
-  if (shouldLogAllPipes) NSLog(@"  TO PYTHON:%@", flushString);
+  if (shouldLogAllPipes) NSLog(@"  TO PYTHON:%@", [flushString substringToIndex:MIN(flushString.length, 200)]);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
   [_inPipe.fileHandleForWriting writeData:data];
 }
@@ -178,7 +179,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 }
 
 - (void)handleMessageFromPython:(NSString *)line {
-  if (shouldLogAllPipes) NSLog(@"FROM PYTHON:%@", line);
+  if (shouldLogAllPipes) NSLog(@"FROM PYTHON:%@", [line substringToIndex:MIN(line.length, 200)]);
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
@@ -295,6 +296,18 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     NSTimer *timer = [_idToTimer objectForKey:timerId];
     [timer invalidate];
     [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"getFrontmostWindowFrame"]) {
+    CGRect frame = [SPRSeed getFrontmostWindowFrame];
+    NSString *message = [NSString stringWithFormat:@"getFrontmostWindowFrame\t%f\t%f\t%f\t%f", frame];
+    [self sendToPython:message withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"setFrontmostWindowFrame"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:4];
+    CGFloat x = [args[0] floatValue];
+    CGFloat y = [args[1] floatValue];
+    CGFloat w = [args[2] floatValue];
+    CGFloat h = [args[3] floatValue];
+    [SPRSeed setFrontmostWindowFrame:CGRectMake(x, y, w, h)];
+    [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"liteWindow.moveWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:5];
     NSString *windowNumber = args[0];
@@ -312,6 +325,18 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [response appendString:@"\t"];
     [response appendString:app.localizedName];
     [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"getFrontmostWindowFrame"]) {
+    CGRect rect = [SPRSeed getFrontmostWindowFrame];
+    NSString *response = [NSString stringWithFormat:@"getFrontmostWindowFrame\t%f\t%f\t%f\t%f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height];
+    [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"setFrontmostWindowFrame"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:4];
+    CGFloat x = [args[0] floatValue];
+    CGFloat y = [args[1] floatValue];
+    CGFloat w = [args[2] floatValue];
+    CGFloat h = [args[3] floatValue];
+    [SPRSeed setFrontmostWindowFrame:CGRectMake(x, y, w, h)];
+    [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"screenFrames"]){
     NSMutableString *response = [[NSMutableString alloc] initWithString:@"screenFrames"];
     for (NSScreen *screen in NSScreen.screens) {

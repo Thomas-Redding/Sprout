@@ -151,6 +151,8 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 
 + (NSString*)runAppleScript:(NSString*)string;
 
++ (CGRect)getFrontmostWindowFrame;
++ (void)setFrontmostWindowFrame:(CGRect)windowFrame;
 @end
 
 NS_ASSUME_NONNULL_END

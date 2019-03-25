@@ -413,6 +413,17 @@ class Sprout:
         message += '\t' + str(height)
         return self._server.sendSynchronousMessage(message)
     
+    def getFrontmostWindowFrame(self):
+        return self._server.sendSynchronousMessage('getFrontmostWindowFrame')
+    
+    def setFrontmostWindowFrame(self, newFrame):
+        message = 'setFrontmostWindowFrame'
+        message += '\t' + str(newFrame[0])
+        message += '\t' + str(newFrame[1])
+        message += '\t' + str(newFrame[2])
+        message += '\t' + str(newFrame[3])
+        return self._server.sendSynchronousMessage(message)
+    
     def doLater(self, waitTime, callback):
         self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
 
@@ -465,6 +476,9 @@ class Sprout:
             return LiteWindow(self, windowNumber, bundleIdentifier, appName)
         elif command == 'liteWindow.moveWindow':
             return None
+        elif command == 'getFrontmostWindowFrame' or command == 'setFrontmostWindowFrame':
+            x, y, w, h = self.argArrayFromArgStr(argStr, 4)
+            return [float(x), float(y), float(w), float(h)]
         elif command == 'makeWindow':
             return None
         elif command == 'screenFrames':

@@ -22,7 +22,7 @@ class TimeTracker:
             info = self.spr.runAppleScript('tell application "Xcode" to return path of front document')
         elif identifier == 'com.apple.systempreferences':
             info = self.spr.runAppleScript('tell application "System Preferences" to get id of current pane')
-        elif identifier == 'com.apple.Terminal':
+        elif False and identifier == 'com.apple.Terminal':
             # https://stackoverflow.com/a/16073987
             tty = self.spr.runAppleScript('tell application "Terminal" to tty of front tab of front window')[:-1]
             cmd = """

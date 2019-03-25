@@ -116,6 +116,7 @@ static id<SPRSeedDelegate> _delegate;
 // https://stackoverflow.com/a/17011107
 // https://stackoverflow.com/q/6178860
 + (void)setFrame:(CGRect)rect ofWindowWithNumber:(NSNumber *)windowNumber {
+  // This method takes something like 0.01 seconds.
   // There's no (known) way to identify a window's a11y refernece from it's windowNumber, so we
   // assume windows are uniquely identified by process and frame.
   CGWindowID windowId = windowNumber.intValue;
@@ -148,14 +149,21 @@ static id<SPRSeedDelegate> _delegate;
     
     if (!CGSizeEqualToSize(currentFrame.size, windowSize)) continue;
     if (fabs(currentFrame.origin.x - windowOrigin.x) + fabs(currentFrame.origin.y - windowOrigin.y) > 10) continue;
-    NSLog(@"TFR----------");
     
     // Since this window has the same process ID, size, and (roughly) position, its probably the one we want.
     AXValueRef positionRef = AXValueCreate(kAXValueCGPointType, &rect.origin);
     AXValueRef sizeRef = AXValueCreate(kAXValueCGSizeType, &rect.size);
+    // Credit to https://github.com/eczarny/spectacle for setting the size twice.
+    AXUIElementSetAttributeValue(windowRef, kAXSizeAttribute, sizeRef);
     AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, positionRef);
     AXUIElementSetAttributeValue(windowRef, kAXSizeAttribute, sizeRef);
+    CFRelease(originVal);
+    CFRelease(sizeValue);
   }
+}
+
++ (NSString *)stringFromRect:(CGRect)rect {
+  return [NSString stringWithFormat:@"%f,%f : %f,%f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height];
 }
 
 + (BOOL)registerHotKeyFromKeyCode:(UInt32)keyCode
@@ -264,7 +272,47 @@ static id<SPRSeedDelegate> _delegate;
   [_delegate webWindowDidLoad:windowId];
 }
 
++ (CGRect)getFrontmostWindowFrame {
+  AXUIElementRef frontWindow = [self getFrontWindow];
+  if (!frontWindow) return CGRectZero;
+  CGPoint windowOrigin = CGPointZero;
+  AXValueRef originVal;
+  AXUIElementCopyAttributeValue(frontWindow, kAXPositionAttribute, (CFTypeRef*)&originVal);
+  AXValueGetValue(originVal, kAXValueCGPointType, &windowOrigin);
+  
+  CGSize windowSize = CGSizeZero;
+  AXValueRef sizeValue;
+  AXUIElementCopyAttributeValue(frontWindow, kAXSizeAttribute, (CFTypeRef*)&sizeValue);
+  AXValueGetValue(sizeValue, kAXValueCGSizeType, &windowSize);
+  CFRelease(originVal);
+  CFRelease(sizeValue);
+  CFRelease(frontWindow);
+  return CGRectMake(windowOrigin.x, windowOrigin.y, windowSize.width, windowSize.height);
+}
+
++ (void)setFrontmostWindowFrame:(CGRect)windowFrame {
+  AXUIElementRef frontWindow = [self getFrontWindow];
+  if (!frontWindow) return;
+  AXValueRef positionRef = AXValueCreate(kAXValueCGPointType, &windowFrame.origin);
+  AXValueRef sizeRef = AXValueCreate(kAXValueCGSizeType, &windowFrame.size);
+  // Credit to https://github.com/eczarny/spectacle for setting the size twice.
+  AXUIElementSetAttributeValue(frontWindow, kAXSizeAttribute, sizeRef);
+  AXUIElementSetAttributeValue(frontWindow, kAXPositionAttribute, positionRef);
+  AXUIElementSetAttributeValue(frontWindow, kAXSizeAttribute, sizeRef);
+  CFRelease(frontWindow);
+}
+
 # pragma mark - Private
+
++ (AXUIElementRef)getFrontWindow {
+  pid_t pid = NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier;
+  AXUIElementRef frontApp = AXUIElementCreateApplication(pid);
+  AXUIElementRef frontWindow = nil;
+  AXError err = AXUIElementCopyAttributeValue(frontApp, kAXFocusedWindowAttribute, (CFTypeRef *)&frontWindow);
+  CFRelease(frontApp);
+  if (err == kAXErrorSuccess) return frontWindow;
+  else return nil;
+}
 
 + (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId {
   [_delegate didReceiveMessage:message fromWindow:windowId];

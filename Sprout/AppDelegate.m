@@ -12,9 +12,9 @@
   _sproutMain = [[SPRMainSprout alloc] init];
   _sproutMain.delegate = self;
   [_sproutMain launch];
-  [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler:^(NSEvent *event) {
+  /*[NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler:^(NSEvent *event) {
     NSLog(@"TFR:%@", event);
-  }];
+  }];*/
 }
 
 -(void)applicationWillTerminate:(NSNotification *)notification {

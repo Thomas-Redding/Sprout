@@ -32,6 +32,7 @@ div.bar > table > tbody > tr { ... }
 function Search(div) {
   var this_input = document.createElement('input');
   disableSmartPunctuationForTextInput(this_input);
+  this_input.spellcheck = false;
   this_input.addEventListener('input', (event) => {
     this.onchange(this_input.value);
   });
