@@ -375,15 +375,7 @@ class Sprout:
     def runAppleScript(self, script):
         # Note: Bash strings denoted by single quotes can't contain single quotes (even if they're "escaped").
         # That's why we use double quotes.
-        script = script.replace('\\', '\\\\').replace('"', '\\"')
-        lines = script.split('\n')
-        command = 'osascript'
-        for line in lines:
-            command += ' -e "' + line + '"'
-        try:
-            return subprocess.check_output(command, shell=True).decode('UTF-8')
-        except:
-            return None
+        return self._server.sendSynchronousMessage('runAppleScript\t' + script)
 
     def searchFiles(self, filePattern, maxResults, descendSubdirs, includeHidden, includeDirs, includeFiles, skipNoIndex, caseSensitive, extensions, path, pathsToExclude, callback):
         message = 'searchFiles\t'
@@ -447,7 +439,10 @@ class Sprout:
     def parseResponse(self, message):
         command = self.commandFromLine(message)
         argStr = message[len(command)+1:]
-        if command == 'registerHotKey':
+        if command == 'runAppleScript':
+            result = self.argArrayFromArgStr(argStr, 1)
+            return result[0]
+        elif command == 'registerHotKey':
             None
         elif command == 'hotKeyPressed':
             keyCode, flags = self.argArrayFromArgStr(argStr, 2)

@@ -224,6 +224,12 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     NSLog(@"Python Print: '%@'", [self stringByUnescaping:q]);
   } else if ([commandType isEqualToString:@"quitSprout"]) {
     [self terminate];
+  } else if ([commandType isEqualToString:@"runAppleScript"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *script = args[0];
+    NSString *result = [self _runAppleScript:script];
+    [self sendToPython:[NSString stringWithFormat:@"runAppleScript\t%@", result]
+          withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"registerHotKey"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:2];
     NSUInteger keyCode = [args[0] integerValue];
@@ -659,11 +665,12 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   [self sendToPython:@"doLater" withUniqueId:uniqueId];
 }
 
-- (void)_runAppleScript:(NSString *)script {
+- (NSString *)_runAppleScript:(NSString *)script {
   // https://stackoverflow.com/a/4505664
   NSAppleScript *appleScript = [[NSAppleScript alloc] initWithSource:script];
   NSDictionary *errDict = nil;
-  [appleScript executeAndReturnError:&errDict];
+  NSAppleEventDescriptor *result = [appleScript executeAndReturnError:&errDict];
+  return [result stringValue];
 }
 
 - (CGFloat)time {
