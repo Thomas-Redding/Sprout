@@ -5,12 +5,14 @@ class Launcher_File:
     def __init__(self, spr):
         self.spr = spr
         self.validExtensions = [
-            'gif', 'jpeg', 'jpg', 'pdf', 'png', 'svg', 'tif',
+            'bmp', 'gif', 'ico', 'jpeg', 'jpg', 'pdf', 'png', 'svg', 'tif',
             'avi', 'flv', 'mp4', 'webm',
-            'doc', 'docx', 'md', 'txt',
+            'mp3', 'wav',
+            'doc', 'docx', 'md', 'rtf', 'tex', 'txt',
             'xlsx',
-            'c', 'css', 'cpp', 'h', 'html', 'js', 'm', 'py', 'sh',
-            'diff', 'dmg', 'json', 'sql', 'xml', 'tgz', 'zip',
+            'c', 'css', 'cpp', 'h', 'htm', 'html', 'js', 'm', 'php', 'py', 'sh',
+            'csv', 'diff', 'dmg', 'gz', 'iso', 'json', 'log', 'rss', 'sql', 'tgz', 'ttf', 'xml', 'zip',
+            'app', 'exe'
         ]
         self.path = '~'
         self.pathsToExclude = [ '~/Library', '~/Music' ]

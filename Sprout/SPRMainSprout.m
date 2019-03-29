@@ -147,6 +147,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 # pragma mark - I/O
 
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
+  string = [self stringByEscapingNewlines:string];
   NSString *flushString = [NSString stringWithFormat:@"%@\t%@\n", uniqueId, string];
   if (shouldLogAllPipes) NSLog(@"  TO PYTHON:%@", [flushString substringToIndex:MIN(flushString.length, 200)]);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
@@ -166,12 +167,47 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
       }
     } else {
       if (!messageSoFar) messageSoFar = [[NSMutableString alloc] init];
-      [messageSoFar appendString:line];
+      [messageSoFar appendString:[self stringByUnescapingNewlines:line]];
     }
   }
 }
 
 # pragma mark - Private
+
+- (NSString *)stringByEscapingNewlines:(NSString *)s {
+  return [[s stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"] stringByReplacingOccurrencesOfString:@"\n" withString:@"\\\n"];
+}
+
+- (NSString *)stringByUnescapingNewlines:(NSString *)str {
+  NSMutableString *rtn = [[NSMutableString alloc] init];
+  NSUInteger len = [str length];
+  unichar buffer[len+1];
+  [str getCharacters:buffer range:NSMakeRange(0, len)];
+  BOOL justConsume = YES;
+  for(int i = 0; i < len; i++) {
+    unichar c = buffer[i];
+    if (justConsume) {
+      if (c == '\\') {
+        justConsume = NO;
+      } else {
+        [rtn appendFormat:@"%C", c];
+      }
+    } else {
+      if (c == '\\') {
+        [rtn appendString:@"\\"];
+      } else if (c == 'n') {
+        [rtn appendString:@"\n"];
+      } else {
+        NSException* myException =
+            [NSException exceptionWithName:@"Error in |stringByUnescapingNewlines:|"
+                                    reason:@"Improper backslashes"
+                                  userInfo:nil];
+        @throw myException;
+      }
+    }
+  }
+  return rtn;
+}
 
 - (NSString *)generateUniqueId {
   ++_DoNotUseMe_UniqueId;

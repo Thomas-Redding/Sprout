@@ -16,26 +16,6 @@ class Helper:
     def finder(self, s, c):
         index = s.find(c)
         return len(s) if index == -1 else index
-    def escape(self, s):
-        return s.replace('\\', '\\\\').replace('\n', '\\n').replace('\t', '\\t')
-    def unescape(self, s):
-        state = 0
-        rtn = ''
-        for c in s:
-            if state == 0:
-                if c == '\\': state = 1
-                else: rtn += c
-            else:
-                if c == '\\': rtn += '\\'
-                elif c == "t": rtn += "\t"
-                elif c == "n": rtn += "\n"
-                else:
-                    print('ERROR in unescapeNewlines', s)
-                    sys.exit(1)
-                state = 0
-        return rtn
-    def escapeQuotes(self, s):
-        return s.replace('\\', '\\\\').replace('"', '\\"')
 helper = Helper()
 
 
@@ -49,6 +29,7 @@ class ServerAPI:
 
     def _pipe(self, message):
         uniqueId = helper.generateUniqueId()
+        message = self._escapeNewlines(message)
         sys.stdout.write(uniqueId + '\t' + message  + '\n\n')
         sys.stdout.flush()
         return uniqueId
@@ -73,12 +54,31 @@ class ServerAPI:
         if debug: self.checkQueue()
         uniqueId = self._pipe(message)
         self._callbacks[uniqueId] = callback
+
+    def _escapeNewlines(self, message):
+        return message.replace('\\', '\\\\').replace('\n', '\\n')
+
+    def _unescapeNewlines(self, message):
+        state = 0
+        rtn = ''
+        for c in message:
+            if state == 0:
+                if c == '\\': state = 1
+                else: rtn += c
+            else:
+                if c == '\\': rtn += '\\'
+                elif c == "n": rtn += "\n"
+                else:
+                    print('ERROR in unescapeNewlines', message)
+                    sys.exit(1)
+                state = 0
+        return rtn
     
-    def _respondToStandardInput(self, line):
-        line = line[0:-1]
-        spaceIndex = helper.finder(line, '\t')
-        uniqueId = line[0:spaceIndex]
-        commandAndArgs = line[spaceIndex+1:]
+    def _respondToStandardInput(self, message):
+        message = self._unescapeNewlines(message[0:-1])
+        spaceIndex = helper.finder(message, '\t')
+        uniqueId = message[0:spaceIndex]
+        commandAndArgs = message[spaceIndex+1:]
         if uniqueId in self._callbacks:
             parsedResponse = self._praserCallback(commandAndArgs)
             func = self._callbacks[uniqueId]
@@ -277,7 +277,6 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.returnOwnership\t' + self._windowId)
     def sendMessage(self, message):
-        message = helper.escape(message)
         self._spr._server.sendAsynchronousMessage('window.sendMessage\t' + self._windowId + '\t' + message, lambda x : x)
     def close(self):
         self._spr._server.sendAsynchronousMessage('window.close\t' + self._windowId, lambda x : x)
@@ -347,7 +346,7 @@ class Sprout:
         return rtn
 
     def print(self, s):
-        self._server.sendAsynchronousMessage('print\t' + helper.escape(s), lambda x : x, False)
+        self._server.sendAsynchronousMessage('print\t' + s, lambda x : x, False)
     
     def quitSprout(self):
         self._server.sendAsynchronousMessage('quitSprout', lambda x : x)

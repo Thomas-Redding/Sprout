@@ -1,4 +1,5 @@
 import datetime
+import os
 import time
 
 class TimeTracker:
@@ -35,9 +36,13 @@ end tell
             info = info[info.find('/'):]
             # bash    31900 thomasredding  cwd    DIR    1,4      288 3506773 /Users/thomasredding/Projects/Sprout
         elif identifier == 'com.apple.finder':
-            info = self.spr.runAppleScript('tell application "Finder" to return target of Finder window 1')
-            reversedPath = info.replace(' of folder ', '/')[7:-17].split('/')
-            info = '/'.join(reversedPath[::-1])
+            try:
+                info = self.spr.runAppleScript('tell application "Finder" to return target of Finder window 1')
+                reversedPath = info.replace(' of folder ', '/')[7:-17].split('/')
+                info = '/'.join(reversedPath[::-1])
+            except:
+                # Desktop
+                info = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') 
         path = self.outputPath + '/' + datetime.datetime.today().strftime('%Y-%m-%d') + '.txt'
         with open(path, "a+") as myfile:
             # 1549868894  com.google.Chrome   https://en.wikipedia.org

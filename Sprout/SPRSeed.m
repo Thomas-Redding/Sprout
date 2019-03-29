@@ -65,7 +65,7 @@ static id<SPRSeedDelegate> _delegate;
 + (void)initialize {
   if (self == [SPRSeed self]) {
     // Commented out to speed up development.
-    // [self requestA11y];
+    [self requestA11y];
     
     // Hotkey Events
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
