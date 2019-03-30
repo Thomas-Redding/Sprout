@@ -51,7 +51,7 @@ class Launcher_File:
                     path = nameToPaths[name][i][0]
                     best = None
                     bestCount = 100000
-                    for j in range(len(path)):
+                    for j in range(len(path)-1, -1, -1):
                         if dirCounts[path[j]] < bestCount:
                             best = path[j]
                             bestCount = dirCounts[path[j]]
