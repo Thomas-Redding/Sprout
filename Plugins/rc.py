@@ -5,8 +5,8 @@ spr.print('BEGIN LOADING')
 
 from WindowSnapper import WindowSnapper
 windowSnapper = WindowSnapper.WindowSnapper(spr)
-windowSnapper.padding = 20
-windowSnapper.extraCornerPading = 20
+windowSnapper.padding = 1
+windowSnapper.extraCornerPading = 40
 # CMD + OPT + LeftArrow
 windowSnapper.connectHotKeyToFrame(123, True, True, False, False, 0.0, 0.0, 0.5, 1.0)
 # CMD + OPT + RightArrow
