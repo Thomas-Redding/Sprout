@@ -149,7 +149,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 - (void)sendToPython:(NSString *)string withUniqueId:(NSString *)uniqueId {
   string = [self stringByEscapingNewlines:string];
   NSString *flushString = [NSString stringWithFormat:@"%@\t%@\n", uniqueId, string];
-  if (shouldLogAllPipes) NSLog(@"  TO PYTHON:%@", [flushString substringToIndex:MIN(flushString.length, 200)]);
+  if (shouldLogAllPipes) NSLog(@"  TO PYTHON:%lu:%@", flushString.length, [flushString substringToIndex:MIN(flushString.length, 200)]);
   NSData *data = [flushString dataUsingEncoding:NSUTF8StringEncoding];
   [_inPipe.fileHandleForWriting writeData:data];
 }
@@ -215,7 +215,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 }
 
 - (void)handleMessageFromPython:(NSString *)line {
-  if (shouldLogAllPipes) NSLog(@"FROM PYTHON:%@", [line substringToIndex:MIN(line.length, 200)]);
+  if (shouldLogAllPipes) NSLog(@"FROM PYTHON:%lu:%@", line.length, [line substringToIndex:MIN(line.length, 200)]);
   NSString *uniqueId = [self firstWordInString:line];
   NSString *command = [line substringFromIndex:uniqueId.length + 1];
   NSString *commandType = [self firstWordInString:command];
@@ -401,6 +401,14 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
       [response appendFormat:@"\t%f %f %f %f", screen.frame.origin.x, screen.frame.origin.y, screen.frame.size.width, screen.frame.size.height];
     }
     [self sendToPython:response withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"setClipboard"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    [NSPasteboard.generalPasteboard clearContents];
+    [NSPasteboard.generalPasteboard writeObjects:@[args[0]]];
+    [self sendToPython:command withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"getClipboard"]) {
+    NSString *str = [NSPasteboard.generalPasteboard stringForType:NSPasteboardTypeString];
+    [self sendToPython:[NSString stringWithFormat:@"getClipboard\t%@", str] withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];

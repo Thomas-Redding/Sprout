@@ -13,15 +13,16 @@ onload = () => {
     var i = message.indexOf('\t');
     if (i == -1) i = message.length;
     var command = message.substr(0, i);
-    var arg = null;
-    try {
-      arg = JSON.parse(message.substr(i+1));
-    } catch (err) {}
+    var arg = message.substr(i+1);
     if (command == 'suggestions') {
-      search.setSuggestions(arg);
-    } else if (command == 'clear') {
-      search.setSuggestions([]);
-      search.setValue('');
+      search.setSuggestions(JSON.parse(message.substr(i+1)));
+    } else if (command == 'getClipboard') {
+      document.getElementById('console').innerHTML = arg.length;
+      var input = search.input();
+      var newCursorIndex = input.selectionStart + arg.length;
+      input.value = input.value.substr(0, input.selectionStart) + arg + input.value.substr(input.selectionEnd);
+      input.selectionStart = newCursorIndex;
+      input.selectionEnd = newCursorIndex;
     }
   };
   search.onsubmit = (value) => {
@@ -29,14 +30,24 @@ onload = () => {
     search.setValue('');
     spr.send('submit\t' + value);
   }
-  spr.hotkeyCallbacks = [(c, keyCode, cmd, opt, ctrl, shift) => {
-    var s = '';
-    if (cmd) s += 'cmd+';
-    if (opt) s += 'opt+';
-    if (ctrl) s += 'ctrl+';
-    if (shift) s += 'shift+';
-    s += c;
-  }];
+  spr.hotkeyCallbacks.push((c, keyCode, cmd, opt, ctrl, shift) => {
+    if (cmd && c == 'v') {
+      spr.send('getClipboard');
+    } else if (cmd && c == 'c') {
+      var input = search.input();
+      var selectedString = input.value.substring(input.selectionStart, input.selectionEnd);
+      spr.send('setClipboard\t' + selectedString);
+    } else {
+      var s = '';
+      if (cmd) s += 'cmd+';
+      if (opt) s += 'opt+';
+      if (ctrl) s += 'ctrl+';
+      if (shift) s += 'shift+';
+      s += c;
+      document.getElementById('console').innerHTML = s;
+      spr.send('print\t' + s)
+    }
+  });
 }
 
 function disableSmartPunctuationForTextInput(element) {
@@ -75,14 +86,14 @@ body {
 .search > input {
   display: block;
   width: 100%;
-  background-color: #333;
+  background-color: red;
   color: white;
   border: none;
   font-size: 2em;
   margin: 0;
 }
 .search > table {
-  background-color: #444;
+  background-color: #333;
   color: white;
   width: 100%;
   border-collapse: collapse;
@@ -93,4 +104,5 @@ body {
   background-color: #222;
 }
 </style>
+<div id="console" style="color: white;"></div>
 <div id="lorem"></div>

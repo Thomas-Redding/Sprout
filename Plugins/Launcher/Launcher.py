@@ -40,6 +40,13 @@ class Launcher:
             for plugin in self.plugins:
                 didUse = plugin.action(commandArgs)
                 if didUse: return None
+        elif command == 'getClipboard':
+            s = self.spr.getClipboard()
+            self._window.sendMessage('getClipboard\t' + s)
+        elif command == 'setClipboard':
+            s = self.spr.setClipboard(commandArgs)
+        elif command == 'print':
+            s = self.spr.print('###' + commandArgs)
 
     def queryCallback(self, userInput, results):
         self._results += results

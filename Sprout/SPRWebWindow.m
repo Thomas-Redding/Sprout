@@ -186,6 +186,7 @@ NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is p
 - (void)sendMessage:(NSString *)message {
   NSString *escapedMessage =
       [message stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+  escapedMessage = [escapedMessage stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
   NSString *injection =
       [NSString stringWithFormat:@" window.spr.receive(\"%@\"); ", escapedMessage];
   [_webView evaluateJavaScript:injection completionHandler:^(id result, NSError *error) {}];

@@ -41,9 +41,10 @@ class ServerAPI:
         uniqueId = self._pipe(message)
         queue = []
         for line in sys.stdin:
-            spaceIndex = helper.finder(line, '\t')
-            if line[0:spaceIndex] == uniqueId:
-                return self._praserCallback(line[spaceIndex+1:])
+            s = line[:-1]
+            spaceIndex = helper.finder(s, '\t')
+            if s[0:spaceIndex] == uniqueId:
+                return self._praserCallback(s[spaceIndex+1:])
             else:
                 self._queue.append(line)
 
@@ -415,6 +416,11 @@ class Sprout:
         message += '\t' + str(newFrame[3])
         return self._server.sendSynchronousMessage(message)
     
+    def getClipboard(self):
+        return self._server.sendSynchronousMessage('getClipboard')
+    def setClipboard(self, s):
+        return self._server.sendSynchronousMessage('setClipboard\t' + s)
+    
     def define(self, word):
         message = 'define\t' + word;
         return self._server.sendSynchronousMessage(message)
@@ -477,6 +483,9 @@ class Sprout:
         elif command == 'getFrontmostWindowFrame' or command == 'setFrontmostWindowFrame':
             x, y, w, h = self.argArrayFromArgStr(argStr, 4)
             return [float(x), float(y), float(w), float(h)]
+        elif command == 'getClipboard' or command == 'setClipboard':
+            arr = self.argArrayFromArgStr(argStr, 1)
+            return arr[0]
         elif command == 'makeWindow':
             return None
         elif command == 'screenFrames':
@@ -546,7 +555,7 @@ class Sprout:
         elif command == 'mouseMove':
             return int(self.argArrayFromArgStr(argStr, 1)[0])
         elif command == 'window.sendMessage':
-            None
+            return None
         elif command == 'window.request':
             windowId, message = self.argArrayFromArgStr(argStr, 2)
             return (windowId, message)

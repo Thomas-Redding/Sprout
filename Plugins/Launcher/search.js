@@ -142,4 +142,7 @@ function Search(div) {
   this.setValue = (newValue) => {
     this_input.value = newValue;
   };
+  this.input = () => {
+    return this_input;
+  };
 }

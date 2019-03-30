@@ -57,5 +57,3 @@ launcherDictionary = Launcher_Dictionary.Launcher_Dictionary(spr)
 launcher.plugins.append(launcherDictionary)
 
 spr.print('END LOADING')
-
-spr.print(spr.runAppleScript('4+2'))
