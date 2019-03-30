@@ -27,12 +27,35 @@ class Launcher_File:
             self.suggest(userInput, lambda response : self.handleCallback(response, callback))
 
     def handleCallback(self, responses, callback):
-        rtn = []
+        # nameToPaths[name][index][0] = [path]
+        # nameToPaths[name][index][1] = rank
+        nameToPaths = {}
         for i in range(len(responses)):
-            response = responses[i]
-            if response == '': continue
-            x = '&nbsp;/&nbsp;'.join(response.split('/')[::-1])
-            rtn.append(['Launcher_File:' + response, 100-i, x])
+            p = responses[i].split('/')
+            if p[-1] not in nameToPaths:
+                nameToPaths[p[-1]] = []
+            nameToPaths[p[-1]].append((p, i))
+        rtn = []
+        for name in nameToPaths:
+            if len(nameToPaths[name]) == 1:
+                rtn.append(['Launcher_File:' + '/'.join(nameToPaths[name][0][0]), 100-nameToPaths[name][0][1], name])
+            else:
+                dirCounts = {}
+                for i in range(len(nameToPaths[name])):
+                    path = nameToPaths[name][i][0]
+                    for j in range(len(path)):
+                        if path[j] not in dirCounts:
+                            dirCounts[path[j]] = 0
+                        dirCounts[path[j]] += 1
+                for i in range(len(nameToPaths[name])):
+                    path = nameToPaths[name][i][0]
+                    best = None
+                    bestCount = 100000
+                    for j in range(len(path)):
+                        if dirCounts[path[j]] < bestCount:
+                            best = path[j]
+                            bestCount = dirCounts[path[j]]
+                    rtn.append(['Launcher_File:' + '/'.join(path), 100-nameToPaths[name][i][1], name + ' - ' + best])
         callback(rtn)
 
     def action(self, key):
