@@ -88,7 +88,4 @@ You can import CSS and JavaScript files from the file system as normal.
 ```javascript
 spr.send(string message)
 spr.receive(string message)
-[function] spr.hotkeyCallbacks
 ```
-An important thing to note is that due to limitations imposed by Apple's `WKWebView`, hot keys are not applied by default. This is a annoying because it (for example) prevents cut, copy, paste, and select all. To navigate around this problem, we provide `spr.hotkeyCallbacks`, which is an array that gets iterated through when a hotkey is pressed and the Window is in focus.
-
