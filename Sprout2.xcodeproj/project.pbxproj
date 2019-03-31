@@ -1,0 +1,350 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		28F33E80225062450090740D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F33E7F225062450090740D /* AppDelegate.m */; };
+		28F33E82225062460090740D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28F33E81225062460090740D /* Assets.xcassets */; };
+		28F33E85225062460090740D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F33E83225062460090740D /* MainMenu.xib */; };
+		28F33E88225062460090740D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F33E87225062460090740D /* main.m */; };
+		28F33E96225064320090740D /* SPRWebWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F33E8F225064320090740D /* SPRWebWindow.m */; };
+		28F33E97225064320090740D /* SproutObjcInterface.py in Resources */ = {isa = PBXBuildFile; fileRef = 28F33E90225064320090740D /* SproutObjcInterface.py */; };
+		28F33E98225064320090740D /* SPRMainSprout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F33E93225064320090740D /* SPRMainSprout.m */; };
+		28F33E99225064320090740D /* SPRSeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F33E95225064320090740D /* SPRSeed.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		28F33E7B225062450090740D /* Sprout2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sprout2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		28F33E7E225062450090740D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		28F33E7F225062450090740D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		28F33E81225062460090740D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		28F33E84225062460090740D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		28F33E86225062460090740D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		28F33E87225062460090740D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		28F33E89225062460090740D /* Sprout2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sprout2.entitlements; sourceTree = "<group>"; };
+		28F33E8F225064320090740D /* SPRWebWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPRWebWindow.m; sourceTree = "<group>"; };
+		28F33E90225064320090740D /* SproutObjcInterface.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = SproutObjcInterface.py; sourceTree = "<group>"; };
+		28F33E91225064320090740D /* SPRWebWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPRWebWindow.h; sourceTree = "<group>"; };
+		28F33E92225064320090740D /* SPRMainSprout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPRMainSprout.h; sourceTree = "<group>"; };
+		28F33E93225064320090740D /* SPRMainSprout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPRMainSprout.m; sourceTree = "<group>"; };
+		28F33E94225064320090740D /* SPRSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPRSeed.h; sourceTree = "<group>"; };
+		28F33E95225064320090740D /* SPRSeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPRSeed.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		28F33E78225062450090740D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		28F33E72225062450090740D = {
+			isa = PBXGroup;
+			children = (
+				28F33E7D225062450090740D /* Sprout2 */,
+				28F33E7C225062450090740D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		28F33E7C225062450090740D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				28F33E7B225062450090740D /* Sprout2.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		28F33E7D225062450090740D /* Sprout2 */ = {
+			isa = PBXGroup;
+			children = (
+				28F33E7E225062450090740D /* AppDelegate.h */,
+				28F33E7F225062450090740D /* AppDelegate.m */,
+				28F33E81225062460090740D /* Assets.xcassets */,
+				28F33E83225062460090740D /* MainMenu.xib */,
+				28F33E86225062460090740D /* Info.plist */,
+				28F33E87225062460090740D /* main.m */,
+				28F33E89225062460090740D /* Sprout2.entitlements */,
+				28F33E92225064320090740D /* SPRMainSprout.h */,
+				28F33E93225064320090740D /* SPRMainSprout.m */,
+				28F33E90225064320090740D /* SproutObjcInterface.py */,
+				28F33E94225064320090740D /* SPRSeed.h */,
+				28F33E95225064320090740D /* SPRSeed.m */,
+				28F33E91225064320090740D /* SPRWebWindow.h */,
+				28F33E8F225064320090740D /* SPRWebWindow.m */,
+			);
+			path = Sprout2;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		28F33E7A225062450090740D /* Sprout2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 28F33E8C225062460090740D /* Build configuration list for PBXNativeTarget "Sprout2" */;
+			buildPhases = (
+				28F33E77225062450090740D /* Sources */,
+				28F33E78225062450090740D /* Frameworks */,
+				28F33E79225062450090740D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sprout2;
+			productName = Sprout2;
+			productReference = 28F33E7B225062450090740D /* Sprout2.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		28F33E73225062450090740D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = "Thomas Redding";
+				TargetAttributes = {
+					28F33E7A225062450090740D = {
+						CreatedOnToolsVersion = 10.2;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 28F33E76225062450090740D /* Build configuration list for PBXProject "Sprout2" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 28F33E72225062450090740D;
+			productRefGroup = 28F33E7C225062450090740D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				28F33E7A225062450090740D /* Sprout2 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		28F33E79225062450090740D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28F33E97225064320090740D /* SproutObjcInterface.py in Resources */,
+				28F33E82225062460090740D /* Assets.xcassets in Resources */,
+				28F33E85225062460090740D /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		28F33E77225062450090740D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28F33E99225064320090740D /* SPRSeed.m in Sources */,
+				28F33E88225062460090740D /* main.m in Sources */,
+				28F33E98225064320090740D /* SPRMainSprout.m in Sources */,
+				28F33E96225064320090740D /* SPRWebWindow.m in Sources */,
+				28F33E80225062450090740D /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		28F33E83225062460090740D /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				28F33E84225062460090740D /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		28F33E8A225062460090740D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		28F33E8B225062460090740D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		28F33E8D225062460090740D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Sprout2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = tfredding.Sprout2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		28F33E8E225062460090740D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Sprout2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = tfredding.Sprout2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		28F33E76225062450090740D /* Build configuration list for PBXProject "Sprout2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28F33E8A225062460090740D /* Debug */,
+				28F33E8B225062460090740D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		28F33E8C225062460090740D /* Build configuration list for PBXNativeTarget "Sprout2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28F33E8D225062460090740D /* Debug */,
+				28F33E8E225062460090740D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 28F33E73225062450090740D /* Project object */;
+}
