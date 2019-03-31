@@ -18,7 +18,7 @@ class Launcher_GoogleSearch:
             rtn.append(['Launcher_GoogleSearch:' + response, 5-i, 'google ' + response])
         callback(rtn)
 
-    def action(self, key):
+    def action(self, key, cmd, opt, ctrl, shift):
         if key[0:22] == 'Launcher_GoogleSearch:':
             url = 'https://www.google.com/search?q=' + key[22:].replace(' ', '+')
             webbrowser.open(url)

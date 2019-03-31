@@ -18,10 +18,16 @@ onload = () => {
       search.setSuggestions(JSON.parse(message.substr(i+1)));
     }
   };
-  search.onsubmit = (value) => {
+  search.onsubmit = (value, isClick, cmd, opt, ctrl, shift) => {
     search.setSuggestions([]);
     search.setValue('');
-    spr.send('submit\t' + value);
+    var message = 'submit\t';
+    message += (cmd   ? '1' : '0');
+    message += (opt   ? '1' : '0');
+    message += (ctrl  ? '1' : '0');
+    message += (shift ? '1' : '0');
+    message += '\t' + value;
+    spr.send(message);
   }
 }
 

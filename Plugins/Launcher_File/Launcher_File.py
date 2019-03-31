@@ -12,7 +12,8 @@ class Launcher_File:
             'xlsx',
             'c', 'css', 'cpp', 'h', 'htm', 'html', 'js', 'm', 'php', 'py', 'sh',
             'csv', 'diff', 'dmg', 'gz', 'iso', 'json', 'log', 'rss', 'sql', 'tgz', 'ttf', 'xml', 'zip',
-            'app', 'exe'
+            'app', 'exe',
+            'beta'
         ]
         self.path = '~'
         self.pathsToExclude = [ '~/Library', '~/Music' ]
@@ -58,9 +59,13 @@ class Launcher_File:
                     rtn.append(['Launcher_File:' + '/'.join(path), 100-nameToPaths[name][i][1], name + ' - ' + best])
         callback(rtn)
 
-    def action(self, key):
+    def action(self, key, cmd, opt, ctrl, shift):
         if key[0:14] == 'Launcher_File:':
-            os.system('open "' + key[14:] + '"')
+            path = key[14:]
+            if cmd:
+                os.system('open "' + path[:path.rfind('/')] + '"')
+            else:
+                os.system('open "' + path + '"')
             return True
         return False
 

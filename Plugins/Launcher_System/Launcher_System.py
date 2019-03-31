@@ -7,7 +7,7 @@ class Launcher_System:
         if 'quit sprout'[0:len(userInput)] == userInput.lower():
             callback([('Launcher_System:quitSprout', 1000, 'quit Sprout')])
 
-    def action(self, key):
+    def action(self, key, cmd, opt, ctrl, shift):
         if key == 'Launcher_System:quitSprout':
             self.spr.quitSprout()
             return True

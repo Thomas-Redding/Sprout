@@ -36,17 +36,16 @@ function Search(div) {
   this_input.addEventListener('input', (event) => {
     this.onchange(this_input.value);
   });
-  var handleEnter = () => {
+  var handleEnter = (isClick, cmd, opt, ctrl, shift) => {
     if (this_selectedIndex == -1) {
-      this.onsubmit(this_input.value);
+      this.onsubmit(this_input.value, isClick, cmd, opt, ctrl, shift);
     } else {
-      this.onsubmit(this_suggestionsValues[this_selectedIndex]);
+      this.onsubmit(this_suggestionsValues[this_selectedIndex], isClick, cmd, opt, ctrl, shift);
     }
   };
   this_input.addEventListener('keydown', (event) => {
     if (event.keyCode == 13) {
-      // Enter
-      handleEnter();
+      handleEnter(false, event.metaKey, event.altKey, event.ctrl, event.shiftKey);
     } else if (event.keyCode == 38) {
       // Up
       if (this_selectedIndex == -1) {
@@ -128,7 +127,7 @@ function Search(div) {
         for (var j = 0; j < tbody.children.length; ++j) {
           if (tbody.children[j] == targetRow) {
             setSelectedIndex(j);
-            handleEnter();
+            handleEnter(true, false, false, false, false);
             break;
           }
         }

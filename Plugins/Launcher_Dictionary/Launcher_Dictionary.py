@@ -12,7 +12,7 @@ class Launcher_Dictionary:
         foo = self.spr.define(word)
         if foo: callback([('Launcher_Dictionary:' + word, 400, 'define ' + word)])
 
-    def action(self, key):
+    def action(self, key, cmd, opt, ctrl, shift):
         if key[0:20] == 'Launcher_Dictionary:':
             os.system('open dict://' + key[20:])
             return True

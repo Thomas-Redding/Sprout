@@ -17,7 +17,7 @@ class Launcher_Calculator:
         except: return None
         callback([('Launcher_Calculator:' + result, 10, '=' + result)])
 
-    def action(self, key):
+    def action(self, key, cmd, opt, ctrl, shift):
         if key[0:20] == 'Launcher_Calculator:':
             # Copy to clipboard.
             os.system('echo "' + key[20:] + '" | tr -d "\n" | pbcopy')

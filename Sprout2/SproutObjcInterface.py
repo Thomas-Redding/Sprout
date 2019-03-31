@@ -635,14 +635,6 @@ class Sprout:
 
 spr = Sprout()
 
-# We run some trivial AppleScript code here to get permissions upon app launch.
-# spr.runAppleScript('tell application "Finder" to return target of Finder window 1')
-# spr.runAppleScript('tell application "Google Chrome" to return URL of active tab of front window')
-# spr.runAppleScript('tell application "Safari" to return URL of front document')
-# spr.runAppleScript('tell application "TextEdit" to return path of front document')
-# spr.runAppleScript('tell application "Xcode" to return path of front document')
-# spr.runAppleScript('tell application "System Events" to set myFrontMost to name of first item of (processes whose frontmost is true)')
-
 PATH_TO_RC = '/Users/thomasredding/Projects/Sprout/Plugins/rc.py'
 with open(PATH_TO_RC) as rcFile:
     exec(rcFile.read(), { 'spr': spr })

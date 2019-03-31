@@ -179,6 +179,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 }
 
 - (NSString *)stringByUnescapingNewlines:(NSString *)str {
+  //a
   NSMutableString *rtn = [[NSMutableString alloc] init];
   NSUInteger len = [str length];
   unichar buffer[len+1];

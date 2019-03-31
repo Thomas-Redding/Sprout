@@ -40,7 +40,7 @@ class Launcher_Apps:
                 if y == val: return True
         return False
 
-    def action(self, key):
+    def action(self, key, cmd, opt, ctrl, shift):
         if key[0:14] == 'Launcher_Apps:':
             if key[14:19] == 'open ':
                 os.system('open "' + key[19:] + '"')
