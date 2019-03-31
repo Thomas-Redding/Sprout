@@ -1,0 +1,111 @@
+# 0.32 sec
+tell application "System Events"
+    tell (first item of (processes whose frontmost is true))
+        {get position of window 1, get size of window 1}
+    end tell
+end tell
+
+# 0.32 sec
+tell application "System Events"
+    tell (first item of (processes whose frontmost is true))
+        set {old_w, old_h} to get size of window 1
+        set {old_x, old_y} to get position of window 1
+        {old_x, old_y, old_w, old_h}
+    end tell
+end tell
+
+# 0.27 sec
+tell application "System Events"
+    set {old_w, old_h} to get size of (window 1 of first item of (processes whose frontmost is true))
+    set {old_x, old_y} to get position of (window 1 of first item of (processes whose frontmost is true))
+end tell
+{old_x, old_y, old_w, old_h}
+
+# 0.24 sec
+tell application "System Events"
+    set myFrontMost to name of first item of (processes whose frontmost is true)
+    tell process myFrontMost
+        set {old_w, old_h} to get size of window 1
+        set {old_x, old_y} to get position of window 1
+        {old_x, old_y, old_w, old_h}
+    end tell
+end tell
+
+# 0.24 sec
+tell application "System Events"
+    set myFrontMost to name of first item of (processes whose frontmost is true)
+    tell process myFrontMost
+        set {old_w, old_h} to get size of window 1
+        set {old_x, old_y} to get position of window 1
+    end tell
+end tell
+{old_x, old_y, old_w, old_h}
+
+# 0.23 sec
+tell application "System Events"
+  set myFrontMost to name of first item of (processes whose frontmost is true)
+  tell process myFrontMost
+    set w to window 1
+    set {old_w, old_h} to get size of w
+    set {old_x, old_y} to get position of w
+  end tell
+end tell
+{old_x, old_y, old_w, old_h}
+
+# 0.23 sec
+tell application "System Events"
+    set myFrontMost to name of first item of (processes whose frontmost is true)
+    set w to window 1 of process myFrontMost
+    {get size of w, get position of w}
+end tell
+
+# 0.22 sec
+tell application "System Events"
+    set myFrontMost to name of first item of (processes whose frontmost is true)
+    set w to window 1 of process myFrontMost
+    set {old_w, old_h} to get size of w
+    set {old_x, old_y} to get position of w
+end tell
+{old_x, old_y, old_w, old_h}
+
+# 0.22 sec
+tell application "System Events"
+    set w to (window 1 of first item of (processes whose frontmost is true))
+    set {old_w, old_h} to get size of w
+    set {old_x, old_y} to get position of w
+end tell
+{old_x, old_y, old_w, old_h}
+
+# 0.22 sec
+tell application "System Events"
+    set w to (window 1 of first item of (processes whose frontmost is true))
+    {get position of w, get size of w}
+end tell
+
+# 0.22 sec
+tell application "System Events"
+    set w to (first window of first item of (processes whose frontmost is true))
+    {get position of w, get size of w}
+end tell
+
+# 0.22 sec
+tell application "System Events"
+  set foo to first item of (processes whose frontmost is true)
+  {get position of (window 1 of foo), get size of (window 1 of foo)}
+end tell
+
+# 0.15 sec
+# https://macscripter.net/viewtopic.php?id=22375
+set AppleScript's text item delimiters to ":"
+set appname to text item -2 of (path to frontmost application as text)
+set AppleScript's text item delimiters to ""
+set frontApp to text items 1 thru -5 of appname as Unicode text
+tell application frontApp
+    get bounds of first window
+end tell
+
+# Like half the runtime of most of these solutions is due to
+# `processes whose frontmost is true`.
+
+
+
