@@ -1,4 +1,4 @@
-"""import sys
+import sys
 sys.path.insert(0, '/Users/thomasredding/Projects/Sprout/Plugins')
 
 spr.print('BEGIN LOADING')
@@ -57,11 +57,3 @@ launcherDictionary = Launcher_Dictionary.Launcher_Dictionary(spr)
 launcher.plugins.append(launcherDictionary)
 
 spr.print('END LOADING')
-"""
-
-# wi = spr.makeWindow()
-# wi.setFrame([100, 100, 500, 500])
-# wi.setIndexPath('~/Desktop/q/index.html')
-# wi.setVisible(True)
-# wi.makeKeyAndFront()
-# wi.setSpaceBehavior(1)

@@ -7,7 +7,7 @@ class Launcher:
         self._window = self.spr.makeWindow()
         self._window.setVisible(False)
         self._window.setFrame([100, 100, 500, 500])
-        # self._window.setTitle(None)
+        self._window.setTitle(None)
         self._window.onMessage = lambda requestStr : self.server(requestStr)
         self._window.didResignMain = lambda: self._window.setVisible(False)
         self._window.setIndexPath('~/Projects/Sprout/Plugins/Launcher/index.html')
@@ -40,11 +40,6 @@ class Launcher:
             for plugin in self.plugins:
                 didUse = plugin.action(commandArgs)
                 if didUse: return None
-        elif command == 'getClipboard':
-            s = self.spr.getClipboard()
-            self._window.sendMessage('getClipboard\t' + s)
-        elif command == 'setClipboard':
-            s = self.spr.setClipboard(commandArgs)
         elif command == 'print':
             s = self.spr.print('###' + commandArgs)
 
