@@ -48,7 +48,7 @@ function Search(div) {
       handleEnter(false, event.metaKey, event.altKey, event.ctrl, event.shiftKey);
     } else if (event.keyCode == 38) {
       // Up
-      if (this_selectedIndex == -1) {
+      if (this_selectedIndex == 0) {
         var tbody = this_table.children[0];
         setSelectedIndex(tbody.children.length - 1);
       } else {
@@ -58,7 +58,7 @@ function Search(div) {
       // Down
       var tbody = this_table.children[0];
       if (this_selectedIndex == tbody.children.length - 1) {
-        setSelectedIndex(-1);
+        setSelectedIndex(0);
       } else {
         setSelectedIndex(this_selectedIndex+1);
       }
@@ -135,8 +135,8 @@ function Search(div) {
       tbody.appendChild(tr);
     }
     this_table.innerHTML = '';
-    setSelectedIndex(-1);
     this_table.appendChild(tbody);
+    setSelectedIndex(0);
   };
   this.setValue = (newValue) => {
     this_input.value = newValue;
