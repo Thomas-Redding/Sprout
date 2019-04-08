@@ -10,13 +10,15 @@ class Launcher_GoogleSearch:
         None
 
     def query(self, userInput, callback):
-        if userInput[0:2] != 'g ': return None
-        responses = self.googleSuggest(userInput[2:])
-        rtn = []
-        for i in range(len(responses)):
-            response = responses[i]
-            rtn.append(['Launcher_GoogleSearch:' + response, 5-i, 'google ' + response])
-        callback(rtn)
+        if userInput[0:2] == 'g ':
+            responses = self.googleSuggest(userInput[2:])
+            rtn = []
+            for i in range(len(responses)):
+                response = responses[i]
+                rtn.append(['Launcher_GoogleSearch:' + response, 5-i, 'google ' + response])
+            callback(rtn)
+        else:
+            callback([['Launcher_GoogleSearch:' + userInput, -1000000, 'google ' + userInput]])
 
     def action(self, key, cmd, opt, ctrl, shift):
         if key[0:22] == 'Launcher_GoogleSearch:':
