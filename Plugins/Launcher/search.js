@@ -72,11 +72,11 @@ function Search(div) {
   var this_selectedIndex = -1;
   var setSelectedIndex = (newIndex) => {
     var tbody = this_table.children[0];
-    if (this_selectedIndex != -1) {
+    if (tbody !== undefined && this_selectedIndex != -1 && this_selectedIndex < tbody.children.length) {
       tbody.children[this_selectedIndex].classList.remove('selected');
     }
     this_selectedIndex = newIndex;
-    if (this_selectedIndex != -1) {
+    if (tbody !== undefined && this_selectedIndex != -1 && this_selectedIndex < tbody.children.length) {
       tbody.children[this_selectedIndex].classList.add('selected');
     }
   }
