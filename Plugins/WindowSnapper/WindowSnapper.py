@@ -66,6 +66,7 @@ class WindowSnapper:
         self.spr.moveWindow(self.lastWindowMoved, newX, newY, newWidth, newHeight)
 
     def resizeMainWindow(self, newX, newY, newWidth, newHeight):
+        screenOfFocusedWindow = None
         screens = self.spr.screenFrames()
         if newX == -1 or newY == -1 or newWidth == -1 or newHeight == -1 or len(screens) > 1:
             frame = self.spr.getFrontmostWindowFrame()

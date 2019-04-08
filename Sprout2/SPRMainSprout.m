@@ -341,7 +341,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [self sendToPython:command withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"getFrontmostWindowFrame"]) {
     CGRect frame = [SPRSeed getFrontmostWindowFrame];
-    NSString *message = [NSString stringWithFormat:@"getFrontmostWindowFrame\t%f\t%f\t%f\t%f", frame];
+    NSString *message = [NSString stringWithFormat:@"getFrontmostWindowFrame\t%f\t%f\t%f\t%f", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height];
     [self sendToPython:message withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"setFrontmostWindowFrame"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:4];
