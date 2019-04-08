@@ -15,5 +15,6 @@ class Launcher_Dictionary:
     def action(self, key, cmd, opt, ctrl, shift):
         if key[0:20] == 'Launcher_Dictionary:':
             os.system('open dict://' + key[20:])
+            os.system('open /Applications/Dictionary.app')
             return True
         return False
