@@ -1,9 +1,10 @@
 import sys
-sys.path.insert(0, '/Users/thomasredding/Projects/Sprout/Plugins')
+sys.path.insert(0, '/Users/thomasredding/proj/Sprout/Plugins')
 
 spr.print('BEGIN LOADING')
 
 from WindowSnapper import WindowSnapper
+
 windowSnapper = WindowSnapper.WindowSnapper(spr)
 windowSnapper.padding = 1
 windowSnapper.extraCornerPading = 40

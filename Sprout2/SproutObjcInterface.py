@@ -635,7 +635,7 @@ class Sprout:
 
 spr = Sprout()
 
-PATH_TO_RC = '/Users/thomasredding/Projects/Sprout/Plugins/rc.py'
+PATH_TO_RC = '/Users/thomasredding/proj/Sprout/Plugins/rc.py'
 with open(PATH_TO_RC) as rcFile:
     exec(rcFile.read(), { 'spr': spr })
 
