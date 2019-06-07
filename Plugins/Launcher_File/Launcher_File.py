@@ -1,5 +1,8 @@
 import json
 import os
+import threading
+import time
+import subprocess
 
 class Launcher_File:
     def __init__(self, spr):
@@ -15,71 +18,40 @@ class Launcher_File:
             'app', 'exe',
             'beta'
         ]
-        self.path = '~'
-        self.pathsToExclude = [ '~/Library', '~/Music' ]
+        self.scopes = ['~/Desktop', '~/Downloads', '~/Documents', '~/Public']
         None
 
     def query(self, userInput, callback):
         for ext in self.validExtensions:
             if userInput[0:len(ext)+1] == ext + ' ':
-                self.suggest(userInput, lambda response : self.handleCallback(response, callback))
+                self.suggest(ext, userInput[len(ext)+1:], callback)
                 return None
-        if userInput[0:2] == 'o ' or userInput[0:3] == 'fo ':
-            self.suggest(userInput, lambda response : self.handleCallback(response, callback))
-
-    def handleCallback(self, responses, callback):
-        # nameToPaths[name][index][0] = [path]
-        # nameToPaths[name][index][1] = rank
-        nameToPaths = {}
-        for i in range(len(responses)):
-            p = responses[i].split('/')
-            if p[-1] not in nameToPaths:
-                nameToPaths[p[-1]] = []
-            nameToPaths[p[-1]].append((p, i))
-        rtn = []
-        for name in nameToPaths:
-            if len(nameToPaths[name]) == 1:
-                rtn.append(['Launcher_File:' + '/'.join(nameToPaths[name][0][0]), 100-nameToPaths[name][0][1], name])
-            else:
-                dirCounts = {}
-                for i in range(len(nameToPaths[name])):
-                    path = nameToPaths[name][i][0]
-                    for j in range(len(path)):
-                        if path[j] not in dirCounts:
-                            dirCounts[path[j]] = 0
-                        dirCounts[path[j]] += 1
-                for i in range(len(nameToPaths[name])):
-                    path = nameToPaths[name][i][0]
-                    best = None
-                    bestCount = 100000
-                    for j in range(len(path)-1, -1, -1):
-                        if dirCounts[path[j]] < bestCount:
-                            best = path[j]
-                            bestCount = dirCounts[path[j]]
-                    rtn.append(['Launcher_File:' + '/'.join(path), 100-nameToPaths[name][i][1], name + ' - ' + best])
-        callback(rtn)
+        if userInput[0:2] == 'o ':
+            self.suggest('o', userInput[2:], callback)
+        elif userInput[0:3] == 'fo ':
+            self.suggest('fo', userInput[3:], callback)
 
     def action(self, key, cmd, opt, ctrl, shift):
-        if key[0:14] == 'Launcher_File:':
-            path = key[14:]
-            if cmd:
-                os.system('open "' + path[:path.rfind('/')] + '"')
-            else:
-                os.system('open "' + path + '"')
-            return True
-        return False
-
-    def suggest(self, query, callback):
-        spaceIndex = query.index(' ')
-        ext = query[0:spaceIndex]
-        regexStr = query[spaceIndex+1:]
-        if regexStr == '': callback([])
-        if ext == 'o':
-            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, True, True, True, False, [], self.path, self.pathsToExclude, callback)
-        elif ext == 'fo':
-            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, True, False, True, False, [], self.path, self.pathsToExclude, callback)
+        if key[0:14] != 'Launcher_File:': return False
+        path = key[14:]
+        if cmd:
+            os.system('open ' + os.path.split(path)[0].replace(" ", "\\ "))
         else:
-            self.spr.searchFiles(query[len(ext)+1:], 1000, True, False, False, True, True, False, [ext], self.path, self.pathsToExclude, callback)
+            os.system('open ' + path.replace(" ", "\\ "))
+        return True
+
+    def suggest(self, ext, query, callback):
+        def searchCallback(results):
+            rtn = []
+            for i in range(len(results)):
+                rtn.append(('Launcher_File:' + results[i], 10-i, results[i]))
+            callback(rtn)
+        if ext == 'o':
+            self.search("kMDItemContentType != public.folder && kMDItemFSName = " + query + "*", searchCallback)
+        elif ext == 'fo':
+            self.search("kMDItemContentType == public.folder && kMDItemFSName = " + query + "*", searchCallback)
+        else:
+            self.search("kMDItemContentType != public.folder && kMDItemFSName = " + query + "* && kMDItemFSName = *." + ext, searchCallback)
 
     def unescape(self, s):
         state = 0
@@ -95,7 +67,24 @@ class Launcher_File:
                 elif c == 'n': rtn += 'n'
                 elif c == 't': rtn += 't'
                 else:
-                    print('ERROR in unescapeNewlines', s)
                     sys.exit(1)
                 state = 0
         return rtn
+
+    def asyncPopen(self, popenArgs, callback):
+        def runInThread(popenArgs, onExit):
+            process = subprocess.Popen(popenArgs, shell=True, stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
+            # wait for the process to terminate
+            output, error = process.communicate()
+            errorCode = process.returncode
+            callback(output.decode(), error.decode(), errorCode)
+            return
+        thread = threading.Thread(target=runInThread, args=(popenArgs, callback))
+        thread.start()
+
+    def search(self, query, callback):
+        def callbackWrapper(output, error, errorCode):
+            results = output.split("\n")
+            callback(results[:-1])
+        for scope in self.scopes:
+            self.asyncPopen("mdfind '" + query + "' -onlyin " + scope, callbackWrapper)

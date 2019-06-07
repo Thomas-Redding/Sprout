@@ -46,6 +46,7 @@ launcher.plugins.append(calculatorLauncher)
 
 from Launcher_File import Launcher_File
 fileLauncher = Launcher_File.Launcher_File(spr)
+fileLauncher.scopes = ['~/Desktop', '~/Downloads', '~/proj']
 launcher.plugins.append(fileLauncher)
 
 from Launcher_GoogleSearch import Launcher_GoogleSearch

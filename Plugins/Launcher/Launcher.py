@@ -44,7 +44,7 @@ class Launcher:
             hotkeys = commandArgs[0:tabIndex]
             submitKey = commandArgs[tabIndex+1:]
             if submitKey not in self._priority: self._priority[submitKey] = 0
-            self._priority[submitKey] += 1.4**float(self._actionCount)
+            # self._priority[submitKey] += 1.4**float(self._actionCount)
             self.toggleWindowHide()
             for plugin in self.plugins:
                 didUse = plugin.action(submitKey, hotkeys[0] != '0', hotkeys[1] != '0', hotkeys[2] != '0', hotkeys[3] != '0')

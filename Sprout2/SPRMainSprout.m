@@ -22,7 +22,7 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 # pragma mark - Public
 
 - (void)launch {
-  shouldLogAllPipes = YES;
+  // shouldLogAllPipes = YES;
   _DoNotUseMe_UniqueId = 0;
   _mouseMoveEventQueue = [[NSMutableSet alloc] init];
   NSString *pathToSproutMain = [NSBundle.mainBundle pathForResource:@"SproutObjcInterface" ofType:@"py"];
@@ -196,8 +196,10 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     } else {
       if (c == '\\') {
         [rtn appendString:@"\\"];
+        justConsume = YES;
       } else if (c == 'n') {
         [rtn appendString:@"\n"];
+        justConsume = YES;
       } else {
         NSException* myException =
             [NSException exceptionWithName:@"Error in |stringByUnescapingNewlines:|"
