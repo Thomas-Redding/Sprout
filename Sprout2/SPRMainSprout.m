@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #import "SPRWebWindow.h"
-#import "FileQuery.h"
 
 static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
@@ -21,11 +20,6 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 };
 
 # pragma mark - Public
-
-- (void)foo:(NSArray<NSString *> *)foo bar:(NSString *)bar {
-  NSLog(@"RESULTS:%d", foo.count);
-  NSLog(@"RESULTS:%@", foo);
-}
 
 - (void)launch {
   shouldLogAllPipes = YES;

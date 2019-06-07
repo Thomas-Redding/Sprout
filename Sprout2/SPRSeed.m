@@ -11,7 +11,6 @@
 #import <Contacts/Contacts.h>
 #import <CoreServices/CoreServices.h>
 
-#import "FileQuery.h"
 #import "SPRSeed.h"
 #import "SPRWebWindow.h"
 
