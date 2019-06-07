@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #import "SPRWebWindow.h"
+#import "FileQuery.h"
 
 static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
@@ -20,6 +21,11 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 };
 
 # pragma mark - Public
+
+- (void)foo:(NSArray<NSString *> *)foo bar:(NSString *)bar {
+  NSLog(@"RESULTS:%d", foo.count);
+  NSLog(@"RESULTS:%@", foo);
+}
 
 - (void)launch {
   shouldLogAllPipes = YES;
@@ -245,35 +251,6 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
                               toTarget:self
                            andSelector:@selector(hotkeyPressed:withFlags:)];
     [self sendToPython:command withUniqueId:uniqueId];
-  } else if ([commandType isEqualToString:@"searchFiles"]) {
-    NSArray<NSString *> *args = [self argsFromCommand:command argNum:6];
-    NSString *filePattern = args[0];
-    NSUInteger maxResults = [args[1] integerValue];
-    NSString *flags = args[2];
-    NSArray<NSString *> *extensions = [args[3] componentsSeparatedByString:@" "];
-    if (extensions.count == 1 && !extensions[0].length) extensions = nil;
-    NSString *path = args[4];
-    NSArray<NSString *> *pathsToExclude = [[args objectAtIndex:5] componentsSeparatedByString:@"\t"];
-    if (pathsToExclude.count == 1 && !pathsToExclude[0].length) pathsToExclude = @[];
-    SPRFileSearchQuery *query = [[SPRFileSearchQuery alloc] init];
-    query.filePattern = filePattern;
-    query.maxResults = maxResults;
-    query.descendSubdirs = ([flags characterAtIndex:0] != '0');
-    query.searchHidden = ([flags characterAtIndex:1] != '0');
-    query.includeDirs = ([flags characterAtIndex:2] != '0');
-    query.includeFiles = ([flags characterAtIndex:3] != '0');
-    query.skipNoIndex = ([flags characterAtIndex:4] != '0');
-    query.caseSensitive = ([flags characterAtIndex:5] != '0');
-    query.extensions = extensions ? [NSSet setWithArray:extensions] : nil;
-    query.path = path;
-    query.pathsToExclude = [NSSet setWithArray:pathsToExclude];
-    NSArray<NSString *> *matches = [SPRSeed searchFilesWithQuery:query];
-    NSMutableString *response = [NSMutableString stringWithString:@"searchFiles"];
-    for (NSString *match in matches) {
-      [response appendString:@"\t"];
-      [response appendString:match];
-    }
-    [self sendToPython:response withUniqueId:uniqueId];
   } else if ([commandType isEqualToString:@"runningApps"]) {
     NSArray<NSRunningApplication *> *apps = NSWorkspace.sharedWorkspace.runningApplications;
     NSMutableString *response = [NSMutableString stringWithString:@"runningApps\t"];

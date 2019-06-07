@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		28CA920922A470270097E14B /* FileQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 28CA920822A470270097E14B /* FileQuery.m */; };
 		28F33E80225062450090740D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F33E7F225062450090740D /* AppDelegate.m */; };
 		28F33E82225062460090740D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28F33E81225062460090740D /* Assets.xcassets */; };
 		28F33E85225062460090740D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F33E83225062460090740D /* MainMenu.xib */; };
@@ -18,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		28CA920722A470270097E14B /* FileQuery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileQuery.h; sourceTree = "<group>"; };
+		28CA920822A470270097E14B /* FileQuery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileQuery.m; sourceTree = "<group>"; };
 		28F33E7B225062450090740D /* Sprout2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sprout2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F33E7E225062450090740D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		28F33E7F225062450090740D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -79,6 +82,8 @@
 				28F33E95225064320090740D /* SPRSeed.m */,
 				28F33E91225064320090740D /* SPRWebWindow.h */,
 				28F33E8F225064320090740D /* SPRWebWindow.m */,
+				28CA920722A470270097E14B /* FileQuery.h */,
+				28CA920822A470270097E14B /* FileQuery.m */,
 			);
 			path = Sprout2;
 			sourceTree = "<group>";
@@ -158,6 +163,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28CA920922A470270097E14B /* FileQuery.m in Sources */,
 				28F33E99225064320090740D /* SPRSeed.m in Sources */,
 				28F33E88225062460090740D /* main.m in Sources */,
 				28F33E98225064320090740D /* SPRMainSprout.m in Sources */,

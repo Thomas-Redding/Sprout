@@ -28,37 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *name;
 @end
 
-/**
- By default we find all the files and directories that are children of the home directory.
- On modern computers, roughly 40,000 files can be found in a second.
- */
-@interface SPRFileSearchQuery : NSObject
-@property(nonatomic) NSString *filePattern;
-/* Whether or not to consider files in subdirs. */
-@property(nonatomic) BOOL descendSubdirs;
-/* Skip hidden files and dirs for both matching and descending. */
-@property(nonatomic) BOOL searchHidden;
-/* Include direcories in results/ */
-@property(nonatomic) BOOL includeDirs;
-/* Include files in results/ */
-@property(nonatomic) BOOL includeFiles;
-@property(nonatomic) BOOL skipNoIndex;
-@property(nonatomic) BOOL caseSensitive;
-/**
- The path to the dir whose contents to search.
- If nil, the query searches from the home directory.
- */
-@property(nonatomic) NSString *path;
-/* The extensions to search for. If nil, this finds all files. */
-@property(nonatomic) NSSet<NSString *> *extensions;
-@property(nonatomic) NSSet<NSString *> *pathsToExclude;
-/**
- The maximum number of files to return. Files closest to the given `path` are prioritized.
- If 0, this returns all matching files. This is discouraged, because this can take a long time.
-*/
-@property(nonatomic) NSUInteger maxResults;
-@end
-
 typedef NS_OPTIONS(NSUInteger, SPRMouseEvent) {
   SPRMouseEventLeftMouseDown,
   SPRMouseEventLeftMouseUp,
@@ -74,11 +43,6 @@ typedef NS_OPTIONS(NSUInteger, SPRMouseEvent) {
   SPRMouseEventOtherMouseDragged,
 };
 
-struct SPRMouseButtonEvent {
-  short button;
-  bool isDown;
-};
-
 typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
   SPRKeyFlagNone    = 0,
   SPRKeyFlagCommand = 1,
@@ -89,7 +53,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 
 @interface SPRSeed : NSObject <SPRWebWindowDelegate>
 
-+ (void)setFrame:(CGRect)rect ofWindowWithNumber:(NSNumber *)windowNumber;
+#pragma mark - User Input
 
 /**
  @brief Calls a selector when the user presses a hotkey.
@@ -116,48 +80,59 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
                   toTarget:(id)target
                andSelector:(SEL)selector;
 
-+ (void)makeWindowWithId:(NSString *)windowId;
-+ (SPRWebWindow *)windowForId:(NSString *)windowId;
-+ (void)closeWindow:(NSString *)windowId;
+#pragma mark - Windows
 
-+ (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;
-+ (void)webWindowDidLoad:(NSString *)windowId;
-+ (void)sendMessage:(NSString *)message toWindow:(NSString *)windowId;
++ (void)setFrame:(CGRect)rect ofWindowWithNumber:(NSNumber *)windowNumber;
+
++ (CGRect)getFrontmostWindowFrame;
+
++ (void)setFrontmostWindowFrame:(CGRect)windowFrame;
 
 /**
  The number of seconds to poll window changes.
  The default value is 0.1, which causes roughly 2% of CPU usage.
  */
 + (CGFloat)windowTrackInterval;
+
 + (void)setWindowTrackInterval:(CGFloat)interval;
+
+#pragma mark - Sprout Windows
+
++ (void)makeWindowWithId:(NSString *)windowId;
+
++ (SPRWebWindow *)windowForId:(NSString *)windowId;
+
++ (void)closeWindow:(NSString *)windowId;
+
++ (void)setIndexPath:(NSString *)indexPath ofWindow:(NSString *)windowId;
+
++ (void)webWindowDidLoad:(NSString *)windowId;
+
++ (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
+
++ (void)sendMessage:(NSString *)message toWindow:(NSString *)windowId;
 
 /**
  A class property that allows the delegate to be notified of window changes.
  */
 + (id<SPRSeedDelegate>)delegate;
+
 + (void)setDelegate:(id<SPRSeedDelegate>)delegate;
-+ (void)didReceiveMessage:(NSString *)message fromWindow:(NSString *)windowId;
+
+#pragma mark - Other
 
 /**
  Should return a list of contacts in the future. Doesn't work at the moment. TODO: make work.
  */
 + (NSArray<SPRContact *> *)contacts;
 
-/**
- @param query A collections of criteria for the file to meet. See `SPRFileSearchQuery` for details.
- @return A list of files matching the criteria. See `SPRFileSearchQuery` for details.
- */
-+ (NSArray<NSString *> *)searchFilesWithQuery:(SPRFileSearchQuery *)query;
-
 + (NSString*)runAppleScript:(NSString*)string;
-
-+ (CGRect)getFrontmostWindowFrame;
-+ (void)setFrontmostWindowFrame:(CGRect)windowFrame;
 
 // Note: rtn.count may be greater than 1.
 // rtn[i][0] = text
 // rtn[i][1] = html
 + (NSArray<NSArray<NSString *> *> *)dictionaryEntryForWord:(NSString *)word;
+
 @end
 
 NS_ASSUME_NONNULL_END

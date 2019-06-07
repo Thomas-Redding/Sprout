@@ -378,21 +378,6 @@ class Sprout:
         # That's why we use double quotes.
         return self._server.sendSynchronousMessage('runAppleScript\t' + script)
 
-    def searchFiles(self, filePattern, maxResults, descendSubdirs, includeHidden, includeDirs, includeFiles, skipNoIndex, caseSensitive, extensions, path, pathsToExclude, callback):
-        message = 'searchFiles\t'
-        message += str(filePattern) + '\t'
-        message += str(maxResults) + '\t'
-        message += ('1' if descendSubdirs else '0')
-        message += ('1' if includeHidden else '0')
-        message += ('1' if includeDirs else '0')
-        message += ('1' if includeFiles else '0')
-        message += ('1' if skipNoIndex else '0')
-        message += ('1' if caseSensitive else '0')
-        message += '\t' + ' '.join(extensions)
-        message += '\t' + path
-        message += '\t' + '\t'.join(pathsToExclude)
-        self._server.sendAsynchronousMessage(message, callback)
-    
     def mousePosition(self):
         return self._server.sendSynchronousMessage('mousePosition')
     

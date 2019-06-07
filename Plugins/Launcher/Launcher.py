@@ -10,7 +10,7 @@ class Launcher:
         self._window.setTitle(None)
         self._window.onMessage = lambda requestStr : self.server(requestStr)
         self._window.didResignMain = lambda: self._window.setVisible(False)
-        self._window.setIndexPath('~/Projects/Sprout/Plugins/Launcher/index.html')
+        self._window.setIndexPath('~/proj/Sprout/Plugins/Launcher/index.html')
         self._window.setSpaceBehavior(1)
         self.spr.listenForHotkey(49, False, True, False, False, lambda a, b, c, d, e : self.toggleWindowHide())
         self.plugins = []
