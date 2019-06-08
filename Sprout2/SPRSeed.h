@@ -51,7 +51,7 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
   SPRKeyFlagShift   = 8,
 };
 
-@interface SPRSeed : NSObject <SPRWebWindowDelegate>
+@interface SPRSeed : NSObject
 
 #pragma mark - User Input
 
@@ -132,6 +132,11 @@ typedef NS_OPTIONS(NSUInteger, SPRKeyFlag) {
 // rtn[i][0] = text
 // rtn[i][1] = html
 + (NSArray<NSArray<NSString *> *> *)dictionaryEntryForWord:(NSString *)word;
+
+#pragma mark - Quasi Private
+
++ (void)webWindowDidBecomeMain:(NSString *)windowId;
++ (void)webWindowDidResignMain:(NSString *)windowId;
 
 @end
 

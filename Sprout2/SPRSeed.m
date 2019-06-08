@@ -64,7 +64,6 @@ static id<SPRSeedDelegate> _delegate;
 
 + (void)initialize {
   if (self == [SPRSeed self]) {
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     // Commented out to speed up development.
     [self requestA11y];
     
@@ -294,7 +293,6 @@ static id<SPRSeedDelegate> _delegate;
 + (void)makeWindowWithId:(NSString *)windowId {
   if ([_windows objectForKey:windowId]) return;
   _windows[windowId] = [[SPRWebWindow alloc] initWithId:windowId];
-  _windows[windowId].webWindowDelegate = self;
 }
 
 + (SPRWebWindow *)windowForId:(NSString *)windowId {
@@ -404,6 +402,16 @@ extern CFStringRef DCSRecordCopyData(CFTypeRef record, long version);
   return rtn;
 }
 
+#pragma mark - Quasi Private
+
++ (void)webWindowDidBecomeMain:(NSString *)windowId {
+  [self.delegate webWindowDidBecomeMain:windowId];
+}
+
++ (void)webWindowDidResignMain:(NSString *)windowId {
+  [self.delegate webWindowDidResignMain:windowId];
+}
+
 #pragma mark - Private
 
 + (void)callCallbackForHotKeyId:(UInt32)hotKeyId {
@@ -497,14 +505,6 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
                                    processID:(NSNumber *)dict[@"kCGWindowOwnerPID"]
                                        frame:rect];
   
-}
-
-+ (void)webWindowDidBecomeMain:(NSString *)windowId {
-  [self.delegate webWindowDidBecomeMain:windowId];
-}
-
-+ (void)webWindowDidResignMain:(NSString *)windowId {
-  [self.delegate webWindowDidResignMain:windowId];
 }
 
 + (AXUIElementRef)getFrontWindow {

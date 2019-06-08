@@ -3,11 +3,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SPRWebWindowDelegate
-- (void)webWindowDidBecomeMain:(NSString *)windowId;
-- (void)webWindowDidResignMain:(NSString *)windowId;
-@end
-
 @interface SPRWebWindow : NSWindow <NSWindowDelegate, WKNavigationDelegate, WKScriptMessageHandler>
 
 - (instancetype)initWithId:(NSString *)widgetId;
@@ -16,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property BOOL supportsUserActions;
 @property BOOL inDesktop;
-@property id<SPRWebWindowDelegate> webWindowDelegate;
 
 @end
 

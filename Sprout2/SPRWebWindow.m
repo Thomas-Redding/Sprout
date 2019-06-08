@@ -97,12 +97,12 @@
 
 - (void)windowDidBecomeMain:(NSNotification *)notification {
   // Might want `windowDidBecomeKey:`.
-  [self.webWindowDelegate webWindowDidBecomeMain:_windowId];
+  [SPRSeed webWindowDidBecomeMain:_windowId];
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
   // Might want `windowDidResignKey:`.
-  [self.webWindowDelegate webWindowDidResignMain:_windowId];
+  [SPRSeed webWindowDidResignMain:_windowId];
 }
 
 # pragma mark - WKNavigationDelegate
