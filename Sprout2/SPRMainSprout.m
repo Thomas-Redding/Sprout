@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 
+#import "FileQuery.h"
 #import "SPRWebWindow.h"
 
 static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
@@ -383,6 +384,23 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   } else if ([commandType isEqualToString:@"getClipboard"]) {
     NSString *str = [NSPasteboard.generalPasteboard stringForType:NSPasteboardTypeString];
     [self sendToPython:[NSString stringWithFormat:@"getClipboard\t%@", str] withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"searchFiles"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:4];
+    NSArray<NSString *> *sortStrings = [args[2] componentsSeparatedByString:@":"];
+    NSMutableArray<NSSortDescriptor *> *sortDescriptors = [[NSMutableArray alloc] init];
+    for (NSString *sortString in sortStrings) {
+      NSString *key = [sortString substringFromIndex:1];
+      BOOL isAscending = ([sortString characterAtIndex:0] != '0');
+      [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:key ascending:isAscending]];
+    }
+    NSInteger maxResults = [args[3] integerValue];
+    [FileQuery findFilesMatchingFilter:args[0]
+                              inScopes:[args[1] componentsSeparatedByString:@":"]
+                                sortBy:sortDescriptors
+                            maxResults:maxResults
+                                string:uniqueId
+                                target:self
+                              callback:@selector(fileSearchFinishedWithResults:uniqueId:)];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
@@ -701,6 +719,15 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
   if (itemRef) {
     CFRelease(itemRef);
   }
+}
+
+- (void)fileSearchFinishedWithResults:(NSArray<NSString *> *)results uniqueId:(NSString *)uniqueId {
+  NSMutableString *response = [@"searchFiles" mutableCopy];
+  for (NSString *result in results) {
+    [response appendString:@"\t"];
+    [response appendString:result];
+  }
+  [self sendToPython:response withUniqueId:uniqueId];
 }
 
 @end

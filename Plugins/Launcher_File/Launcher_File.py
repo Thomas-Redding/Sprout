@@ -83,8 +83,10 @@ class Launcher_File:
         thread.start()
 
     def search(self, query, callback):
-        def callbackWrapper(output, error, errorCode):
-            results = output.split("\n")
-            callback(results[:-1])
+        scopes = []
         for scope in self.scopes:
-            self.asyncPopen("mdfind '" + query + "' -onlyin " + scope, callbackWrapper)
+            if scope[0] == '~':
+                scopes.append('/Users/thomasredding/' + scope[1:])
+            else:
+                scopes.append(scope)
+        self.spr.searchFiles(query, scopes, [('kMDItemLastUsedDate', False)], callback, 5)

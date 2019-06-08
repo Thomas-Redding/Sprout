@@ -378,6 +378,21 @@ class Sprout:
         # That's why we use double quotes.
         return self._server.sendSynchronousMessage('runAppleScript\t' + script)
 
+    def searchFiles(self, mdfindQuery, scopes, sortKeys, callback, maxResults):
+        message = 'searchFiles'
+        message += '\t' + mdfindQuery
+        message += '\t' + ':'.join(scopes)
+        sortKeyCompress = []
+        for sortKey in sortKeys:
+            key = sortKey[0]
+            shouldAscend = sortKey[1]
+            sortKeyCompress.append(('1' if shouldAscend else '0') + key)
+        message += '\t' + ':'.join(sortKeyCompress)
+        if maxResults < 0: maxResults = 0
+        if maxResults == float('inf'): maxResults = 2**64
+        message += '\t' + str(maxResults)
+        self._server.sendAsynchronousMessage(message, callback)
+
     def mousePosition(self):
         return self._server.sendSynchronousMessage('mousePosition')
     
