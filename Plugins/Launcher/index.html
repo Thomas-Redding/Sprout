@@ -16,6 +16,8 @@ onload = () => {
     var arg = message.substr(i+1);
     if (command == 'suggestions') {
       search.setSuggestions(JSON.parse(message.substr(i+1)));
+      var heightNeeded = document.getElementById('mainInput').getBoundingClientRect().height
+      spr.send('resize\t' + heightNeeded)
     }
   };
   search.onsubmit = (value, isClick, cmd, opt, ctrl, shift) => {

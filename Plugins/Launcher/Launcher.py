@@ -4,9 +4,12 @@ class Launcher:
 
     def __init__(self, spr):
         self.spr = spr
+        self.ypos = 100
+        self.width = 500
+        self.maxHeight = 500
         self._window = self.spr.makeWindow()
         self._window.setVisible(False)
-        self._window.setFrame([100, 100, 500, 500])
+        self.setFrameForHeight(40)
         self._window.setTitle(None)
         self._window.onMessage = lambda requestStr : self.server(requestStr)
         self._window.didResignMain = lambda: self._window.setVisible(False)
@@ -27,6 +30,7 @@ class Launcher:
             self._window.returnOwnership()
         else:
             self._window.borrowOwnership()
+            self.setFrameForHeight(self._height)
 
     def server(self, requestStr):
         tabIndex = requestStr.find('\t')
@@ -39,6 +43,8 @@ class Launcher:
             self._resultsChanged()
             for plugin in self.plugins:
                 plugin.query(commandArgs, lambda results: self.queryCallback(commandArgs, results))
+        elif command == 'resize':
+            self.setFrameForHeight(int(commandArgs))
         elif command == 'submit':
             tabIndex = commandArgs.index('\t')
             hotkeys = commandArgs[0:tabIndex]
@@ -52,6 +58,11 @@ class Launcher:
             self._actionCount += 1
         elif command == 'print':
             s = self.spr.print('###' + submitKey)
+
+    def setFrameForHeight(self, height):
+        if height > self.maxHeight: height = self.maxHeight
+        self._height = height
+        self._window.setFrame([1680/2-self.width/2, 900-100-height, self.width, height])
 
     def queryCallback(self, userInput, results):
         self._results += results

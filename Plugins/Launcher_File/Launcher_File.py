@@ -46,12 +46,13 @@ class Launcher_File:
             for i in range(len(results)):
                 rtn.append(('Launcher_File:' + results[i], 10-i, results[i]))
             callback(rtn)
+        queryName = "" if query == "" else " && kMDItemFSName = " + query + "*"
         if ext == 'o':
-            self.search("kMDItemContentType != public.folder && kMDItemFSName = " + query + "*", searchCallback)
+            self.search("kMDItemContentType != public.folder" + queryName, searchCallback)
         elif ext == 'fo':
-            self.search("kMDItemContentType == public.folder && kMDItemFSName = " + query + "*", searchCallback)
+            self.search("kMDItemContentType == public.folder" + queryName, searchCallback)
         else:
-            self.search("kMDItemContentType != public.folder && kMDItemFSName = " + query + "* && kMDItemFSName = *." + ext, searchCallback)
+            self.search("kMDItemContentType != public.folder" + queryName + " && kMDItemFSName = *." + ext, searchCallback)
 
     def unescape(self, s):
         state = 0
