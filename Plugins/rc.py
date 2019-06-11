@@ -34,7 +34,7 @@ timeTracker = TimeTracker.TimeTracker(spr, outputPath, 10)
 
 
 from Launcher import Launcher
-launcher = Launcher.Launcher(spr)
+launcher = Launcher.Launcher(spr, 49, True, False, False, False)
 
 from Launcher_Apps import Launcher_Apps
 appsLauncher = Launcher_Apps.Launcher_Apps(spr)

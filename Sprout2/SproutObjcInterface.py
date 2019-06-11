@@ -313,10 +313,10 @@ class Sprout:
         if type(ctrl) != bool: raise Exception('ctrl in Sprout.listenForHotkey() should have type bool.')
         if type(shift) != bool: raise Exception('shift in Sprout.listenForHotkey() should have type bool.')
         if not callable(callback): raise Exception('callback in Sprout.listenForHotkey() should be callable.')
-        x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
-        if x not in self._hotkeyCallbacks: self._hotkeyCallbacks[x] = []
-        self._hotkeyCallbacks[x].append(callback)
-        self._server.sendAsynchronousMessage('registerHotKey\t' + x, lambda x : x)
+        hotkeyStr = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
+        if hotkeyStr not in self._hotkeyCallbacks: self._hotkeyCallbacks[hotkeyStr] = []
+        self._hotkeyCallbacks[hotkeyStr].append(callback)
+        self._server.sendAsynchronousMessage('registerHotKey\t' + hotkeyStr, lambda x : x)
 
     def listenForMouseButtons(self, callback):
         if not callable(callback): raise Exception('callback in Sprout.listenForMouseButtons() should be callable.')

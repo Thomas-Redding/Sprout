@@ -2,7 +2,7 @@ import json
 
 class Launcher:
 
-    def __init__(self, spr):
+    def __init__(self, spr, keyCode, cmd, opt, ctrl, shift):
         self.spr = spr
         self.ypos = 100
         self.width = 500
@@ -15,7 +15,7 @@ class Launcher:
         self._window.didResignMain = lambda: self._window.setVisible(False)
         self._window.setIndexPath('~/proj/Sprout/Plugins/Launcher/index.html')
         self._window.setSpaceBehavior(1)
-        self.spr.listenForHotkey(49, False, True, False, False, lambda a, b, c, d, e : self.toggleWindowHide())
+        self.spr.listenForHotkey(keyCode, cmd, opt, ctrl, shift, lambda a, b, c, d, e : self.toggleWindowHide())
         self.plugins = []
         self._userInput = None
         self._results = [] # (key, priority, displayHTML)
