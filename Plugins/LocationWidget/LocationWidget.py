@@ -11,9 +11,9 @@ class LocationWidget:
         self._window.setVisible(True)
         self._window.setSupportsUserActions(False)
         screenSize = [self.spr.screenFrames()[0][2], self.spr.screenFrames()[0][3]]
-        self._window.setFrame([100, screenSize[1] - 200, 200, 120])
+        self._window.setFrame((100, screenSize[1] - 200, 200, 120))
         self._window.setTitle(None)
-        self._window.setIndexPath('~/Projects/Sprout/Plugins/LocationWidget/index.html')
+        self._window.setIndexPath('~/proj/Sprout/Plugins/LocationWidget/index.html')
         self.spr.repeat(600, lambda: self.update())
         self.update()
 

@@ -115,6 +115,7 @@ class Window:
         if not self._windowId: return None
         return self._indexPath
     def setIndexPath(self, pathToIndex):
+        if type(pathToIndex) != str: raise Exception('pathToIndex in Window.setIndexPath() should have type string.')
         if not self._windowId: return None
         self._indexPath = pathToIndex
         message = 'window.setIndexPath\t' + self._windowId + '\t' + pathToIndex
@@ -123,6 +124,12 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getFrame\t' + self._windowId)
     def setFrame(self, newFrame):
+        if type(newFrame) != tuple: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
+        if len(newFrame) != 4: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[0]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[1]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[2]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[3]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
         if not self._windowId: return None
         message = 'window.setFrame'
         message += '\t' + self._windowId
@@ -135,12 +142,14 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getVisible\t' + self._windowId)
     def setVisible(self, newVisible):
+        if type(newVisible) != str: raise Exception('newVisible in Window.setVisible() should have type bool.')
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.setVisible\t' + self._windowId + '\t' + ('1' if newVisible else '0'))
     def title(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getTitle\t' + self._windowId)
     def setTitle(self, newTitle):
+        if type(newVisible) != str: raise Exception('newTitle in Window.setTitle() should have type string.')
         if not self._windowId: return None
         if newTitle == None:
             return self._spr._server.sendSynchronousMessage('window.setTitle\t' + self._windowId + '\t0\t')
@@ -150,24 +159,34 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getAlpha\t' + self._windowId)
     def setAlpha(self, newAlpha):
+        if type(newAlpha) != int and type(newAlpha) != float: raise Exception('newAlpha in Window.setAlpha() should have type int or float.')
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.setAlpha\t' + self._windowId + '\t' + str(newAlpha))
     def minSize(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getMinSize\t' + self._windowId)
     def setMinSize(self, newSize):
+        if type(newSize) != tuple: raise Exception('newSize in Sprout.setMinSize() should be a tuple of 2 integers/floats.')
+        if len(newSize) != 2: raise Exception('newSize in Sprout.setMinSize() should be a tuple of 2 integers/floats.')
+        if type(newSize[0]) != int and type(newSize[0]) != float: raise Exception('newSize in Sprout.setMinSize() should be a tuple of 2 integers/floats.')
+        if type(newSize[1]) != int and type(newSize[1]) != float: raise Exception('newSize in Sprout.setMinSize() should be a tuple of 2 integers/floats.')
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.setMinSize\t' + self._windowId + '\t' + str(newSize[0]) + '\t' + str(newSize[1]))
     def maxSize(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getMaxSize\t' + self._windowId)
     def setMaxSize(self, newSize):
+        if type(newSize) != tuple: raise Exception('newSize in Sprout.setMaxSize() should be a tuple of 2 integers/floats.')
+        if len(newSize) != 2: raise Exception('newSize in Sprout.setMaxSize() should be a tuple of 2 integers/floats.')
+        if type(newSize[0]) != int and type(newSize[0]) != float: raise Exception('newSize in Sprout.setMaxSize() should be a tuple of 2 integers/floats.')
+        if type(newSize[1]) != int and type(newSize[1]) != float: raise Exception('newSize in Sprout.setMaxSize() should be a tuple of 2 integers/floats.')
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.setMaxSize\t' + self._windowId + '\t' + str(newSize[0]) + '\t' + str(newSize[1]))
     def movable(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getMovable\t' + self._windowId)
     def setMovable(self, newMovable):
+        if type(newMovable) != str: raise Exception('newMovable in Window.setMovable() should have type bool.')
         if not self._windowId: return None
         if newMovable:
             return self._spr._server.sendSynchronousMessage('window.setMovable\t' + self._windowId + '\t1')
@@ -177,6 +196,7 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getSupportsUserActions\t' + self._windowId)
     def setSupportsUserActions(self, newValue):
+        if type(newValue) != str: raise Exception('newValue in Window.setSupportsUserActions() should have type bool.')
         if not self._windowId: return None
         if newValue:
             return self._spr._server.sendSynchronousMessage('window.setSupportsUserActions\t' + self._windowId + '\t1')
@@ -186,6 +206,7 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getInDesktop\t' + self._windowId)
     def setInDesktop(self, newValue):
+        if type(newValue) != str: raise Exception('newValue in Window.setInDesktop() should have type bool.')
         if not self._windowId: return None
         if newValue:
             return self._spr._server.sendSynchronousMessage('window.setInDesktop\t' + self._windowId + '\t1')
@@ -276,6 +297,7 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.returnOwnership\t' + self._windowId)
     def sendMessage(self, message):
+        if type(message) != str: raise Exception('message in Window.sendMessage() should have type string.')
         self._spr._server.sendAsynchronousMessage('window.sendMessage\t' + self._windowId + '\t' + message, lambda x : x)
     def close(self):
         self._spr._server.sendAsynchronousMessage('window.close\t' + self._windowId, lambda x : x)
