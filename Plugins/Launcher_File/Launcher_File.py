@@ -41,14 +41,16 @@ class Launcher_File:
         return True
 
     def suggest(self, ext, query, callback):
+        # https://developer.apple.com/library/archive/documentation/Carbon/Conceptual/SpotlightQuery/Concepts/QueryFormat.html#//apple_ref/doc/uid/TP40001849
+        # https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Predicates/Articles/pSpotlightComparison.html
         def searchCallback(results):
             rtn = []
             for i in range(len(results)):
                 rtn.append(('Launcher_File:' + results[i], 10-i, results[i]))
             callback(rtn)
-        queryName = "" if query == "" else " && kMDItemFSName = " + query + "*"
+        queryName = "" if query == "" else " && kMDItemFSName == \'" + query + "*\'c"
         if ext == 'o':
-            self.search("kMDItemContentType != public.folder" + queryName, searchCallback)
+            self.search("kMDItemContentType != public.folder" + queryName + "", searchCallback)
         elif ext == 'fo':
             self.search("kMDItemContentType == public.folder" + queryName, searchCallback)
         else:
