@@ -1,7 +1,7 @@
+spr.print('BEGIN LOADING')
+
 import sys
 sys.path.insert(0, '/Users/thomasredding/proj/Sprout/Plugins')
-
-spr.print('BEGIN LOADING')
 
 from WindowSnapper import WindowSnapper
 

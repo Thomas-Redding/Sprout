@@ -124,12 +124,12 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getFrame\t' + self._windowId)
     def setFrame(self, newFrame):
-        if type(newFrame) != tuple: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
-        if len(newFrame) != 4: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[0]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[1]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[2]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[3]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame) != tuple: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats A.')
+        if len(newFrame) != 4: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats B.')
+        if type(newFrame[0]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats. C')
+        if type(newFrame[1]) != int and type(newFrame[1]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats. D')
+        if type(newFrame[2]) != int and type(newFrame[2]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats. E')
+        if type(newFrame[3]) != int and type(newFrame[3]) != float: raise Exception('newFrame in Window.setFrame() should be a tuple of 4 integers/floats. F')
         if not self._windowId: return None
         message = 'window.setFrame'
         message += '\t' + self._windowId
@@ -142,19 +142,21 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getVisible\t' + self._windowId)
     def setVisible(self, newVisible):
-        if type(newVisible) != str: raise Exception('newVisible in Window.setVisible() should have type bool.')
+        if type(newVisible) != bool: raise Exception('newVisible in Window.setVisible() should have type bool.')
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.setVisible\t' + self._windowId + '\t' + ('1' if newVisible else '0'))
     def title(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getTitle\t' + self._windowId)
     def setTitle(self, newTitle):
-        if type(newVisible) != str: raise Exception('newTitle in Window.setTitle() should have type string.')
-        if not self._windowId: return None
         if newTitle == None:
+            if not self._windowId: return None
             return self._spr._server.sendSynchronousMessage('window.setTitle\t' + self._windowId + '\t0\t')
-        else:
+        elif type(newTitle) == str:
+            if not self._windowId: return None
             return self._spr._server.sendSynchronousMessage('window.setTitle\t' + self._windowId + '\t1\t' + newTitle)
+        else:
+            raise Exception('newTitle in Window.setTitle() should have type string.')
     def alpha(self):
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getAlpha\t' + self._windowId)
@@ -186,7 +188,7 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getMovable\t' + self._windowId)
     def setMovable(self, newMovable):
-        if type(newMovable) != str: raise Exception('newMovable in Window.setMovable() should have type bool.')
+        if type(newMovable) != bool: raise Exception('newMovable in Window.setMovable() should have type bool.')
         if not self._windowId: return None
         if newMovable:
             return self._spr._server.sendSynchronousMessage('window.setMovable\t' + self._windowId + '\t1')
@@ -196,7 +198,7 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getSupportsUserActions\t' + self._windowId)
     def setSupportsUserActions(self, newValue):
-        if type(newValue) != str: raise Exception('newValue in Window.setSupportsUserActions() should have type bool.')
+        if type(newValue) != bool: raise Exception('newValue in Window.setSupportsUserActions() should have type bool.')
         if not self._windowId: return None
         if newValue:
             return self._spr._server.sendSynchronousMessage('window.setSupportsUserActions\t' + self._windowId + '\t1')
@@ -206,7 +208,7 @@ class Window:
         if not self._windowId: return None
         return self._spr._server.sendSynchronousMessage('window.getInDesktop\t' + self._windowId)
     def setInDesktop(self, newValue):
-        if type(newValue) != str: raise Exception('newValue in Window.setInDesktop() should have type bool.')
+        if type(newValue) != bool: raise Exception('newValue in Window.setInDesktop() should have type bool.')
         if not self._windowId: return None
         if newValue:
             return self._spr._server.sendSynchronousMessage('window.setInDesktop\t' + self._windowId + '\t1')

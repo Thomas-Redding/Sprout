@@ -62,7 +62,7 @@ class Launcher:
     def setFrameForHeight(self, height):
         if height > self.maxHeight: height = self.maxHeight
         self._height = height
-        self._window.setFrame([1680/2-self.width/2, 900-100-height, self.width, height])
+        self._window.setFrame((1680/2-self.width/2, 900-100-height, self.width, height))
 
     def queryCallback(self, userInput, results):
         self._results += results
