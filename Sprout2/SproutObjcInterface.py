@@ -310,11 +310,8 @@ class LiteWindow:
         self._bundleIdentifier = bundleIdentifier
         self._appName = appName
     def number(self): return self._number
-    def setNumber(self, newVal): self._number = newVal
     def bundleIdentifier(self): return self._bundleIdentifier
-    def setBundleIdentifier(self, newVal): self._bundleIdentifier = newVal
     def appName(self): return self._appName
-    def setAppName(self, newVal): self._appName = newVal
 
 class Sprout:
     def __init__(self):
