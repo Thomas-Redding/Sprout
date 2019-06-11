@@ -75,7 +75,7 @@ class ServerAPI:
                 state = 0
         return rtn
     
-    def _respondToStandardInput(self, message):
+    def __respondToStandardInput(self, message):
         message = self._unescapeNewlines(message[0:-1])
         spaceIndex = helper.finder(message, '\t')
         uniqueId = message[0:spaceIndex]
@@ -92,15 +92,15 @@ class ServerAPI:
         else:
             self._unexpectedMessageCallback(commandAndArgs)
 
-    def respondToStandardInput(self, line):
+    def _respondToStandardInput(self, line):
         self.checkQueue()
-        self._respondToStandardInput(line)
+        self.__respondToStandardInput(line)
 
     def checkQueue(self):
         queue = self._queue[:]
         self._queue = []
         for line in queue:
-            self._respondToStandardInput(line)
+            self.__respondToStandardInput(line)
 
 class Window:
     def __init__(self, spr):
@@ -298,8 +298,8 @@ class LiteWindow:
 
 class Sprout:
     def __init__(self):
-        self._server = ServerAPI(lambda message : self.parseResponse(message),
-                                 lambda message : self.unexpectedMessageCallback(message))
+        self._server = ServerAPI(lambda message : self._parseResponse(message),
+                                 lambda message : self._unexpectedMessageCallback2(message))
         self._windows = {}
         self.shared = {}
         self._hotkeyCallbacks = {}
@@ -309,18 +309,27 @@ class Sprout:
 
     # For keyCodes, see https://stackoverflow.com/a/16125341 or https://eastmanreference.com/complete-list-of-applescript-key-codes.
     def listenForHotkey(self, keyCode, cmd, opt, ctrl, shift, callback):
+        if type(keyCode) != int: raise Exception('keyCode in Sprout.listenForHotkey() should have type int.')
+        if type(cmd) != bool: raise Exception('cmd in Sprout.listenForHotkey() should have type bool.')
+        if type(opt) != bool: raise Exception('opt in Sprout.listenForHotkey() should have type bool.')
+        if type(ctrl) != bool: raise Exception('ctrl in Sprout.listenForHotkey() should have type bool.')
+        if type(shift) != bool: raise Exception('shift in Sprout.listenForHotkey() should have type bool.')
+        if not callable(callback): raise Exception('callback in Sprout.listenForHotkey() should be callable.')
         x = self._hotkeyStr(keyCode, cmd, opt, ctrl, shift)
         if x not in self._hotkeyCallbacks: self._hotkeyCallbacks[x] = []
         self._hotkeyCallbacks[x].append(callback)
         self._server.sendAsynchronousMessage('registerHotKey\t' + x, lambda x : x)
 
     def listenForMouseButtons(self, callback):
+        if not callable(callback): raise Exception('callback in Sprout.listenForMouseButtons() should be callable.')
         self._mouseButtonCallbacks.append(callback)
     
     def listenForMouseMove(self, callback):
+        if not callable(callback): raise Exception('callback in Sprout.listenForMouseMove() should be callable.')
         self._mouseMoveCallbacks.append(callback)
     
     def listenForWindowMove(self, callback):
+        if not callable(callback): raise Exception('callback in Sprout.listenForWindowMove() should be callable.')
         self._windowMovedCallbacks.append(callback)
 
     def _hotkeyStr(self, keyCode, cmd, opt, ctrl, shift):
@@ -347,6 +356,7 @@ class Sprout:
         return rtn
 
     def print(self, s):
+        if type(s) != str: raise Exception('s in Sprout.print() should have type string.')
         self._server.sendAsynchronousMessage('print\t' + s, lambda x : x, False)
     
     def quitSprout(self):
@@ -359,9 +369,11 @@ class Sprout:
         return self._server.sendSynchronousMessage('frontmostApp')
     
     def quitApp(self, bundleIdentifier):
+        if type(bundleIdentifier) != str: raise Exception('bundleIdentifier in Sprout.quitApp() should have type string.')
         self._server.sendAsynchronousMessage('quitApp\t' + bundleIdentifier, lambda x: x)
     
     def forceQuitApp(self, bundleIdentifier):
+        if type(bundleIdentifier) != str: raise Exception('bundleIdentifier in Sprout.forceQuitApp() should have type string.')
         self._server.sendAsynchronousMessage('forceQuitApp\t' + bundleIdentifier, lambda x: x)
     
     def sleepScreen(self):
@@ -374,11 +386,24 @@ class Sprout:
         self._server.sendAsynchronousMessage('power.logOut', lambda x: x)
     
     def runAppleScript(self, script):
+        if type(script) != str: raise Exception('script in Sprout.forceQuitApp() should have type string.')
         # Note: Bash strings denoted by single quotes can't contain single quotes (even if they're "escaped").
         # That's why we use double quotes.
         return self._server.sendSynchronousMessage('runAppleScript\t' + script)
 
     def searchFiles(self, mdfindQuery, scopes, sortKeys, callback, maxResults):
+        if type(mdfindQuery) != str: raise Exception('mdfindQuery in Sprout.searchFiles() should have type string.')
+        if type(scopes) != list: raise Exception('scopes in Sprout.searchFiles() should have type [string].')
+        for scope in scopes:
+            if type(scope) != str: raise Exception('scopes in Sprout.searchFiles() should have type [string].')
+        if type(sortKeys) != list: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
+        for sortKey in sortKeys:
+            if type(sortKey) != tuple: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
+            if len(sortKey) != 2: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
+            if type(sortKey[0]) != str: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
+            if type(sortKey[1]) != bool: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
+        if not callable(callback) != str: raise Exception('callback in Sprout.searchFiles() should be callable.')
+        if type(maxResults) != int: raise Exception('maxResults in Sprout.searchFiles() should have type int.')
         message = 'searchFiles'
         message += '\t' + mdfindQuery
         message += '\t' + ':'.join(scopes)
@@ -397,6 +422,11 @@ class Sprout:
         return self._server.sendSynchronousMessage('mousePosition')
     
     def moveWindow(self, liteWindow, x, y, width, height):
+        if type(liteWindow) != LiteWindow: raise Exception('liteWindow in Sprout.moveWindow() should have type LiteWindow.')
+        if type(x) != int and type(x) != float: raise Exception('x in Sprout.moveWindow() should have type int or float.')
+        if type(y) != int and type(y) != float: raise Exception('y in Sprout.moveWindow() should have type int or float.')
+        if type(width) != int and type(width) != float: raise Exception('width in Sprout.moveWindow() should have type int or float.')
+        if type(height) != int and type(height) != float: raise Exception('height in Sprout.moveWindow() should have type int or float.')
         message = 'liteWindow.moveWindow'
         message += '\t' + str(liteWindow.number())
         message += '\t' + str(x)
@@ -409,6 +439,11 @@ class Sprout:
         return self._server.sendSynchronousMessage('getFrontmostWindowFrame')
     
     def setFrontmostWindowFrame(self, newFrame):
+        if type(newFrame) != tuple: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[0]) != int and type(newFrame[0]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[1]) != int and type(newFrame[1]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[2]) != int and type(newFrame[2]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[3]) != int and type(newFrame[3]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
         message = 'setFrontmostWindowFrame'
         message += '\t' + str(newFrame[0])
         message += '\t' + str(newFrame[1])
@@ -422,18 +457,25 @@ class Sprout:
         return self._server.sendSynchronousMessage('setClipboard\t' + s)
     
     def define(self, word):
+        if type(word) != tuple: raise Exception('word in Sprout.define() should have type string.')
         message = 'define\t' + word;
         return self._server.sendSynchronousMessage(message)
     
     def doLater(self, waitTime, callback):
+        if type(waitTime) != int and type(float) != int: raise Exception('waitTime in Sprout.doLater() should have type float or int.')
+        if not callable(callback) != tuple: raise Exception('callback in Sprout.doLater() should be callable.')
         self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
 
     def repeat(self, waitTime, callback):
+        if type(waitTime) != int and type(float) != int: raise Exception('waitTime in Sprout.repeat() should have type float or int.')
+        if not callable(callback) != tuple: raise Exception('callback in Sprout.repeat() should be callable.')
         timerId = helper.generateUniqueId()
         self._server.sendAsynchronousMessage('repeat\t' + timerId + '\t' + str(waitTime), callback)
         return timerId
 
     def stopRepeat(self, timerId, callback=None):
+        if type(waitTime) != str: raise Exception('timerId in Sprout.stopRepeat() should have type string.')
+        if not callable(callback) != tuple: raise Exception('callback in Sprout.stopRepeat() should be callable.')
         if callback:
             self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, callback)
         else:
@@ -442,16 +484,16 @@ class Sprout:
     def screenFrames(self):
         return self._server.sendSynchronousMessage('screenFrames')
 
-    def parseResponse(self, message):
-        command = self.commandFromLine(message)
+    def _parseResponse(self, message):
+        command = self._commandFromLine(message)
         argStr = message[len(command)+1:]
         if command == 'runAppleScript':
-            result = self.argArrayFromArgStr(argStr, 1)
+            result = self._argArrayFromArgStr(argStr, 1)
             return result[0]
         elif command == 'registerHotKey':
             None
         elif command == 'hotKeyPressed':
-            keyCode, flags = self.argArrayFromArgStr(argStr, 2)
+            keyCode, flags = self._argArrayFromArgStr(argStr, 2)
             cmd = (flags[0] != '0')
             opt = (flags[1] != '0')
             ctrl = (flags[2] != '0')
@@ -466,25 +508,25 @@ class Sprout:
                 apps[i] = (apps[i][:firstSpace], apps[i][firstSpace+1:])
             return apps[1:]
         elif command == 'frontmostApp':
-            bundleId, appName = self.argArrayFromArgStr(argStr[:-1], 2)
+            bundleId, appName = self._argArrayFromArgStr(argStr[:-1], 2)
             return (bundleId, appName)
         elif command == 'power.sleepScreen' or command == 'power.shutDown' or command == 'power.restart' or command == 'power.logOut':
             None
         elif command == 'mousePosition':
-            x, y = self.argArrayFromArgStr(argStr, 2)
+            x, y = self._argArrayFromArgStr(argStr, 2)
             return (float(x), float(y))
         elif command == 'doLater' or command == 'repeat' or command == 'stopRepeat':
             None
         elif command == 'liteWindow.windowMoved':
-            windowNumber, bundleIdentifier, appName = self.argArrayFromArgStr(argStr, 3)
+            windowNumber, bundleIdentifier, appName = self._argArrayFromArgStr(argStr, 3)
             return LiteWindow(self, windowNumber, bundleIdentifier, appName)
         elif command == 'liteWindow.moveWindow':
             return None
         elif command == 'getFrontmostWindowFrame' or command == 'setFrontmostWindowFrame':
-            x, y, w, h = self.argArrayFromArgStr(argStr, 4)
+            x, y, w, h = self._argArrayFromArgStr(argStr, 4)
             return [float(x), float(y), float(w), float(h)]
         elif command == 'getClipboard' or command == 'setClipboard':
-            arr = self.argArrayFromArgStr(argStr, 1)
+            arr = self._argArrayFromArgStr(argStr, 1)
             return arr[0]
         elif command == 'makeWindow':
             return None
@@ -513,75 +555,75 @@ class Sprout:
                 rtn.append([args[i], args[i+1]])
             return rtn
         elif command == 'window.setFrame' or command == 'window.getFrame':
-            windowId, x, y, w, h = self.argArrayFromArgStr(argStr, 5)
+            windowId, x, y, w, h = self._argArrayFromArgStr(argStr, 5)
             x = float(x)
             y = float(y)
             w = float(w)
             h = float(h)
             return (x, y, w, h)
         elif command == 'window.setVisible' or command == 'window.getVisible':
-            windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+            windowId, isVisible = self._argArrayFromArgStr(argStr, 2)
             return bool(int(isVisible))
         elif command == 'window.getTitle' or command == 'window.setTitle':
-            windowId, isTitleVisible, titleStr = self.argArrayFromArgStr(argStr, 3)
+            windowId, isTitleVisible, titleStr = self._argArrayFromArgStr(argStr, 3)
             isTitleVisible = bool(int(isTitleVisible))
             if not isTitleVisible: return None
             else: return titleStr
         elif command == 'window.getAlpha' or command == 'window.setAlpha':
-            windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+            windowId, isVisible = self._argArrayFromArgStr(argStr, 2)
             return bool(int(isVisible))
         elif command == 'window.getMinSize' or command == 'window.setMinSize':
-            windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+            windowId, isVisible = self._argArrayFromArgStr(argStr, 2)
             return bool(int(isVisible))
         elif command == 'window.getMaxSize' or command == 'window.setMaxSize':
-            windowId, isVisible = self.argArrayFromArgStr(argStr, 2)
+            windowId, isVisible = self._argArrayFromArgStr(argStr, 2)
             return bool(int(isVisible))
         elif command == 'window.getMovable' or command == 'window.setMovable':
-            windowId, isMovable = self.argArrayFromArgStr(argStr, 2)
+            windowId, isMovable = self._argArrayFromArgStr(argStr, 2)
             return bool(int(isMovable))
         elif command == 'window.setIndexPath':
             None
         elif command == 'window.didLoad':
-            return self.argArrayFromArgStr(argStr, 1)[0]
+            return self._argArrayFromArgStr(argStr, 1)[0]
         elif command == 'window.close':
             None
         elif command == 'window.makeKeyAndFront':
             None
         elif command == 'mouseButton':
-            button, goingDown = self.argArrayFromArgStr(argStr, 2)
+            button, goingDown = self._argArrayFromArgStr(argStr, 2)
             if goingDown == 'down': goingDown = True
             elif goingDown == 'up': goingDown = False
             return (int(button), goingDown)
         elif command == 'mouseMove':
-            return int(self.argArrayFromArgStr(argStr, 1)[0])
+            return int(self._argArrayFromArgStr(argStr, 1)[0])
         elif command == 'window.sendMessage':
             return None
         elif command == 'window.request':
-            windowId, message = self.argArrayFromArgStr(argStr, 2)
+            windowId, message = self._argArrayFromArgStr(argStr, 2)
             return (windowId, message)
         elif command == 'window.borrowOwnership' or command == 'window.returnOwnership':
             None
         elif command == 'window.didBecomeMain' or command == 'window.didResignMain':
-            windowId = self.argArrayFromArgStr(argStr, 1)[0]
+            windowId = self._argArrayFromArgStr(argStr, 1)[0]
             return windowId
         elif command == 'window.getSupportsUserActions' or command == 'window.setSupportsUserActions':
-            windowId, value = self.argArrayFromArgStr(argStr, 2)
+            windowId, value = self._argArrayFromArgStr(argStr, 2)
             return value
         elif command == 'window.getInDesktop' or command == 'window.setInDesktop':
-            windowId, value = self.argArrayFromArgStr(argStr, 2)
+            windowId, value = self._argArrayFromArgStr(argStr, 2)
             return bool(value)
         elif command == 'window.getCollectionBehavior' or command == 'window.setCollectionBehavior':
-             windowId, value = self.argArrayFromArgStr(argStr, 2)
+             windowId, value = self._argArrayFromArgStr(argStr, 2)
              return int(value)
         elif command == 'window.getIsWidget' or command == 'window.setIsWidget':
-            windowId, value = self.argArrayFromArgStr(argStr, 2)
+            windowId, value = self._argArrayFromArgStr(argStr, 2)
             return value
         else:
             self.print('UNKNOWN COMMAND: ' + message)
 
-    def unexpectedMessageCallback(self, message):
-        command = self.commandFromLine(message)
-        parsedMessage = self.parseResponse(message)
+    def _unexpectedMessageCallback2(self, message):
+        command = self._commandFromLine(message)
+        parsedMessage = self._parseResponse(message)
         if command == 'window.didLoad':
             self._windows[parsedMessage].onLoad()
         elif command == 'window.request':
@@ -613,12 +655,12 @@ class Sprout:
             self.print('Unknown UnexpectedMessageCallback: ' + message)
         # TODO: Use parsed message.
         
-    def commandFromLine(self, line):
+    def _commandFromLine(self, line):
         index = line.find('\t')
         if index == -1: return line
         else: return line[0:index]
 
-    def argArrayFromArgStr(self, argStr, maxNumArgs):
+    def _argArrayFromArgStr(self, argStr, maxNumArgs):
         argsLeft = argStr
         args = []
         for i in range(maxNumArgs-1):
@@ -630,8 +672,8 @@ class Sprout:
         if len(args) != maxNumArgs: return None
         return args
 
-    def respondToStandardInput(self, line):
-        self._server.respondToStandardInput(line)
+    def _respondToStandardInput(self, line):
+        self._server._respondToStandardInput(line)
 
 spr = Sprout()
 
@@ -640,4 +682,4 @@ with open(PATH_TO_RC) as rcFile:
     exec(rcFile.read(), { 'spr': spr })
 
 for line in sys.stdin:
-    spr.respondToStandardInput(line)
+    spr._respondToStandardInput(line)
