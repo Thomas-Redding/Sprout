@@ -86,4 +86,4 @@ class WindowSnapper:
         if newY != -1:      newFrame[1] = newY * screenOfFocusedWindow[3]     + screenOfFocusedWindow[1]
         if newWidth != -1:  newFrame[2] = newWidth * screenOfFocusedWindow[2]
         if newHeight != -1: newFrame[3] = newHeight * screenOfFocusedWindow[3]
-        self.spr.setFrontmostWindowFrame(newFrame)
+        self.spr.setFrontmostWindowFrame(tuple(newFrame))

@@ -4,8 +4,6 @@ import subprocess
 import string
 import sys
 
-
-
 class Helper:
     def __init__(self):
         self._uniqueId = 0
@@ -404,6 +402,7 @@ class Sprout:
             if type(sortKey[1]) != bool: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
         if not callable(callback) != str: raise Exception('callback in Sprout.searchFiles() should be callable.')
         if type(maxResults) != int: raise Exception('maxResults in Sprout.searchFiles() should have type int.')
+        if maxResults < 0: raise Exception('maxResults in Sprout.searchFiles() should be greater than or equal to zero.')
         message = 'searchFiles'
         message += '\t' + mdfindQuery
         message += '\t' + ':'.join(scopes)
@@ -439,11 +438,12 @@ class Sprout:
         return self._server.sendSynchronousMessage('getFrontmostWindowFrame')
     
     def setFrontmostWindowFrame(self, newFrame):
-        if type(newFrame) != tuple: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[0]) != int and type(newFrame[0]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[1]) != int and type(newFrame[1]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[2]) != int and type(newFrame[2]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
-        if type(newFrame[3]) != int and type(newFrame[3]) != float: raise Exception('sortKeys in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame) != tuple: raise Exception('newFrame in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if len(newFrame) != 4: raise Exception('newFrame in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[0]) != int and type(newFrame[0]) != float: raise Exception('newFrame in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[1]) != int and type(newFrame[1]) != float: raise Exception('newFrame in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[2]) != int and type(newFrame[2]) != float: raise Exception('newFrame in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
+        if type(newFrame[3]) != int and type(newFrame[3]) != float: raise Exception('newFrame in Sprout.setFrontmostWindowFrame() should be a tuple of 4 integers/floats.')
         message = 'setFrontmostWindowFrame'
         message += '\t' + str(newFrame[0])
         message += '\t' + str(newFrame[1])
@@ -457,25 +457,25 @@ class Sprout:
         return self._server.sendSynchronousMessage('setClipboard\t' + s)
     
     def define(self, word):
-        if type(word) != tuple: raise Exception('word in Sprout.define() should have type string.')
+        if type(word) != str: raise Exception('word in Sprout.define() should have type string.')
         message = 'define\t' + word;
         return self._server.sendSynchronousMessage(message)
     
     def doLater(self, waitTime, callback):
         if type(waitTime) != int and type(float) != int: raise Exception('waitTime in Sprout.doLater() should have type float or int.')
-        if not callable(callback) != tuple: raise Exception('callback in Sprout.doLater() should be callable.')
+        if not callable(callback): raise Exception('callback in Sprout.doLater() should be callable.')
         self._server.sendAsynchronousMessage('doLater\t' + str(waitTime), callback)
 
     def repeat(self, waitTime, callback):
         if type(waitTime) != int and type(float) != int: raise Exception('waitTime in Sprout.repeat() should have type float or int.')
-        if not callable(callback) != tuple: raise Exception('callback in Sprout.repeat() should be callable.')
+        if not callable(callback): raise Exception('callback in Sprout.repeat() should be callable.')
         timerId = helper.generateUniqueId()
         self._server.sendAsynchronousMessage('repeat\t' + timerId + '\t' + str(waitTime), callback)
         return timerId
 
     def stopRepeat(self, timerId, callback=None):
         if type(waitTime) != str: raise Exception('timerId in Sprout.stopRepeat() should have type string.')
-        if not callable(callback) != tuple: raise Exception('callback in Sprout.stopRepeat() should be callable.')
+        if not callable(callback): raise Exception('callback in Sprout.stopRepeat() should be callable.')
         if callback:
             self._server.sendAsynchronousMessage('stopRepeat\t' + timerId, callback)
         else:
@@ -677,9 +677,28 @@ class Sprout:
 
 spr = Sprout()
 
+PATH_TO_ERRORS = '/Users/thomasredding/proj/Sprout/errors.txt'
 PATH_TO_RC = '/Users/thomasredding/proj/Sprout/Plugins/rc.py'
-with open(PATH_TO_RC) as rcFile:
-    exec(rcFile.read(), { 'spr': spr })
 
-for line in sys.stdin:
-    spr._respondToStandardInput(line)
+try:
+    with open(PATH_TO_RC) as rcFile:
+        exec(rcFile.read(), { 'spr': spr })
+except Exception as exception:
+    spr.quitSprout()
+    try:
+        with open(PATH_TO_ERRORS, 'a') as errorFile:
+            stackTrace = traceback.format_exception(None, exception, exception.__traceback__)
+            errorFile.write(stackTrace)
+        sys.exit(1)
+    except:
+        sys.exit(2)
+
+try:
+    for line in sys.stdin:
+        spr._respondToStandardInput(line)
+except Exception as exception:
+    spr.quitSprout()
+    with open(PATH_TO_ERRORS, "a+") as errorFile:
+        exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
+        errorFile.write("\n\n==========\n\n")
+        errorFile.write(str(exceptionValue))

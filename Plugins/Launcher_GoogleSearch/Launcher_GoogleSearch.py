@@ -17,8 +17,6 @@ class Launcher_GoogleSearch:
                 response = responses[i]
                 rtn.append(['Launcher_GoogleSearch:' + response, 5-i, 'google ' + response])
             callback(rtn)
-        else:
-            callback([['Launcher_GoogleSearch:' + userInput, -1000000, 'google ' + userInput]])
 
     def action(self, key, cmd, opt, ctrl, shift):
         if key[0:22] == 'Launcher_GoogleSearch:':
