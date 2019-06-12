@@ -8,13 +8,17 @@
 
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
+#import <CommonCrypto/CommonDigest.h>
 #import <Contacts/Contacts.h>
 #import <CoreServices/CoreServices.h>
 
 #import "SPRSeed.h"
 #import "SPRWebWindow.h"
 
+static const NSString *kCachePath = @"/Users/thomasredding/SproutCache";
+static const NSUInteger kMaxCacheSize = 20;
 static NSMutableDictionary<NSString *, SPRWebWindow *> *_windows;
+static NSUInteger nextCacheId;
 static CNContactStore *_addressBook;
 
 @implementation SPRWindowInfo
@@ -440,6 +444,32 @@ extern CFStringRef DCSRecordCopyData(CFTypeRef record, long version);
   return rtn;
 }
 
++ (NSString *)pathToFileIcon:(NSString *)path {
+  // TODO: delete files from cache.
+  // Originally, we had a cache, but hashing the NSImage took too long:
+  //   NSString *imageMD5 = [self md5HashFromData:image.representations.firstObject];
+  //   if (_cachedImageHashToCachedImage[imageMD5]) {
+  //     return _cachedImageHashToCachedImage[imageMD5];
+  //   } else {
+  //     [_cachedImageHashToCachedImage setValue:rtn forKey:imageMD5];
+  //   }
+  NSString *rtn = [NSString stringWithFormat:@"%@/%lu.png", kCachePath, nextCacheId];
+  ++nextCacheId;
+  if (nextCacheId > kMaxCacheSize) {
+    NSError *error;
+    NSString *fileToRemove =
+        [NSString stringWithFormat:@"%@/%lu.png", kCachePath, nextCacheId-kMaxCacheSize-1];
+    [[NSFileManager defaultManager] removeItemAtPath:fileToRemove error:&error];
+  }
+  NSImage *image = [[NSWorkspace sharedWorkspace] iconForFile:path];
+  CGImageRef cgRef = [image CGImageForProposedRect:NULL context:nil hints:nil];
+  NSBitmapImageRep *newRep = [[NSBitmapImageRep alloc] initWithCGImage:cgRef];
+  [newRep setSize:[image size]];
+  NSData *pngData = [newRep representationUsingType:NSPNGFileType properties:nil];
+  [pngData writeToFile:rtn atomically:NO];
+  return rtn;
+}
+
 #pragma mark - Quasi Private
 
 + (void)webWindowDidBecomeMain:(NSString *)windowId {
@@ -578,9 +608,7 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
 + (void)requestContactsPermission {
   _addressBook = [[CNContactStore alloc] init];
   [_addressBook requestAccessForEntityType:CNEntityTypeContacts
-                         completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                           NSLog(@"T:%d,%@", granted, error);
-                         }];
+                         completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
 }
 
 + (NSString *)expandFilePath:(NSString *)path {
@@ -591,6 +619,18 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   } else {
     return path;
   }
+}
+
+// https://stackoverflow.com/a/1685319
++ (NSString *)md5HashFromData:(NSData *)data {
+  unsigned char result[16];
+  CC_MD5(data.bytes, data.length, result);
+  NSString *rtn = [NSString stringWithFormat:
+      @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
+      result[0], result[1], result[2], result[3], result[4], result[5], result[6],
+      result[7], result[8], result[9], result[10], result[11], result[12], result[13],
+      result[14], result[15] ];
+  return rtn;
 }
 
 @end

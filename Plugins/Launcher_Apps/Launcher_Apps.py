@@ -14,12 +14,12 @@ class Launcher_Apps:
             if file == '.DS_Store': continue
             appName = file[0:-4]
             if userInput.lower() == appName[0:len(userInput)].lower():
-                response.append(['Launcher_Apps:open /Applications/' + file, 0, appName])
+                response.append(['Launcher_Apps:open /Applications/' + file, 0, self.imageHTML("/Applications/" + file) + appName])
         for file in os.listdir('/Applications/Utilities'):
             if file == '.DS_Store': continue
             appName = file[0:-4]
             if userInput.lower() == appName[0:len(userInput)].lower():
-                response.append(['Launcher_Apps:open /Applications/Utilities/' + file, 0, appName])
+                response.append(['Launcher_Apps:open /Applications/Utilities/' + file, 0, self.imageHTML("/Applications/Utilities" + file) + appName])
         for alias in self.aliases:
             if not userInput.lower() == alias[0:len(userInput)].lower(): continue
             pathToApp = self.aliases[alias]
@@ -32,13 +32,13 @@ class Launcher_Apps:
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:quit /Applications/' + file, 0, 'quit ' + appName])
+                        response.append(['Launcher_Apps:quit /Applications/' + file, 0, self.imageHTML("/Applications/" + file) + 'quit ' + appName])
             for file in os.listdir('/Applications/Utilities'):
                 if file == '.DS_Store': continue
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:quit /Applications/Utilities/' + file, 0, 'quit ' + appName])
+                        response.append(['Launcher_Apps:quit /Applications/Utilities/' + file, 0, self.imageHTML("/Applications/Utilities" + file) + 'quit ' + appName])
         if userInput[0:8] == 'restart ':
             query = userInput[8:]
             for file in os.listdir('/Applications'):
@@ -46,13 +46,13 @@ class Launcher_Apps:
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:restart /Applications/' + file, 0, 'restart ' + appName])
+                        response.append(['Launcher_Apps:restart /Applications/' + file, 0, self.imageHTML("/Applications/" + file) + 'restart ' + appName])
             for file in os.listdir('/Applications/Utilities'):
                 if file == '.DS_Store': continue
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:restart /Applications/Utilities/' + file, 0, 'restart ' + appName])
+                        response.append(['Launcher_Apps:restart /Applications/Utilities/' + file, 0, self.imageHTML("/Applications/Utilities" + file) + 'restart ' + appName])
         callback(response)
 
     def does2dArrayContain(self, arr2d, val):
@@ -75,3 +75,6 @@ class Launcher_Apps:
                 os.system('open "' + key[22:] + '"')
                 return True
         return False
+
+    def imageHTML(self, path):
+        return "<img src='" + self.spr.pathToFileIcon(path) + "'>"

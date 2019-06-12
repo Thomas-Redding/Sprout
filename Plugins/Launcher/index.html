@@ -68,7 +68,6 @@ body {
 }
 .search > input {
   display: block;
-  width: 100%;
   background-color: #333;
   color: white;
   border: none;
@@ -78,13 +77,16 @@ body {
 .search > table {
   background-color: #333;
   color: white;
-  width: 100%;
   border-collapse: collapse;
   cursor: pointer;
   font-size: 2em;
+  white-space: nowrap;
 }
 .search > table > tbody > tr.selected {
   background-color: #222;
+}
+.search > table > tbody img {
+  height: 1em;
 }
 </style>
 <div id="mainInput"></div>

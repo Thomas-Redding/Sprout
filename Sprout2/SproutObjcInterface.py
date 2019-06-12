@@ -425,7 +425,7 @@ class Sprout:
             if len(sortKey) != 2: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
             if type(sortKey[0]) != str: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
             if type(sortKey[1]) != bool: raise Exception('sortKeys in Sprout.searchFiles() should have type [(str, bool)].')
-        if not callable(callback) != str: raise Exception('callback in Sprout.searchFiles() should be callable.')
+        if not callable(callback): raise Exception('callback in Sprout.searchFiles() should be callable.')
         if type(maxResults) != int: raise Exception('maxResults in Sprout.searchFiles() should have type int.')
         if maxResults < 0: raise Exception('maxResults in Sprout.searchFiles() should be greater than or equal to zero.')
         message = 'searchFiles'
@@ -443,7 +443,12 @@ class Sprout:
         self._server.sendAsynchronousMessage(message, callback)
     
     def fetchContacts(self, callback):
+        if not callable(callback): raise Exception('callback in Sprout.fetchContacts() should be callable.')
         return self._server.sendAsynchronousMessage("contacts", callback)
+    
+    def pathToFileIcon(self, path):
+        if type(path) != str: raise Exception('path in Sprout.pathToFileIcon() should have type string.')
+        return self._server.sendSynchronousMessage("pathToFileIcon\t" + path)
 
     def mousePosition(self):
         return self._server.sendSynchronousMessage('mousePosition')
@@ -528,9 +533,13 @@ class Sprout:
             shift = (flags[3] != '0')
             return (argStr, keyCode, cmd, opt, ctrl, shift)
         elif command == 'searchFiles':
+            x = argStr.split('\t')
+            if len(x) == 1 and x[0] == "": return []
             return argStr.split('\t')
         elif command == "contacts":
           return json.loads(argStr)
+        elif command == "pathToFileIcon":
+          return argStr
         elif command == 'runningApps':
             apps = argStr[0:-1].split('/')
             for i in range(len(apps)):

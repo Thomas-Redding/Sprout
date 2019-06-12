@@ -435,6 +435,11 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
     [message appendString:@"]"];
     // TODO: escape quotation marks
     [self sendToPython:message withUniqueId:uniqueId];
+  } else if ([commandType isEqualToString:@"pathToFileIcon"]) {
+    NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];
+    NSString *filePath = args[0];
+    NSString *iconPath = [SPRSeed pathToFileIcon:filePath];
+    [self sendToPython:[NSString stringWithFormat:@"pathToFileIcon\t%@", iconPath] withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];

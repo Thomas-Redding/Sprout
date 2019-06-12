@@ -1,7 +1,6 @@
 import json
 import os
 import threading
-import time
 import subprocess
 
 """
@@ -57,7 +56,7 @@ class Launcher_File:
             if userInput[0:len(ext)+1] == ext + ' ':
                 self.suggest(ext, userInput[len(ext)+1:], callback)
                 return None
-        if userInput[0:2] == self.fileKeyword + 'o ':
+        if userInput[0:2] == self.fileKeyword + ' ':
             self.suggest(self.fileKeyword, userInput[2:], callback)
         elif userInput[0:3] == self.folderKeyword + ' ':
             self.suggest(self.folderKeyword, userInput[3:], callback)
@@ -73,8 +72,10 @@ class Launcher_File:
         def searchCallback(results):
             rtn = []
             for i in range(len(results)):
-                reversedPath = " / ".join(results[i].split('/')[::-1])
-                rtn.append(('Launcher_File:' + results[i], 10-i, reversedPath))
+                path = results[i]
+                reversedPath = " / ".join(path.split('/')[::-1])
+                html = "<img src='" + self._pathToFileIcon(path) + "'></img>" + reversedPath
+                rtn.append(('Launcher_File:' + results[i], 10-i, html))
             callback(rtn)
         queryName = "" if query == "" else " && kMDItemFSName == '" + query + "*'c"
         if ext == self.fileKeyword:
@@ -97,3 +98,15 @@ class Launcher_File:
             else:
                 scopes.append(scope)
         self.spr.searchFiles(query, scopes, [('kMDItemLastUsedDate', False)], callback, self.maxResults)
+
+    def _pathToFileIcon(self, path):
+        fileName, extension = os.path.splitext(path)
+        pathToIcon = ""
+        if extension == "":
+            pathToIcon = "/Users/thomasredding/proj/Sprout/Plugins/Launcher_File/icons/dir.png"
+        else:
+            extension = extension[1:] # remove "."
+            pathToIcon = "/Users/thomasredding/proj/Sprout/Plugins/Launcher_File/icons/" + extension + ".png"
+        if not os.path.isfile(pathToIcon):
+            pathToIcon = "/Users/thomasredding/proj/Sprout/Plugins/Launcher_File/icons/default.png"
+        return pathToIcon
