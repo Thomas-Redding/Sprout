@@ -403,6 +403,35 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
                                 string:uniqueId
                                 target:self
                               callback:@selector(fileSearchFinishedWithResults:uniqueId:)];
+  } else if ([commandType isEqualToString:@"contacts"]) {
+    NSArray<SPRContact *> *contacts = [SPRSeed contacts];
+    NSMutableString *message = [@"contacts\t[" mutableCopy];
+    BOOL isFirst = YES;
+    for (SPRContact *contact in contacts) {
+      if (isFirst) isFirst = NO;
+      else [message appendString:@","];
+      [message appendString:@"{"];
+      [message appendFormat:@"\"name\": \"%@\",", contact.name];
+      [message appendFormat:@"\"birthday\": %f,", contact.birthday];
+      [message appendFormat:@"\"phones\": ["];
+      BOOL isFirst2 = YES;
+      for (NSString *phoneNumber in contact.phoneNumbers) {
+        if (isFirst2) isFirst2 = NO;
+        else [message appendString:@","];
+        [message appendFormat:@"\"%@\"", phoneNumber];
+      }
+      [message appendFormat:@"], \"emails\": ["];
+      isFirst2 = YES;
+      for (NSString *emailAddress in contact.emailAddresses) {
+        if (isFirst2) isFirst2 = NO;
+        else [message appendString:@","];
+        [message appendFormat:@"\"%@\"", emailAddress];
+      }
+      [message appendString:@"]}"];
+    }
+    [message appendString:@"]"];
+    // TODO: escape quotation marks
+    [self sendToPython:message withUniqueId:uniqueId];
 /********** Window Commands **********/
   } else if ([commandType isEqualToString:@"makeWindow"]) {
     NSArray<NSString *> *args = [self argsFromCommand:command argNum:1];

@@ -15,6 +15,7 @@
 #import "SPRWebWindow.h"
 
 static NSMutableDictionary<NSString *, SPRWebWindow *> *_windows;
+static CNContactStore *_addressBook;
 
 @implementation SPRWindowInfo
 
@@ -31,6 +32,9 @@ static NSMutableDictionary<NSString *, SPRWebWindow *> *_windows;
 - (NSString *)description {
   return [NSString stringWithFormat:@"('%@', %@, %@, [%f, %f, %f, %f])", self.name, self.number, self.processID, self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height];
 }
+@end
+
+@implementation SPRContact : NSObject
 @end
 
 OSStatus callback(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);
@@ -66,6 +70,7 @@ static id<SPRSeedDelegate> _delegate;
   if (self == [SPRSeed self]) {
     // Commented out to speed up development.
     [self requestA11y];
+    [self requestContactsPermission];
     
     // Hotkey Events
     _hotKeyToTarget = [[NSMutableDictionary alloc] init];
@@ -338,19 +343,48 @@ static id<SPRSeedDelegate> _delegate;
 #pragma mark - Other Public
 
 + (NSArray<SPRContact *> *)contacts {
-  NSPredicate *pred = [CNContact predicateForContactsMatchingName:@"Morgan"];
+  // https://developer.apple.com/documentation/contacts/contact_keys?language=objc
   CNContactStore *store = [[CNContactStore alloc] init];
-  NSArray *keys = @[CNContactGivenNameKey, CNContactFamilyNameKey];
+  NSPredicate *predicate = [CNContact predicateForContactsInContainerWithIdentifier:_addressBook.defaultContainerIdentifier];
+  NSArray *keys = @[
+      CNContactGivenNameKey,      // Albert
+      CNContactFamilyNameKey,     // Einstein
+      CNContactEmailAddressesKey, // einstein@princeton.edu
+      CNContactPhoneNumbersKey,   // (555) 123-4567
+      CNContactBirthdayKey,       // Mar 3, 1879
+      CNContactThumbnailImageDataKey,
+  ];
   NSError *error;
-  NSArray<CNContact *> *containers = [store unifiedContactsMatchingPredicate:pred keysToFetch:keys error:&error];
+  NSArray<CNContact *> *containers =
+      [store unifiedContactsMatchingPredicate:predicate keysToFetch:keys error:&error];
   if ([error.domain isEqualToString:CNErrorDomain] && error.code == 100) {
     // The user denied us permission to access contacts.
     return nil;
+  } else if (error) {
+    return nil;
   }
   // TODO: Make this work.
-  NSLog(@"TR: %@", error);
-  NSLog(@"TR: %@", containers);
-  return nil;
+  NSMutableArray<SPRContact *> *rtn = [[NSMutableArray alloc] init];
+  NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+  [formatter setDateFormat:@"yyyy-MMM-dd"];
+  for (CNContact *contact in containers) {
+    SPRContact *newContact = [[SPRContact alloc] init];
+    newContact.name = [NSString stringWithFormat:@"%@ %@", contact.givenName, contact.familyName];
+    newContact.birthday = [[contact.birthday date] timeIntervalSince1970];
+    NSMutableArray <NSString *> *phoneNumbers = [[NSMutableArray alloc] init];
+    for (CNLabeledValue<CNPhoneNumber*>* phoneNumber in contact.phoneNumbers) {
+      [phoneNumbers addObject:phoneNumber.value.stringValue];
+    }
+    newContact.phoneNumbers = phoneNumbers;
+    
+    NSMutableArray <NSString *> *emailAddresses = [[NSMutableArray alloc] init];
+    for (CNLabeledValue<NSString*> *emailAddress in contact.emailAddresses) {
+      [emailAddresses addObject:emailAddress.value];
+    }
+    newContact.emailAddresses = emailAddresses;
+    [rtn addObject:newContact];
+  }
+  return rtn;
 }
 
 + (NSString*)runAppleScript:(NSString*)string {
@@ -535,6 +569,14 @@ OSStatus callback(EventHandlerCallRef nextHandler, EventRef event,void *userData
   BOOL accessibilityEnabled = AXIsProcessTrustedWithOptions((__bridge CFDictionaryRef) options);
   return accessibilityEnabled;
   return NO;
+}
+
++ (void)requestContactsPermission {
+  _addressBook = [[CNContactStore alloc] init];
+  [_addressBook requestAccessForEntityType:CNEntityTypeContacts
+                         completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                           NSLog(@"T:%d,%@", granted, error);
+                         }];
 }
 
 + (NSString *)expandFilePath:(NSString *)path {

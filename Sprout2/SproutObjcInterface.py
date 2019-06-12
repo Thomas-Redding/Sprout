@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import subprocess
@@ -440,6 +441,9 @@ class Sprout:
         if maxResults == float('inf'): maxResults = 2**64
         message += '\t' + str(maxResults)
         self._server.sendAsynchronousMessage(message, callback)
+    
+    def fetchContacts(self, callback):
+        return self._server.sendAsynchronousMessage("contacts", callback)
 
     def mousePosition(self):
         return self._server.sendSynchronousMessage('mousePosition')
@@ -525,6 +529,8 @@ class Sprout:
             return (argStr, keyCode, cmd, opt, ctrl, shift)
         elif command == 'searchFiles':
             return argStr.split('\t')
+        elif command == "contacts":
+          return json.loads(argStr)
         elif command == 'runningApps':
             apps = argStr[0:-1].split('/')
             for i in range(len(apps)):

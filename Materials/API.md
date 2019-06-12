@@ -89,3 +89,11 @@ You can import CSS and JavaScript files from the file system as normal.
 spr.send(string message)
 spr.receive(string message)
 ```
+
+## Permissions
+
+An important detail to be aware of when using Sprout is all your Python scripts get the same permissions as Sprout itself. This simplifies development, but means plugins you add from other sources have a lot of power over your system. This is an intentional decision, but has drawbacks.
+
+A related issue is that Apple's recent sandboxing logic requires Sprout to [request automation permission from each app individually](https://www.felix-schwarz.org/blog/2018/08/new-apple-event-apis-in-macos-mojave). This is one of the justifications for a ~~simplified~~ unified privacy model: asking for permissions once per app instead of once per app-script combo dramatically simplifies user interactions.
+
+Accessibility permission, however, is only asked for once.

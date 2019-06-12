@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SPRContact : NSObject
 @property NSString *name;
+@property double birthday; // seconds since 1970
+@property NSArray<NSString *> *phoneNumbers;
+@property NSArray<NSString *> *emailAddresses;
 @end
 
 typedef NS_OPTIONS(NSUInteger, SPRMouseEvent) {
