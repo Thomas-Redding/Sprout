@@ -1,5 +1,6 @@
 spr.print('BEGIN LOADING')
 
+import os
 import sys
 sys.path.insert(0, '/Users/thomasredding/proj/Sprout/Plugins')
 
@@ -46,7 +47,15 @@ launcher.plugins.append(calculatorLauncher)
 
 from Launcher_File import Launcher_File
 fileLauncher = Launcher_File.Launcher_File(spr)
+fileLauncher.fileKeyword = "o"
+fileLauncher.folderKeyword = "fo"
 fileLauncher.scopes = ['~/Desktop', '~/Downloads', '~/proj']
+def openFile(path, command, option, control, shift):
+    if command:
+        os.system('open ' + os.path.split(path)[0])
+    else:
+        os.system('open ' + path)
+fileLauncher.handleSelection = openFile
 launcher.plugins.append(fileLauncher)
 
 from Launcher_GoogleSearch import Launcher_GoogleSearch

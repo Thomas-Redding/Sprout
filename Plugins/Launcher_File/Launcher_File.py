@@ -4,9 +4,39 @@ import threading
 import time
 import subprocess
 
+"""
+launcherFile = Launcher_File()
+launcherFile.maxResults = 20
+
+self.fileKeyword = "file"
+self.folderKeyword = "folder"
+# file foo = files starting with foo
+# folder foo = folders starting with foo
+
+launcherFile.validExtensions = ["jpg"]
+launcherFile.validExtensions.append("png")
+# jpg foo = .jpg files starting with foo
+# etc
+
+launcherFile.scopes = [ "~/Desktop" ] # Search files on the user's Desktop
+launcherFile.scopes.append("~/Downloads") # ... and downloads
+
+# Define how to handle a user selectin a file. This example opens the enclosing folder if
+# the command key is pressed, otherwise it opens the file. The default implementation
+# simply always opens the file.
+launcherFile.handleSelection = lambda path, command, option, control, shift:
+    if command:
+        os.system('open ' + os.path.split(path)[0])
+    else:
+        os.system('open ' + path)
+"""
+
 class Launcher_File:
     def __init__(self, spr):
         self.spr = spr
+        self.fileKeyword = "file"
+        self.folderKeyword = "folder"
+        self.maxResults = 10
         self.validExtensions = [
             'bmp', 'gif', 'ico', 'jpeg', 'jpg', 'pdf', 'png', 'svg', 'tif',
             'avi', 'flv', 'mp4', 'webm',
@@ -20,24 +50,21 @@ class Launcher_File:
         ]
         self.scopes = ['~/Desktop', '~/Downloads', '~/Documents', '~/Public']
         None
+        self.handleSelection = lambda path, cmd, opt, ctrl, shift: os.system('open ' + path)
 
     def query(self, userInput, callback):
         for ext in self.validExtensions:
             if userInput[0:len(ext)+1] == ext + ' ':
                 self.suggest(ext, userInput[len(ext)+1:], callback)
                 return None
-        if userInput[0:2] == 'o ':
-            self.suggest('o', userInput[2:], callback)
-        elif userInput[0:3] == 'fo ':
-            self.suggest('fo', userInput[3:], callback)
+        if userInput[0:2] == self.fileKeyword + 'o ':
+            self.suggest(self.fileKeyword, userInput[2:], callback)
+        elif userInput[0:3] == self.folderKeyword + ' ':
+            self.suggest(self.folderKeyword, userInput[3:], callback)
 
     def action(self, key, cmd, opt, ctrl, shift):
         if key[0:14] != 'Launcher_File:': return False
-        path = key[14:]
-        if cmd:
-            os.system('open ' + os.path.split(path)[0].replace(" ", "\\ "))
-        else:
-            os.system('open ' + path.replace(" ", "\\ "))
+        self.handleSelection(key[14:].replace(" ", "\\ "), cmd, opt, ctrl, shift)
         return True
 
     def suggest(self, ext, query, callback):
@@ -49,10 +76,15 @@ class Launcher_File:
                 rtn.append(('Launcher_File:' + results[i], 10-i, results[i]))
             callback(rtn)
         queryName = "" if query == "" else " && kMDItemFSName == '" + query + "*'c"
-        if ext == 'o':
+        if ext == self.fileKeyword:
             self.search("kMDItemContentType != public.folder" + queryName + "", searchCallback)
-        elif ext == 'fo':
-            self.search("kMDItemContentType == public.folder" + queryName, searchCallback)
+        elif ext == self.folderKeyword:
+            def callbackWrapper(results):
+                for scope in self.scopes:
+                    if os.path.basename(scope).lower().startswith(query.lower()):
+                        results.insert(0, scope)
+                searchCallback(results[0:self.maxResults])
+            self.search("kMDItemContentType == public.folder" + queryName, callbackWrapper)
         else:
             self.search("kMDItemContentType != public.folder" + queryName + " && kMDItemFSName = '*." + ext + "'c", searchCallback)
 
@@ -92,4 +124,4 @@ class Launcher_File:
                 scopes.append('/Users/thomasredding/' + scope[1:])
             else:
                 scopes.append(scope)
-        self.spr.searchFiles(query, scopes, [('kMDItemLastUsedDate', False)], callback, 5)
+        self.spr.searchFiles(query, scopes, [('kMDItemLastUsedDate', False)], callback, self.maxResults)
