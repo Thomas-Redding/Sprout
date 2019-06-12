@@ -395,6 +395,9 @@ class Sprout:
         if type(bundleIdentifier) != str: raise Exception('bundleIdentifier in Sprout.forceQuitApp() should have type string.')
         self._server.sendAsynchronousMessage('forceQuitApp\t' + bundleIdentifier, lambda x: x)
     
+    def restartSprout(self):
+        self._server.sendAsynchronousMessage('restartSprout', lambda x : x)
+    
     def sleepScreen(self):
         self._server.sendAsynchronousMessage('power.sleepScreen', lambda x: x)
     def shutDown(self):

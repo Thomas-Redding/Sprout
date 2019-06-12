@@ -279,6 +279,8 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
         break;
       }
     }
+  } else if ([commandType isEqualToString:@"restartSprout"]) {
+    [self restartSprout];
   } else if ([commandType isEqualToString:@"power.sleepScreen"]) {
     [self _runAppleScript:@"tell application \"Finder\" to sleep"];
     [self sendToPython:command withUniqueId:uniqueId];
@@ -653,6 +655,35 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
 
 - (void)sproutMainTerminated {
   if (self.delegate) [self.delegate didEnd];
+}
+
+- (NSString*)restartSprout {
+  NSString* path = [[NSBundle mainBundle] bundlePath];
+  NSString* commandToRun = [NSString stringWithFormat:@"open -n %@", path];
+
+  NSTask *task;
+  task = [[NSTask alloc] init];
+  [task setLaunchPath: @"/bin/sh"];
+  
+  NSArray *arguments = [NSArray arrayWithObjects: @"-c" ,
+      [NSString stringWithFormat:@"%@", commandToRun], nil];
+  [task setArguments: arguments];
+  
+  NSPipe *pipe;
+  pipe = [NSPipe pipe];
+  [task setStandardOutput: pipe];
+  
+  NSFileHandle *file;
+  file = [pipe fileHandleForReading];
+  
+  [task launch];
+  
+  NSData *data;
+  data = [file readDataToEndOfFile];
+  
+  NSString *output;
+  output = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+  exit(0);
 }
 
 - (void)assert:(BOOL)check message:(NSString *)message {
