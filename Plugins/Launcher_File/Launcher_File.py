@@ -73,7 +73,8 @@ class Launcher_File:
         def searchCallback(results):
             rtn = []
             for i in range(len(results)):
-                rtn.append(('Launcher_File:' + results[i], 10-i, results[i]))
+                reversedPath = " / ".join(results[i].split('/')[::-1])
+                rtn.append(('Launcher_File:' + results[i], 10-i, reversedPath))
             callback(rtn)
         queryName = "" if query == "" else " && kMDItemFSName == '" + query + "*'c"
         if ext == self.fileKeyword:
