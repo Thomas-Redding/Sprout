@@ -5,6 +5,7 @@ import time
 class Launcher_Apps:
     def __init__(self, spr):
         self.spr = spr
+        self.aliases = {}
 
     def query(self, userInput, callback):
         response = []
@@ -19,6 +20,11 @@ class Launcher_Apps:
             appName = file[0:-4]
             if userInput.lower() == appName[0:len(userInput)].lower():
                 response.append(['Launcher_Apps:open /Applications/Utilities/' + file, 0, appName])
+        for alias in self.aliases:
+            if not userInput.lower() == alias[0:len(userInput)].lower(): continue
+            pathToApp = self.aliases[alias]
+            appName = os.path.basename(pathToApp)[0:-4]
+            response.append(['Launcher_Apps:open ' + pathToApp, 0, appName])
         if userInput[0:5] == 'quit ':
             query = userInput[5:]
             for file in os.listdir('/Applications'):

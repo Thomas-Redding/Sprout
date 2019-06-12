@@ -39,6 +39,13 @@ launcher = Launcher.Launcher(spr, 49, True, False, False, False)
 
 from Launcher_Apps import Launcher_Apps
 appsLauncher = Launcher_Apps.Launcher_Apps(spr)
+appsLauncher.aliases = {
+    "Chrome": "Applications/Google Chrome",
+    "Preferences": "Applications/System\\ Preferences.app",
+    "LoL": "Applications/League of Legends",
+    "Legends": "Applications/League of Legends",
+    "Control": "Applications/Mission Control",
+}
 launcher.plugins.append(appsLauncher)
 
 from Launcher_Calculator import Launcher_Calculator
