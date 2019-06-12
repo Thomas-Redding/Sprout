@@ -77,4 +77,8 @@ from Launcher_Dictionary import Launcher_Dictionary
 launcherDictionary = Launcher_Dictionary.Launcher_Dictionary(spr)
 launcher.plugins.append(launcherDictionary)
 
+from Launcher_Contacts import Launcher_Contacts
+launcherContacts = Launcher_Contacts.Launcher_Contacts(spr)
+launcher.plugins.append(launcherContacts)
+
 spr.print('END LOADING')

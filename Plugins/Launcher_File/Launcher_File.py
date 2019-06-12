@@ -89,35 +89,6 @@ class Launcher_File:
         else:
             self.search("kMDItemContentType != public.folder" + queryName + " && kMDItemFSName = '*." + ext + "'c", searchCallback)
 
-    def unescape(self, s):
-        state = 0
-        rtn = ''
-        for c in s:
-            if state == 0:
-                if c == '\\': state = 1
-                else: rtn += c
-            else:
-                if c == '\\': rtn += '\\'
-                elif c == '"': rtn += '"'
-                elif c == "'": rtn += "'"
-                elif c == 'n': rtn += 'n'
-                elif c == 't': rtn += 't'
-                else:
-                    sys.exit(1)
-                state = 0
-        return rtn
-
-    def asyncPopen(self, popenArgs, callback):
-        def runInThread(popenArgs, onExit):
-            process = subprocess.Popen(popenArgs, shell=True, stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
-            # wait for the process to terminate
-            output, error = process.communicate()
-            errorCode = process.returncode
-            callback(output.decode(), error.decode(), errorCode)
-            return
-        thread = threading.Thread(target=runInThread, args=(popenArgs, callback))
-        thread.start()
-
     def search(self, query, callback):
         scopes = []
         for scope in self.scopes:

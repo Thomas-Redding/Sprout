@@ -412,7 +412,10 @@ static const CGFloat kMinTimeBetweenMouseEvents = 1.0/20;
       else [message appendString:@","];
       [message appendString:@"{"];
       [message appendFormat:@"\"name\": \"%@\",", contact.name];
-      [message appendFormat:@"\"birthday\": %f,", contact.birthday];
+      // I'm hacky and -2 means no birthday.
+      if (contact.birthday != -2) {
+        [message appendFormat:@"\"birthday\": %f,", contact.birthday];
+      }
       [message appendFormat:@"\"phones\": ["];
       BOOL isFirst2 = YES;
       for (NSString *phoneNumber in contact.phoneNumbers) {

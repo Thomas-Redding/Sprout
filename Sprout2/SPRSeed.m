@@ -352,7 +352,6 @@ static id<SPRSeedDelegate> _delegate;
       CNContactEmailAddressesKey, // einstein@princeton.edu
       CNContactPhoneNumbersKey,   // (555) 123-4567
       CNContactBirthdayKey,       // Mar 3, 1879
-      CNContactThumbnailImageDataKey,
   ];
   NSError *error;
   NSArray<CNContact *> *containers =
@@ -370,7 +369,12 @@ static id<SPRSeedDelegate> _delegate;
   for (CNContact *contact in containers) {
     SPRContact *newContact = [[SPRContact alloc] init];
     newContact.name = [NSString stringWithFormat:@"%@ %@", contact.givenName, contact.familyName];
-    newContact.birthday = [[contact.birthday date] timeIntervalSince1970];
+    if (contact.birthday == nil) {
+      // I'm hacky and -2 means no birthday.
+      newContact.birthday = -2;
+    } else {
+      newContact.birthday = [[contact.birthday date] timeIntervalSince1970];
+    }
     NSMutableArray <NSString *> *phoneNumbers = [[NSMutableArray alloc] init];
     for (CNLabeledValue<CNPhoneNumber*>* phoneNumber in contact.phoneNumbers) {
       [phoneNumbers addObject:phoneNumber.value.stringValue];
