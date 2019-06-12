@@ -705,14 +705,14 @@ try:
     with open(PATH_TO_RC) as rcFile:
         exec(rcFile.read(), { 'spr': spr })
 except Exception as exception:
-    spr.quitSprout()
     try:
         with open(PATH_TO_ERRORS, 'a') as errorFile:
-            stackTrace = traceback.format_exception(None, exception, exception.__traceback__)
-            errorFile.write(stackTrace)
-        sys.exit(1)
+            exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
+            errorFile.write("\n\n==========\n\n")
+            errorFile.write(str(exceptionValue))
+        spr.quitSprout()
     except:
-        sys.exit(2)
+        spr.quitSprout()
 
 try:
     for line in sys.stdin:
