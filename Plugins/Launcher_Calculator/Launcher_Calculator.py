@@ -20,6 +20,7 @@ class Launcher_Calculator:
             'tan': tan, 'tanh': tanh }
 
     def query(self, userInput, callback):
+        userInput = userInput.replace("^", "**")
         result = None
         variables = {"__builtins__":None}
         for variableName in self.variables:

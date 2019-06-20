@@ -64,8 +64,8 @@ def openFile(path, command, option, control, shift):
 fileLauncher.handleSelection = openFile
 launcher.plugins.append(fileLauncher)
 
-from Launcher_PythonEvaluator import Launcher_PythonEvaluator
-pythonEvaluatorLauncher = Launcher_PythonEvaluator.Launcher_PythonEvaluator(spr)
+from Launcher_Calculator import Launcher_Calculator
+pythonEvaluatorLauncher = Launcher_Calculator.Launcher_Calculator(spr)
 pythonEvaluatorLauncher.priority = 100
 launcher.plugins.append(pythonEvaluatorLauncher)
 
