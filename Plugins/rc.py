@@ -64,10 +64,10 @@ def openFile(path, command, option, control, shift):
 fileLauncher.handleSelection = openFile
 launcher.plugins.append(fileLauncher)
 
-from Launcher_Calculator import Launcher_Calculator
-calculatorLauncher = Launcher_Calculator.Launcher_Calculator()
-calculatorLauncher.priority = 100
-launcher.plugins.append(calculatorLauncher)
+from Launcher_PythonEvaluator import Launcher_PythonEvaluator
+pythonEvaluatorLauncher = Launcher_PythonEvaluator.Launcher_PythonEvaluator(spr)
+pythonEvaluatorLauncher.priority = 100
+launcher.plugins.append(pythonEvaluatorLauncher)
 
 from Launcher_GoogleSearch import Launcher_GoogleSearch
 googleSearchLauncher = Launcher_GoogleSearch.Launcher_GoogleSearch(spr)

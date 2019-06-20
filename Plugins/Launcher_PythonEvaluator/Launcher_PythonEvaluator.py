@@ -1,13 +1,12 @@
 from math import *
 import os
-import re
 
 """
 launcherCalculator = Launcher_Calculator()
 launcherCalculator.priority = 15
 """
 
-class Launcher_Calculator:
+class Launcher_PythonEvaluator:
 
     def __init__(self, spr):
         self.spr = spr
@@ -28,8 +27,7 @@ class Launcher_Calculator:
         eqIndex = userInput.find("=")
         expression = userInput if eqIndex == -1 else userInput[eqIndex+1:]
         variableName = None if eqIndex == -1 else userInput[:eqIndex]
-        if variableName and not self._isValidVariableName(variableName):
-            return None
+        # TODO: verify variable name
         try:
             result = eval(expression, variables, self.supportedMethods)
         except:
@@ -44,6 +42,3 @@ class Launcher_Calculator:
             os.system('echo "' + key[20:] + '" | tr -d "\n" | pbcopy')
             return True
         return False
-
-    def _isValidVariableName(self, variableName):
-        return re.match(r"^[a-zA-Z_][a-zA-Z_0-9]*$", variableName) != None
