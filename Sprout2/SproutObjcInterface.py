@@ -378,6 +378,21 @@ class Sprout:
     def print(self, s):
         if type(s) != str: raise Exception('s in Sprout.print() should have type string.')
         self._server.sendAsynchronousMessage('print\t' + s, lambda x : x, False)
+
+    def log(self, s):
+        if type(s) != str: raise Exception('s in Sprout.log() should have type string.')
+        try:
+            with open(PATH_TO_LOGS, 'a') as logFile:
+                logFile.write(s + "\n")
+        except Exception as exception:
+            try:
+                with open(PATH_TO_ERRORS, 'a') as errorFile:
+                    exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
+                    errorFile.write("\n\n==========\n\n")
+                    errorFile.write(str(exceptionValue))
+                spr.quitSprout()
+            except:
+                spr.quitSprout()
     
     def quitSprout(self):
         self._server.sendAsynchronousMessage('quitSprout', lambda x : x)
@@ -716,6 +731,7 @@ class Sprout:
 
 spr = Sprout()
 
+PATH_TO_LOGS = '/Users/thomasredding/proj/Sprout/logs.txt'
 PATH_TO_ERRORS = '/Users/thomasredding/proj/Sprout/errors.txt'
 PATH_TO_RC = '/Users/thomasredding/proj/Sprout/Plugins/rc.py'
 

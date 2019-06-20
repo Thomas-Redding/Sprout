@@ -1,6 +1,9 @@
 
 class Launcher_System:
     def __init__(self, spr):
+        self.sleepPriority = 0
+        self.shutdownPriority = 0
+        self.restartPriority = 0
         self.spr = spr
 
     def query(self, userInput, callback):
@@ -9,11 +12,11 @@ class Launcher_System:
         if 'restart sprout'[0:len(userInput)] == userInput.lower():
             callback([('Launcher_System:restartSprout', 1000, 'restart Sprout')])
         if 'sleep'[0:len(userInput)] == userInput.lower():
-            callback([('Launcher_System:sleepScreen', 1000, 'sleep')])
+            callback([('Launcher_System:sleepScreen', self.sleepPriority, 'sleep')])
         if 'shutdown'[0:len(userInput)] == userInput.lower():
-            callback([('Launcher_System:shutdown', 1000, 'shutdown')])
+            callback([('Launcher_System:shutdown', self.shutdownPriority, 'shutdown')])
         if 'restart'[0:len(userInput)] == userInput.lower():
-            callback([('Launcher_System:restart', 1000, 'restart')])
+            callback([('Launcher_System:restart', self.restartPriority, 'restart')])
 
     def action(self, key, cmd, opt, ctrl, shift):
         if key == 'Launcher_System:quitSprout':

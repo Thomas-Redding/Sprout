@@ -19,6 +19,7 @@ launcherFile.validExtensions.append("png")
 
 launcherFile.scopes = [ "~/Desktop" ] # Search files on the user's Desktop
 launcherFile.scopes.append("~/Downloads") # ... and downloads
+launcherFile.extraDirs.append("~")
 
 # Define how to handle a user selectin a file. This example opens the enclosing folder if
 # the command key is pressed, otherwise it opens the file. The default implementation
@@ -47,6 +48,7 @@ class Launcher_File:
             'app', 'exe',
             'beta'
         ]
+        self.extraDirs = [ "/", "~" ]
         self.scopes = ['~/Desktop', '~/Downloads', '~/Documents', '~/Public']
         None
         self.handleSelection = lambda path, cmd, opt, ctrl, shift: os.system('open ' + path)
@@ -75,14 +77,14 @@ class Launcher_File:
                 path = results[i]
                 reversedPath = " / ".join(path.split('/')[::-1])
                 html = "<img src='" + self._pathToFileIcon(path) + "'></img>" + reversedPath
-                rtn.append(('Launcher_File:' + results[i], 10-i, html))
+                rtn.append(('Launcher_File:' + results[i], 500-i, html))
             callback(rtn)
         queryName = "" if query == "" else " && kMDItemFSName == '" + query + "*'c"
         if ext == self.fileKeyword:
             self.search("kMDItemContentType != public.folder" + queryName + "", searchCallback)
         elif ext == self.folderKeyword:
             def callbackWrapper(results):
-                for scope in self.scopes:
+                for scope in self.scopes + self.extraDirs:
                     if os.path.basename(scope).lower().startswith(query.lower()):
                         results.insert(0, scope)
                 searchCallback(results[0:self.maxResults])

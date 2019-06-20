@@ -2,20 +2,32 @@ import json
 import requests # pip install requests;
 import webbrowser
 
+"""
+launcherGoogleSearch = Launcher_GoogleSearch()
+launcherGoogleSearch.maxPriority = 15          # priority of first fallback
+launcherGoogleSearch.minPriority = 15          # priority of last fallback
+"""
 
 class Launcher_GoogleSearch:
 
     def __init__(self, spr):
         self.spr = spr
+        self.maxPriority = 10
+        self.minPriority = 0
         None
 
     def query(self, userInput, callback):
+        self.spr.log(userInput)
         if userInput[0:2] == 'g ':
-            responses = self.googleSuggest(userInput[2:])
+            query = userInput[2:]
+            callback([['Launcher_GoogleSearch:' + query, self.maxPriority, 'google ' + query]])
+            responses = self.googleSuggest(query)
             rtn = []
             for i in range(len(responses)):
+                priority = self.maxPriority - i - 1
+                if priority < self.minPriority: break
                 response = responses[i]
-                rtn.append(['Launcher_GoogleSearch:' + response, 5-i, 'google ' + response])
+                rtn.append(['Launcher_GoogleSearch:' + response, priority, 'google ' + response])
             callback(rtn)
 
     def action(self, key, cmd, opt, ctrl, shift):

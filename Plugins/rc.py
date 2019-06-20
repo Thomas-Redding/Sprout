@@ -39,6 +39,9 @@ launcher = Launcher.Launcher(spr, 49, True, False, False, False)
 
 from Launcher_Apps import Launcher_Apps
 appsLauncher = Launcher_Apps.Launcher_Apps(spr)
+appsLauncher.launchPriority = 0
+appsLauncher.quitPriority = 0
+appsLauncher.restartPriority = 0
 appsLauncher.aliases = {
     "Chrome": "Applications/Google Chrome.app",
     "Preferences": "Applications/System Preferences.app",
@@ -47,10 +50,6 @@ appsLauncher.aliases = {
     "Control": "Applications/Mission Control.app",
 }
 launcher.plugins.append(appsLauncher)
-
-from Launcher_Calculator import Launcher_Calculator
-calculatorLauncher = Launcher_Calculator.Launcher_Calculator()
-launcher.plugins.append(calculatorLauncher)
 
 from Launcher_File import Launcher_File
 fileLauncher = Launcher_File.Launcher_File(spr)
@@ -65,20 +64,32 @@ def openFile(path, command, option, control, shift):
 fileLauncher.handleSelection = openFile
 launcher.plugins.append(fileLauncher)
 
+from Launcher_Calculator import Launcher_Calculator
+calculatorLauncher = Launcher_Calculator.Launcher_Calculator()
+calculatorLauncher.priority = 100
+launcher.plugins.append(calculatorLauncher)
+
 from Launcher_GoogleSearch import Launcher_GoogleSearch
 googleSearchLauncher = Launcher_GoogleSearch.Launcher_GoogleSearch(spr)
+googleSearchLauncher.maxPriority = 0
+googleSearchLauncher.minPriority = 0
 launcher.plugins.append(googleSearchLauncher)
 
 from Launcher_System import Launcher_System
 launcherSystem = Launcher_System.Launcher_System(spr)
+launcherSystem.sleepPriority = 0
+launcherSystem.shutdownPriority = 0
+launcherSystem.restartPriority = 0
 launcher.plugins.append(launcherSystem)
 
 from Launcher_Dictionary import Launcher_Dictionary
 launcherDictionary = Launcher_Dictionary.Launcher_Dictionary(spr)
+launcherDictionary.priority = 0
 launcher.plugins.append(launcherDictionary)
 
 from Launcher_Contacts import Launcher_Contacts
 launcherContacts = Launcher_Contacts.Launcher_Contacts(spr)
+launcherContacts.priority = 0
 launcher.plugins.append(launcherContacts)
 
 spr.print('END LOADING')

@@ -4,18 +4,24 @@ import threading
 import time
 import subprocess
 
+"""
+launcherContacts = Launcher_Contacts()
+launcherContacts.priority = 15
+"""
+
 class Launcher_Contacts:
     def __init__(self, spr):
         self.spr = spr
         self.spr.fetchContacts(lambda newContacts: self.updateContacts(newContacts))
         self._contacts = []
+        self.priority = 0
 
     def query(self, userInput, callback):
         suggestions = []
         for i in range(len(self._contacts)):
             contact = self._contacts[i]
             if userInput.lower() == contact["name"][:len(userInput)].lower():
-                suggestions.append(('Launcher_Contacts:' + contact["name"], 100-i, contact["name"]))
+                suggestions.append(('Launcher_Contacts:' + contact["name"], self.priority, contact["name"]))
         callback(suggestions)
 
     def action(self, key, cmd, opt, ctrl, shift):
