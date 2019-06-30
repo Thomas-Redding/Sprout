@@ -5,6 +5,8 @@ import subprocess
 import string
 import sys
 
+standardInput = sys.stdin
+
 class Helper:
     def __init__(self):
         self._uniqueId = 0
@@ -39,7 +41,7 @@ class ServerAPI:
         self.checkQueue()
         uniqueId = self._pipe(message)
         queue = []
-        for line in sys.stdin:
+        for line in standardInput:
             s = line[:-1]
             spaceIndex = helper.finder(s, '\t')
             if s[0:spaceIndex] == uniqueId:
@@ -735,6 +737,7 @@ PATH_TO_LOGS = '/Users/thomasredding/proj/Sprout/logs.txt'
 PATH_TO_ERRORS = '/Users/thomasredding/proj/Sprout/errors.txt'
 PATH_TO_RC = '/Users/thomasredding/proj/Sprout/Plugins/rc.py'
 
+
 try:
     with open(PATH_TO_RC) as rcFile:
         exec(rcFile.read(), { 'spr': spr })
@@ -749,7 +752,7 @@ except Exception as exception:
         spr.quitSprout()
 
 try:
-    for line in sys.stdin:
+    for line in standardInput:
         spr._respondToStandardInput(line)
 except Exception as exception:
     spr.quitSprout()

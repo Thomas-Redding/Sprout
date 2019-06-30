@@ -42,13 +42,6 @@ appsLauncher = Launcher_Apps.Launcher_Apps(spr)
 appsLauncher.launchPriority = 0
 appsLauncher.quitPriority = 0
 appsLauncher.restartPriority = 0
-appsLauncher.aliases = {
-    "Chrome": "Applications/Google Chrome.app",
-    "Preferences": "Applications/System Preferences.app",
-    "LoL": "Applications/League of Legends.app",
-    "Legends": "Applications/League of Legends.app",
-    "Control": "Applications/Mission Control.app",
-}
 launcher.plugins.append(appsLauncher)
 
 from Launcher_File import Launcher_File
@@ -74,6 +67,16 @@ googleSearchLauncher = Launcher_GoogleSearch.Launcher_GoogleSearch(spr)
 googleSearchLauncher.maxPriority = 0
 googleSearchLauncher.minPriority = 0
 launcher.plugins.append(googleSearchLauncher)
+
+from Launcher_Simple import Launcher_Simple
+launcherSimple = Launcher_Simple.Launcher_Simple(spr)
+launcherSimple.addSimpleAction("Chrome", 100, lambda: os.system('open "/Applications/Google Chrome.app"'))
+launcherSimple.addSimpleAction("Preferences", 100, lambda: os.system('open "Applications/System Preferences.app"'))
+launcherSimple.addSimpleAction("Chrome", 100, lambda: os.system('open "/Applications/Google Chrome.app"'))
+launcherSimple.addSimpleAction("LoL", 100, lambda: os.system('open "/Applications/League of Legends.app"'))
+launcherSimple.addSimpleAction("Legends", 100, lambda: os.system('open "/Applications/League of Legends.app"'))
+launcherSimple.addSimpleAction("Control", 100, lambda: os.system('open "/Applications/Mission Control.app"'))
+launcher.plugins.append(launcherSimple)
 
 from Launcher_System import Launcher_System
 launcherSystem = Launcher_System.Launcher_System(spr)

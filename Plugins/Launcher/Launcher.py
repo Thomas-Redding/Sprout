@@ -21,7 +21,7 @@ class Launcher:
         self._results = [] # (key, priority, displayHTML)
         self._resultsChanged()
         self._actionCount = 0
-        self.mostRecentUpdateId = 0
+        self._mostRecentUpdateId = 0
 
     def toggleWindowHide(self):
         isVisible = self._window.visible()
@@ -38,11 +38,11 @@ class Launcher:
         command = requestStr[0:tabIndex]
         commandArgs = requestStr[tabIndex+1:]
         if command == 'query':
-            self.mostRecentUpdateId += 1
+            self._mostRecentUpdateId += 1
             self._userInput = commandArgs
             self._results = []
             self._resultsChanged()
-            updateId = self.mostRecentUpdateId
+            updateId = self._mostRecentUpdateId
             for plugin in self.plugins:
                 plugin.query(commandArgs, lambda results: self.queryCallback(updateId, results))
         elif command == 'resize':
@@ -65,7 +65,7 @@ class Launcher:
         self._window.setFrame((1680/2-self.width/2, 900-100-height, self.width, height))
 
     def queryCallback(self, updateId, results):
-        if updateId != self.mostRecentUpdateId: return None
+        if updateId != self._mostRecentUpdateId: return None
         self._results += results
         self._resultsChanged()
 

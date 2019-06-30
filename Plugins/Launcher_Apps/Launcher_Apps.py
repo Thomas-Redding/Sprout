@@ -8,54 +8,54 @@ class Launcher_Apps:
         self.launchPriority = 0
         self.quitPriority = 0
         self.restartPriority = 0
-        self.aliases = {}
+        self.appPriority = {}
+
+    def _getAppPriority(self, path):
+        return self.appPriority[path] if path in self.appPriority else 0
 
     def query(self, userInput, callback):
         response = []
-        runningApps = self.spr.runningApps()
-        for file in os.listdir('/Applications'):
-            if file == '.DS_Store': continue
-            appName = file[0:-4]
-            if userInput.lower() == appName[0:len(userInput)].lower():
-                response.append(['Launcher_Apps:open /Applications/' + file, self.launchPriority, self.imageHTML("/Applications/" + file) + appName])
-        for file in os.listdir('/Applications/Utilities'):
-            if file == '.DS_Store': continue
-            appName = file[0:-4]
-            if userInput.lower() == appName[0:len(userInput)].lower():
-                response.append(['Launcher_Apps:open /Applications/Utilities/' + file, self.launchPriority, self.imageHTML("/Applications/Utilities" + file) + appName])
-        for alias in self.aliases:
-            if not userInput.lower() == alias[0:len(userInput)].lower(): continue
-            pathToApp = self.aliases[alias]
-            appName = os.path.basename(pathToApp)[0:-4]
-            response.append(['Launcher_Apps:open ' + pathToApp, 0, appName])
         if userInput[0:5] == 'quit ':
+            runningApps = self.spr.runningApps()
             query = userInput[5:]
             for file in os.listdir('/Applications'):
                 if file == '.DS_Store': continue
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:quit /Applications/' + file, self.quitPriority, self.imageHTML("/Applications/" + file) + 'quit ' + appName])
+                        response.append(['Launcher_Apps:quit /Applications/' + file, self.quitPriority + self._getAppPriority("/Applications/" + file), self.imageHTML("/Applications/" + file) + 'quit ' + appName])
             for file in os.listdir('/Applications/Utilities'):
                 if file == '.DS_Store': continue
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:quit /Applications/Utilities/' + file, self.quitPriority, self.imageHTML("/Applications/Utilities" + file) + 'quit ' + appName])
-        if userInput[0:8] == 'restart ':
+                        response.append(['Launcher_Apps:quit /Applications/Utilities/' + file, self.quitPriority + self._getAppPriority("/Applications/Utilities" + file), self.imageHTML("/Applications/Utilities" + file) + 'quit ' + appName])
+        elif userInput[0:8] == 'restart ':
+            runningApps = self.spr.runningApps()
             query = userInput[8:]
             for file in os.listdir('/Applications'):
                 if file == '.DS_Store': continue
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:restart /Applications/' + file, self.restartPriority, self.imageHTML("/Applications/" + file) + 'restart ' + appName])
+                        response.append(['Launcher_Apps:restart /Applications/' + file, self.restartPriority + self._getAppPriority("/Applications/" + file), self.imageHTML("/Applications/" + file) + 'restart ' + appName])
             for file in os.listdir('/Applications/Utilities'):
                 if file == '.DS_Store': continue
                 appName = file[0:-4]
                 if query.lower() == appName[0:len(query)].lower():
                     if self.does2dArrayContain(runningApps, appName):
-                        response.append(['Launcher_Apps:restart /Applications/Utilities/' + file, self.restartPriority, self.imageHTML("/Applications/Utilities" + file) + 'restart ' + appName])
+                        response.append(['Launcher_Apps:restart /Applications/Utilities/' + file, self.restartPriority + self._getAppPriority("/Applications/Utilities" + file), self.imageHTML("/Applications/Utilities" + file) + 'restart ' + appName])
+        else:
+            for file in os.listdir('/Applications'):
+                if file == '.DS_Store': continue
+                appName = file[0:-4]
+                if userInput.lower() == appName[0:len(userInput)].lower():
+                    response.append(['Launcher_Apps:open /Applications/' + file, self.launchPriority + self._getAppPriority("/Applications/" + file), self.imageHTML("/Applications/" + file) + appName])
+            for file in os.listdir('/Applications/Utilities'):
+                if file == '.DS_Store': continue
+                appName = file[0:-4]
+                if userInput.lower() == appName[0:len(userInput)].lower():
+                    response.append(['Launcher_Apps:open /Applications/Utilities/' + file, self.launchPriority + self._getAppPriority("/Applications/Utilities" + file), self.imageHTML("/Applications/Utilities" + file) + appName])
         callback(response)
 
     def does2dArrayContain(self, arr2d, val):
