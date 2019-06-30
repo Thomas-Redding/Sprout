@@ -1,7 +1,7 @@
 import json
 import os
-import threading
 import subprocess
+import threading
 
 """
 launcherFile = Launcher_File()
@@ -50,7 +50,6 @@ class Launcher_File:
         ]
         self.extraDirs = [ "/", "~" ]
         self.scopes = ['~/Desktop', '~/Downloads', '~/Documents', '~/Public']
-        None
         self.handleSelection = lambda path, cmd, opt, ctrl, shift: os.system('open ' + path)
 
     def query(self, userInput, callback):

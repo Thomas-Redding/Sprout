@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import random
@@ -5,7 +6,8 @@ import subprocess
 import string
 import sys
 
-standardInput = sys.stdin
+standardInput = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+standardOutput = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 class Helper:
     def __init__(self):
@@ -31,8 +33,8 @@ class ServerAPI:
     def _pipe(self, message):
         uniqueId = helper.generateUniqueId()
         message = self._escapeNewlines(message)
-        sys.stdout.write(uniqueId + '\t' + message  + '\n\n')
-        sys.stdout.flush()
+        standardOutput.write(uniqueId + '\t' + message  + '\n\n')
+        standardOutput.flush()
         return uniqueId
     
     # string message : The message to send to the server.
